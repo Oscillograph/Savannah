@@ -2,7 +2,7 @@
 #define SAVANNAH_H
 
 #include <Savannah/Core.h>
-#include <Savannah/Core/Application/Application.h>
+// #include <Savannah/Core/Application/Application.h>
 // #include <Savannah/Core/KeyCodes.h>
 
 // Savannah systems
@@ -25,9 +25,22 @@
 // #include <Savannah/Utils/PlatformUtils.h> // modal windows
 
 // entry point
-#include <Savannah/MainLoop.h> // need to be included in Client main file
+// #include <Savannah/MainLoop.h> // need to be included in Client main file
 
 // Various Application data stored by Engine for Client App to use 
-#include <Savannah/EngineData.h> // must be included last
+// #include <Savannah/EngineData.h> // must be included last
+
+#define GL_SILENCE_DEPRECATION
+
+// #include <Savannah/Vendor/Glad/include/glad/glad.h>
+#include <Savannah/Vendor/glfw/glfw3.h> // Will drag system OpenGL headers
+
+// #define IMGUI_IMPL_OPENGL_LOADER_CUSTOM
+
+#include <Savannah/Vendor/imgui/imgui.h>
+#include <Savannah/Vendor/imgui/backends/imgui_impl_glfw.h>
+#include <Savannah/Vendor/imgui/backends/imgui_impl_opengl3.h>
+
+// #include <Savannah/Utils/DearImGuiBackend.h>
 
 #endif
