@@ -1,217 +1,73 @@
-// #include "Savannah.h"
+#include "Savannah.h"
 
-// Dear ImGui: standalone example application for GLFW + OpenGL 3, using programmable pipeline
-// (GLFW is a cross-platform general purpose library for handling windows, inputs, OpenGL/Vulkan/Metal graphics context creation, etc.)
-// If you are new to Dear ImGui, read documentation from the docs/ folder + read the top of imgui.cpp.
-// Read online: https://github.com/ocornut/imgui/tree/master/docs
-
-#include <stdio.h>
-
-#include <Savannah/Vendor/Glad/include/glad/glad.h>
-#include <Savannah/Vendor/glfw/glfw3.h> // Will drag system OpenGL headers
-
-#ifndef IMGUI_IMPL_OPENGL_LOADER_CUSTOM
-	#define IMGUI_IMPL_OPENGL_LOADER_CUSTOM
-#endif
-
-#include <Savannah/Vendor/imgui/imgui.h>
-#include <Savannah/Vendor/imgui/backends/imgui_impl_glfw.h>
-#include <Savannah/Vendor/imgui/backends/imgui_impl_opengl3.h>
-
-// #include <Savannah/Utils/DearImGuiBackend.h>
-
-#define GL_SILENCE_DEPRECATION
-
-static void glfw_error_callback(int error, const char* description)
-{
-	fprintf(stderr, "GLFW Error %d: %s\n", error, description);
-}
-
-struct App {
-public:
-	static void Init(){
-		SetupWindow();
-		SetupGUI();
-	}
-	
-	static void SetupWindow(){
-		glfwSetErrorCallback(glfw_error_callback);
-		if (!glfwInit())
-			return;
-		
-		// Decide GL+GLSL versions
-		// GL 3.0 + GLSL 130
-		// const char* m_glsl_version = "#version 410";
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
-		//glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);  // 3.2+ only
-		//glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);            // 3.0+ only
-		
-		// Create window with graphics context
-		m_Window = glfwCreateWindow(1280, 720, "Dear ImGui GLFW+OpenGL3 example", nullptr, nullptr);
-		if (m_Window == nullptr)
-			return;
-		glfwMakeContextCurrent(m_Window);
-		gladLoadGL();
-		glfwSwapInterval(1); // Enable vsync
-	}
-	
-	static void SetupGUI(){
-		// Setup Dear ImGui context
-		IMGUI_CHECKVERSION();
-		ImGui::CreateContext();
-		ImGuiIO& io = ImGui::GetIO(); // (void)io;
-		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
-		io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
-		
-		io.BackendFlags |= ImGuiBackendFlags_HasMouseCursors;
-		io.BackendFlags |= ImGuiBackendFlags_HasSetMousePos;
-		
-		// Setup Dear ImGui style
-		ImGui::StyleColorsDark();
-		//ImGui::StyleColorsLight();
-		
-		// Setup Platform/Renderer backends
-		ImGui_ImplOpenGL3_Init(m_glsl_version);
-		ImGui_ImplGlfw_InitForOpenGL(m_Window, true);
-		
-		// Load Fonts
-		// - If no fonts are loaded, dear imgui will use the default font. You can also load multiple fonts and use ImGui::PushFont()/PopFont() to select them.
-		// - AddFontFromFileTTF() will return the ImFont* so you can store it if you need to select the font among multiple.
-		// - If the file cannot be loaded, the function will return a nullptr. Please handle those errors in your application (e.g. use an assertion, or display an error and quit).
-		// - The fonts will be rasterized at a given size (w/ oversampling) and stored into a texture when calling ImFontAtlas::Build()/GetTexDataAsXXXX(), which ImGui_ImplXXXX_NewFrame below will call.
-		// - Use '#define IMGUI_ENABLE_FREETYPE' in your imconfig file to use Freetype for higher quality font rendering.
-		// - Read 'docs/FONTS.md' for more instructions and details.
-		// - Remember that in C/C++ if you want to include a backslash \ in a string literal you need to write a double backslash \\ !
-		// - Our Emscripten build process allows embedding fonts to be accessible at runtime from the "fonts/" folder. See Makefile.emscripten for details.
-		//io.Fonts->AddFontDefault();
-		//io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\segoeui.ttf", 18.0f);
-		//io.Fonts->AddFontFromFileTTF("../../misc/fonts/DroidSans.ttf", 16.0f);
-		//io.Fonts->AddFontFromFileTTF("../../misc/fonts/Roboto-Medium.ttf", 16.0f);
-		//io.Fonts->AddFontFromFileTTF("../../misc/fonts/Cousine-Regular.ttf", 15.0f);
-		//ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f, nullptr, io.Fonts->GetGlyphRangesJapanese());
-		//IM_ASSERT(font != nullptr);
-	}
-	
-	static GLFWwindow* GetWindow(){
-		return m_Window;
-	}
-	
-	static void ProcessInput(){
-		// Poll and handle events (inputs, window resize, etc.)
-		// You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if dear imgui wants to use your inputs.
-		// - When io.WantCaptureMouse is true, do not dispatch mouse input data to your main application, or clear/overwrite your copy of the mouse data.
-		// - When io.WantCaptureKeyboard is true, do not dispatch keyboard input data to your main application, or clear/overwrite your copy of the keyboard data.
-		// Generally you may always pass all inputs to dear imgui, and hide them from your application based on those two flags.
-		glfwPollEvents();
-	}
-	
-	static void Render(){
-		GUIBegin();
-		GUIContent();
-		GUIEnd();
-	}
-	
-	static void GUIBegin(){
-		// Start the Dear ImGui frame
-		ImGui_ImplOpenGL3_NewFrame();
-		ImGui_ImplGlfw_NewFrame();
-		ImGui::NewFrame();
-	}
-	
-	static void GUIEnd(){
-		// Rendering
-		ImGui::Render();
-		int display_w, display_h;
-		glfwGetFramebufferSize(m_Window, &display_w, &display_h);
-		// io.DisplaySize = ImVec2((float)display_w, (float)display_h);
-		glViewport(0, 0, (GLsizei)display_w, (GLsizei)display_h);
-		glClearColor(m_ClearColor.x * m_ClearColor.w, m_ClearColor.y * m_ClearColor.w, m_ClearColor.z * m_ClearColor.w, m_ClearColor.w);
-		glClear(GL_COLOR_BUFFER_BIT);
-		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-		glfwSwapBuffers(m_Window);
-	}
-	
-	static void GUIContent(){
-		// Our state
-		bool show_demo_window = true;
-		bool show_another_window = false;
-		m_ClearColor = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
-		
-		// 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
-		if (show_demo_window)
-			ImGui::ShowDemoWindow(&show_demo_window);
-		// 2. Show a simple window that we create ourselves. We use a Begin/End pair to create a named window.
-		{
-			ImGuiIO& io = ImGui::GetIO();
-			static float f = 0.0f;
-			static int counter = 0;
+namespace Savannah {
+	class Testbed : public App {
+	public:
+		Testbed(){
 			
-			ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
-			
-			ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
-			ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
-			ImGui::Checkbox("Another Window", &show_another_window);
-			
-			ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
-			ImGui::ColorEdit3("clear color", (float*)&m_ClearColor); // Edit 3 floats representing a color
-			
-			if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
-				counter++;
-			ImGui::SameLine();
-			ImGui::Text("counter = %d", counter);
-			
-			ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
-			ImGui::End();
 		}
 		
-		// 3. Show another simple window.
-		if (show_another_window)
-		{
-			ImGui::Begin("Another Window", &show_another_window);   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
-			ImGui::Text("Hello from another window!");
-			if (ImGui::Button("Close Me"))
-				show_another_window = false;
-			ImGui::End();
+		~Testbed(){
+			
 		}
-	}
-	
-	static void ShutDown(){
-		// Cleanup
-		ImGui_ImplOpenGL3_Shutdown();
-		ImGui_ImplGlfw_Shutdown();
-		ImGui::DestroyContext();
 		
-		glfwDestroyWindow(m_Window);
-		glfwTerminate();
+		void GUIContent() override {
+			bool p_open = true;
+			static bool use_work_area = true;
+			// static ImGuiWindowFlags flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings;
+			static ImGuiWindowFlags flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoSavedSettings;
+			
+			// We demonstrate using the full viewport area or the work area (without menu-bars, task-bars etc.)
+			// Based on your use case you may want one or the other.
+			ImGuiViewport* viewport = ImGui::GetMainViewport();
+			// viewport->WorkPos.x -= 50;
+			// viewport->WorkPos.y -= 50;
+			// viewport->WorkSize.y += 50;
+			ImGui::SetNextWindowPos(use_work_area ? viewport->WorkPos : viewport->Pos);
+			ImGui::SetNextWindowSize(use_work_area ? viewport->WorkSize: viewport->Size);
+			
+			if (ImGui::Begin("Example: Fullscreen window", &p_open, flags))
+			{
+				ImGui::Checkbox("Use work area instead of main area", &use_work_area);
+				ImGui::SameLine();
+				// HelpMarker("Main Area = entire viewport,\nWork Area = entire viewport minus sections used by the main menu bars, task bars etc.\n\nEnable the main-menu bar in Examples menu to see the difference.");
+				
+				ImGui::CheckboxFlags("ImGuiWindowFlags_NoBackground", &flags, ImGuiWindowFlags_NoBackground);
+				ImGui::CheckboxFlags("ImGuiWindowFlags_NoDecoration", &flags, ImGuiWindowFlags_NoDecoration);
+				ImGui::Indent();
+				ImGui::CheckboxFlags("ImGuiWindowFlags_NoTitleBar", &flags, ImGuiWindowFlags_NoTitleBar);
+				ImGui::CheckboxFlags("ImGuiWindowFlags_NoCollapse", &flags, ImGuiWindowFlags_NoCollapse);
+				ImGui::CheckboxFlags("ImGuiWindowFlags_NoScrollbar", &flags, ImGuiWindowFlags_NoScrollbar);
+				ImGui::Unindent();
+			}
+			ImGui::End();
+			
+			
+			if (ImGui::BeginMainMenuBar())
+			{
+				if (ImGui::BeginMenu("File"))
+				{
+					// ShowExampleMenuFile();
+					ImGui::EndMenu();
+				}
+				if (ImGui::BeginMenu("Edit"))
+				{
+					if (ImGui::MenuItem("Undo", "CTRL+Z")) {}
+					if (ImGui::MenuItem("Redo", "CTRL+Y", false, false)) {}  // Disabled item
+					ImGui::Separator();
+					if (ImGui::MenuItem("Cut", "CTRL+X")) {}
+					if (ImGui::MenuItem("Copy", "CTRL+C")) {}
+					if (ImGui::MenuItem("Paste", "CTRL+V")) {}
+					ImGui::EndMenu();
+				}
+				ImGui::EndMainMenuBar();
+			}
+		}
+	};
+	
+	App* CreateApplication(){
+		return new Testbed();
 	}
-	
-private:
-	static GLFWwindow* m_Window;
-	static ImVec4 m_ClearColor;
-	static const char* m_glsl_version;
-};
-
-GLFWwindow* App::m_Window = nullptr;
-ImVec4 App::m_ClearColor = {0.0f, 0.0f, 0.0f, 0.0f};
-const char* App::m_glsl_version = "#version 410";
-
-// Main code
-int main(int, char**)
-{
-	// ===================================
-	App::Init();
-	
-	while (!glfwWindowShouldClose(App::GetWindow())){
-		App::ProcessInput();
-		// App::Logic();
-		App::Render();
-		// App::Sound();
-	}
-	
-	App::ShutDown();
-	// ===================================
-	return 0;
 }
 
 /*
