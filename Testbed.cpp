@@ -1,5 +1,6 @@
 #include "Savannah.h"
 
+#include "Savannah/Vendor/nlohmann/json.hpp"
 
 class Tree {
 public:
@@ -22,7 +23,7 @@ public:
 	}
 	
 	// Access a branch by number
-	inline std::pair<std::string, Tree>& operator [] (const int& number)
+	inline std::pair<std::string, Tree>& operator [] (const uint32_t& number)
 	{
 		if (m_Branches.size() > number)
 		{
@@ -45,6 +46,7 @@ public:
 	
 	inline int CountChildren() { return m_Branches.size(); }
 	
+	// serialize into a string
 	inline std::string Serialize(const std::string& root = "Default Tree Name", int level = 0)
 	{
 		std::stringstream text;
@@ -52,12 +54,12 @@ public:
 		text << spaces << root.c_str() << "\n";
 		text << spaces << "[" << m_Contents.c_str() << "]\n";
 		
-		int childrenCount = CountChildren();
+		uint32_t childrenCount = CountChildren();
 		if (childrenCount > 0)
 		{
 			text << spaces << "{\n";
 			
-			for (int i = 0; i < childrenCount; i++)
+			for (uint32_t i = 0; i < childrenCount; i++)
 			{
 				text << m_Branches[i].second.Serialize(m_Branches[i].first, level+1);
 			}
@@ -68,6 +70,42 @@ public:
 		return text.str();
 	}
 	
+	// serialize a node into a string
+	inline nlohmann::json SerializeJSON(const std::string& root = "Default Tree Name", int level = 0)
+	{
+		nlohmann::json jsonData;
+		jsonData["Name"] = root;
+		jsonData["Description"] = m_Contents.c_str();
+		
+		uint32_t childrenCount = CountChildren();
+		if (childrenCount > 0)
+		{
+			for (uint32_t i = 0; i < childrenCount; i++)
+			{
+				jsonData["Branches"][m_Branches[i].first] = m_Branches[i].second.SerializeJSON(m_Branches[i].first, level+1);
+			}
+		}
+		
+		return jsonData;
+	}
+	
+	// reconstruct a Tree from a string
+	inline void Deserialize(const std::string& source)
+	{
+		// read a character
+		// if it is a '{' then
+		//		read characters until "\n"
+		//		trim spaces or specially chosen characters from the left
+		//		collect a child and append it to the tree
+		// 		repeat until a character is '}'
+	}
+	
+	// reconstruct a Tree from a json object
+	inline void DeserializeJSON(const nlohmann::json& j)
+	{
+		
+	}
+	
 private:
 	std::string m_Contents; // text content of a node - its description
 	std::vector<std::pair<std::string, Tree>> m_Branches;
@@ -76,10 +114,11 @@ private:
 	// utility method
 	inline const char* AddSpaces(int level = 0)
 	{
+		char symbol = '	';
 		std::string spaces = "";
 		for (int i = 0; i < level; i++)
 		{
-			spaces += "	";
+			spaces += symbol;
 		}
 		return spaces.c_str();
 	}
@@ -224,7 +263,7 @@ namespace Savannah {
 			StoryClever["Стиль"]["Танцы"] = "";
 			StoryClever["Стиль"]["Мультипликация"] = "";
 			
-			m_InputText = new std::string(StoryClever.Serialize("История"));
+			m_InputText = new std::string((StoryClever.SerializeJSON("История")).dump(4));
 		}
 		
 		~Testbed(){
@@ -239,19 +278,20 @@ namespace Savannah {
 			
 			if (ImGui::BeginMainMenuBar())
 			{
-				if (ImGui::BeginMenu("File"))
+				if (ImGui::BeginMenu("Файл"))
 				{
 					// ShowExampleMenuFile();
+					if (ImGui::MenuItem("Выход")) { doExit = true; }
 					ImGui::EndMenu();
 				}
-				if (ImGui::BeginMenu("Edit"))
+				if (ImGui::BeginMenu("Правка"))
 				{
-					if (ImGui::MenuItem("Undo", "CTRL+Z")) {}
-					if (ImGui::MenuItem("Redo", "CTRL+Y", false, false)) {}  // Disabled item
+					if (ImGui::MenuItem("Отменить", "CTRL+Z")) {}
+					if (ImGui::MenuItem("Повторить", "CTRL+Y", false, false)) {}  // Disabled item
 					ImGui::Separator();
-					if (ImGui::MenuItem("Cut", "CTRL+X")) {}
-					if (ImGui::MenuItem("Copy", "CTRL+C")) {}
-					if (ImGui::MenuItem("Paste", "CTRL+V")) {}
+					if (ImGui::MenuItem("Вырезать", "CTRL+X")) {}
+					if (ImGui::MenuItem("Копировать", "CTRL+C")) {}
+					if (ImGui::MenuItem("Вставить", "CTRL+V")) {}
 					ImGui::EndMenu();
 				}
 				ImGui::EndMainMenuBar();
@@ -282,13 +322,16 @@ namespace Savannah {
 				if (ImGui::Button("Сгенерировать жанр"))
 				{
 					m_InputText->clear();
-					for (int i = 0; i < StoryClever.CountChildren(); i++)
+					srand((uint32_t)(glfwGetTime() * 10000));
+					
+					for (uint32_t i = 0; i < StoryClever.CountChildren(); i++)
 					{
 						*m_InputText += StoryClever[i].first;
 						*m_InputText += ": ";
 						
 						int r = rand() % StoryClever[StoryClever[i].first].CountChildren();
 						auto branch = StoryClever[StoryClever[i].first][r];
+						
 						while (r != -1)
 						{
 							*m_InputText += branch.first;

@@ -11,7 +11,7 @@ int main(int, char**)
 	
 	float time_previous = (float)glfwGetTime();
 	
-	while (!glfwWindowShouldClose(application->GetWindow())){
+	while ((!glfwWindowShouldClose(application->GetWindow())) && !application->doExit){
 		float time_current = (float)glfwGetTime();
 		
 		application->ProcessInput();

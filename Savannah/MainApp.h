@@ -202,6 +202,8 @@ namespace Savannah {
 		
 		virtual float GetFPS(){ return FPS; }
 		
+		bool doExit = false;
+		
 	private:
 		ImFontConfig* font_config = nullptr;
 		GLFWwindow* m_Window = nullptr;
