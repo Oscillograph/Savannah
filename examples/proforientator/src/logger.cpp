@@ -1,5 +1,5 @@
-#include <logger.h>
-#include <vendor/color-console/color.hpp>
+#include "../include/logger.h"
+#include <external/color-console/color.hpp>
 
 std::string Logger::m_u8string = "";
 std::u32string Logger::m_u32string = U"";

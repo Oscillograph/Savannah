@@ -1,4 +1,4 @@
-#include <examples/proforientator/include/common.h>
+#include "./common.h"
 
 class FileIO {
 public:
