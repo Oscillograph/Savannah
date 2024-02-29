@@ -1,7 +1,7 @@
 #ifndef PROFORIENTATOR_LOGGER_H
 #define PROFORIENTATOR_LOGGER_H
 
-#include <examples/proforientator/include/common.h>
+#include "./common.h"
 #include <external/utf8.h>
 
 // comment this line if you want something simple like std::cout

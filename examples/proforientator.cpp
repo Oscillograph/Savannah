@@ -1,6 +1,6 @@
 #include <include/savannah/savannah.h>
-#include <examples/proforientator/include/yaml_wrapper.h>
-#include <examples/proforientator/include/logger.h>
+#include "./proforientator/include/yaml_wrapper.h"
+#include "./proforientator/include/logger.h"
 
 // Compiled Dear ImGui to a binary .a file and linked it to Savannah.
 // Result: 40+ seconds to build -> 4-7 seconds to build.
@@ -53,7 +53,7 @@ namespace Savannah
 				average /= (float)IM_ARRAYSIZE(values);
 				char overlay[32];
 				sprintf(overlay, "avg %f", average);
-				ImGui::PlotLines("Lines", values, IM_ARRAYSIZE(values), values_offset, overlay, -1.0f, 1.0f, ImVec2(0, 80.0f));
+				ImGui::PlotLines("Lines", values, IM_ARRAYSIZE(values), values_offset, overlay, -1.0f, 1.0f, ImVec2(300, 150.0f));
 			}
 		}
 		

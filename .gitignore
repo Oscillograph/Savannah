@@ -6,6 +6,13 @@ ide/Savannah.dev
 ide/Savannah.layout
 ide/Savannah_private.rc
 ide/Savannah_private.res
+/Savannah_private.h
+/Savannah.bookmarks
+/Savannah.debug
+/Savannah.dev
+/Savannah.layout
+/Savannah_private.rc
+/Savannah_private.res
 /makefile.win
 *.o
 *.exe
