@@ -23,6 +23,18 @@ namespace Savannah
 			m_YAMLWrapperObject->UseSkillRegistry(m_SkillsRegistry);
 			m_YAMLWrapperObject->LoadDocument(m_SkillsFile);
 			
+			m_LevelDescription.push_back("незнаком"); // 0
+			m_LevelDescription.push_back("слышал"); // 1
+			m_LevelDescription.push_back("знаком"); // 2
+			m_LevelDescription.push_back("есть пет-проекты"); // 3
+			m_LevelDescription.push_back("разбираюсь в чужих проектах"); // 4
+			m_LevelDescription.push_back("широкий кругозор"); // 5
+			m_LevelDescription.push_back("могу работать в команде как участник"); // 6
+			m_LevelDescription.push_back("могу создавать новые решения"); // 7
+			m_LevelDescription.push_back("могу работать в команде как эксперт"); // 8
+			m_LevelDescription.push_back("могу руководить работой команды"); // 9
+			m_LevelDescription.push_back("БОГ"); // 10
+			
 			CONSOLE_GREY("Skill not aquaried");
 			CONSOLE_WHITE("Skill aquired.");
 			CONSOLE_CYAN("Skill is almost perfect.");
@@ -36,6 +48,7 @@ namespace Savannah
 		
 		~Proforientator()
 		{
+			m_YAMLWrapperObject->SaveDocument(m_SkillsFile);
 			delete m_SkillsRegistry;
 			delete m_YAMLWrapperObject;
 		}
@@ -53,6 +66,77 @@ namespace Savannah
 			// ====================================================================================
 			// The Application starts here
 			// ------------------------------------------------------------------------------------
+			ShowMainMenu();
+			
+			// We demonstrate using the full viewport area or the work area (without menu-bars, task-bars etc.)
+			// Based on your use case you may want one or the other.
+			ImGuiViewport* viewport = ImGui::GetMainViewport();
+			ImGui::SetNextWindowPos(use_work_area ? viewport->WorkPos : viewport->Pos);
+			ImGui::SetNextWindowSize(use_work_area ? viewport->WorkSize: viewport->Size);
+			// ------------------------------------------------------------------------------------
+			
+			if (ImGui::Begin("Example: Fullscreen window", &p_open, flags))
+			{
+				if (ImGui::BeginTable("Top Table", 2, ImGuiTableFlags_ScrollY, {TEXT_BASE_WIDTH * 160, TEXT_BASE_HEIGHT * 11}))
+				{
+					ImGui::TableNextColumn();
+					ShowLogo();
+					ImGui::TableNextColumn();
+					ShowContent();
+					ImGui::EndTable();
+				}
+				
+//				ImGui::ShowStackToolWindow();
+				
+				{
+					if (ImGui::BeginTable("Middle Table", 4, ImGuiTableFlags_RowBg, {TEXT_BASE_WIDTH * 140, TEXT_BASE_HEIGHT * 12}))
+					{
+						ImGui::TableNextColumn();
+						ShowSkillsTable("Технологии");
+						ImGui::TableNextColumn();
+						ShowSkillsTable("Инструменты");
+						ImGui::TableNextColumn();
+						ShowSkillsTable("Запчасти");
+						ImGui::TableNextColumn();
+						ShowSkillsTable("Знания");
+						ImGui::EndTable();
+					}
+					/*
+					ImGui::Columns(4);
+					ImGui::SetColumnWidth(0, TEXT_BASE_WIDTH * 40);
+					ImGui::SetColumnWidth(1, TEXT_BASE_WIDTH * 40);
+					ImGui::SetColumnWidth(2, TEXT_BASE_WIDTH * 40);
+					ImGui::SetColumnWidth(3, TEXT_BASE_WIDTH * 40);
+					
+					ShowSkillsTable("Технологии");
+					ImGui::NextColumn();
+					ShowSkillsTable("Инструменты");
+					ImGui::NextColumn();
+					ShowSkillsTable("Запчасти");
+					ImGui::NextColumn();
+					ShowSkillsTable("Знания");
+					
+					ImGui::NextColumn();
+					*/
+				}
+				
+				ImGui::End();
+			}
+			// ====================================================================================
+		}
+		
+	private:
+		std::string m_SkillsFile = "";
+		std::vector<std::string> m_LevelDescription = {};
+		SkillRegistry* m_SkillsRegistry = nullptr;
+		Skill* m_SkillSelected = nullptr;
+		YamlWrapper* m_YAMLWrapperObject = nullptr;
+		
+		float TEXT_BASE_WIDTH = 0.0f;
+		float TEXT_BASE_HEIGHT = 0.0f;
+		
+		void ShowMainMenu()
+		{
 			if (ImGui::BeginMainMenuBar())
 			{
 				if (ImGui::BeginMenu("Файл"))
@@ -76,18 +160,14 @@ namespace Savannah
 				}
 				ImGui::EndMainMenuBar();
 			}
-			
-			// We demonstrate using the full viewport area or the work area (without menu-bars, task-bars etc.)
-			// Based on your use case you may want one or the other.
-			ImGuiViewport* viewport = ImGui::GetMainViewport();
-			ImGui::SetNextWindowPos(use_work_area ? viewport->WorkPos : viewport->Pos);
-			ImGui::SetNextWindowSize(use_work_area ? viewport->WorkSize: viewport->Size);
-			// ------------------------------------------------------------------------------------
-			
-			if (ImGui::Begin("Example: Fullscreen window", &p_open, flags))
+		}
+		
+		void ShowLogo()
+		{
+			// A beautiful sinusoid
 			{
 				static bool animate = true;
-				ImGui::Checkbox("Animate", &animate);
+				// ImGui::Checkbox("Animate", &animate);
 				
 				static float values[90] = {};
 				static int values_offset = 0;
@@ -106,12 +186,12 @@ namespace Savannah
 				// Plots can display overlay texts
 				// (in this example, we will display an average value)
 				{
-					float average = 0.0f;
-					for (int n = 0; n < IM_ARRAYSIZE(values); n++)
-						average += values[n];
-					average /= (float)IM_ARRAYSIZE(values);
+					// float average = 0.0f;
+					// for (int n = 0; n < IM_ARRAYSIZE(values); n++)
+					//	average += values[n];
+					// average /= (float)IM_ARRAYSIZE(values);
 					char overlay[32];
-					sprintf(overlay, "avg %f", average);
+					// sprintf(overlay, "avg %f", average);
 					ImGui::PlotLines(
 						"###Lines", 
 						values, 
@@ -122,49 +202,59 @@ namespace Savannah
 						1.0f, 
 						ImVec2(TEXT_BASE_WIDTH*60, TEXT_BASE_HEIGHT*10)
 						);
-					ImGui::SameLine();
-					std::string raw = R"(Если чуточку разобраться, то Dear ImGui оказывается очень даже ручной.
+				}
+			}
+		}
+		
+		void ShowContent()
+		{
+			std::string raw = R"(Если чуточку разобраться, то Dear ImGui оказывается очень даже ручной.
 Строительство интерфейса напоминает конструирование таблиц-на-лету, и
 ощущения чем-то похожи на сайтостроительство тех времён, когда в ходу
 были преимущественно таблицы.
 
-<-- А синусоида-то анимированная!)";
-					// ImGui::TextColored({0.6f, 1.0f, 0.7f, 1.0f}, raw.c_str());
-					ImGui::Text(raw.c_str());
+<-- А синусоида-то анимированная!
+
+)";
+			// ImGui::TextColored({0.6f, 1.0f, 0.7f, 1.0f}, raw.c_str());
+			ImGui::Text(raw.c_str());
+			if (m_SkillSelected != nullptr)
+			{
+				std::string selected = "Выбран навык: " + m_SkillSelected->name;
+				ImGui::Text(selected.c_str());
+				int level = (int)(m_SkillSelected->level);
+				ImGui::Text("Уровень: ");
+				ImGui::SameLine();
+				ImGui::SliderInt("###Level", &level, 0, 10);
+				m_SkillSelected->level = (uint32_t)level;
+				ImVec4 color;
+				if (level < 2)
+				{ // red
+					color = {1.0f, 0.4f, 0.4f, 1.0f};
+				} else {
+					if (level < 4)
+					{ // orange
+						color = {1.0f, 0.7f, 0.5f, 1.0f};
+					} else {
+						if (level < 6)
+						{ // yellow
+							color = {1.0f, 1.0f, 0.5f, 1.0f};
+						} else {
+							if (level < 10)
+							{ // green
+								color = {0.6f, 1.0f, 0.5f, 1.0f};
+							} else {
+								if (level == 10)
+								{ // magenta
+									color = {1.0f, 0.5f, 1.0f, 1.0f};
+								}
+							}
+						}
+					}
 				}
-				
-//				ImGui::ShowStackToolWindow();
-				
-				{
-					ImGui::Columns(4);
-					ImGui::SetColumnWidth(0, TEXT_BASE_WIDTH * 32);
-					ImGui::SetColumnWidth(1, TEXT_BASE_WIDTH * 32);
-					ImGui::SetColumnWidth(2, TEXT_BASE_WIDTH * 32);
-					ImGui::SetColumnWidth(3, TEXT_BASE_WIDTH * 32);
-					
-					ShowSkillsTable("Технологии");
-					ImGui::NextColumn();
-					ShowSkillsTable("Инструменты");
-					ImGui::NextColumn();
-					ShowSkillsTable("Запчасти");
-					ImGui::NextColumn();
-					ShowSkillsTable("Знания");
-					
-					ImGui::NextColumn();
-				}
-				
-				ImGui::End();
+				ImGui::TextColored(color, m_LevelDescription[level].c_str());
 			}
-			// ====================================================================================
 		}
-		
-	private:
-		std::string m_SkillsFile = "";
-		SkillRegistry* m_SkillsRegistry = nullptr;
-		YamlWrapper* m_YAMLWrapperObject = nullptr;
-		
-		float TEXT_BASE_WIDTH = 0.0f;
-		float TEXT_BASE_HEIGHT = 0.0f;
 		
 		void ShowSkillsTable(const std::string& groupName)
 		{
@@ -176,11 +266,28 @@ namespace Savannah
 				for (auto skillsIterator = group->children.begin(); skillsIterator != group->children.end(); skillsIterator++)
 				{
 					std::string nameID = (*skillsIterator)->name;
+					//ImGui::PushStyleColor(ImGuiCol_TableRowBg, ImVec4(0.2f, 0.5f, 0.2f, 1.0f)); 
+					//ImGui::PushStyleColor(ImGuiCol_TableRowBgAlt, ImVec4(0.2f, 0.5f, 0.2f, 1.0f));
 					ImGui::TableNextColumn();
+					bool selected = false;
+					if ((*skillsIterator) == m_SkillSelected)
+					{
+						selected = true;
+						// ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, ImGui::GetColorU32(ImVec4(0.2f, 0.5f, 0.2f, 1.0f)));
+					} else {
+						selected = false;
+						// ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, ImGui::GetColorU32(ImGuiCol_TableRowBg));
+					}
+					//ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, ImGui::GetColorU32(ImVec4(0.2f, 0.3f, 0.5f, 1.0f)));
 					ImGui::PushID(nameID.c_str());
-					ImGui::Text("%s", nameID.c_str());
+					if (ImGui::Selectable(nameID.c_str(), &selected, ImGuiSelectableFlags_SpanAllColumns))
+					{
+						m_SkillSelected = *skillsIterator;
+					}
+					// ImGui::Text("%s", nameID.c_str());
 					ImGui::Spacing();
 					ImGui::TableNextColumn();
+					// ImGui::PushStyleVar();
 					std::string valueID = (*skillsIterator)->name;
 					// ImGui::PushID(valueID.c_str());
 					std::string value = "";
@@ -193,7 +300,12 @@ namespace Savannah
 							value += " ";
 						}
 					}
-					ImGui::Text("%s", value.c_str());
+					// ImGui::Text("%s", value.c_str());
+					if (ImGui::Selectable(value.c_str(), &selected, ImGuiSelectableFlags_SpanAllColumns))
+					{
+						m_SkillSelected = *skillsIterator;
+					}
+					//ImGui::PopStyleColor(2);
 					ImGui::PopID();
 				}
 				// PopStyleCompact();
