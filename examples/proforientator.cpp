@@ -47,8 +47,8 @@ namespace Savannah
 			// static ImGuiWindowFlags flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings;
 			static ImGuiWindowFlags flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoSavedSettings;
 			
-			const float TEXT_BASE_WIDTH = ImGui::CalcTextSize("A").x;
-			const float TEXT_BASE_HEIGHT = ImGui::GetTextLineHeightWithSpacing();
+			TEXT_BASE_WIDTH = ImGui::CalcTextSize("A").x;
+			TEXT_BASE_HEIGHT = ImGui::GetTextLineHeightWithSpacing();
 			
 			// ====================================================================================
 			// The Application starts here
@@ -58,7 +58,10 @@ namespace Savannah
 				if (ImGui::BeginMenu("Файл"))
 				{
 					// ShowExampleMenuFile();
-					if (ImGui::MenuItem("Выход")) { doExit = true; }
+					if (ImGui::MenuItem("Выход")) 
+					{ 
+						doExit = true; 
+					}
 					ImGui::EndMenu();
 				}
 				if (ImGui::BeginMenu("Правка"))
@@ -110,7 +113,7 @@ namespace Savannah
 					char overlay[32];
 					sprintf(overlay, "avg %f", average);
 					ImGui::PlotLines(
-						"На самом деле, подпись справа -- это неудобно, потому что текст уезжает далеко.", 
+						"###Lines", 
 						values, 
 						IM_ARRAYSIZE(values), 
 						values_offset, 
@@ -119,6 +122,15 @@ namespace Savannah
 						1.0f, 
 						ImVec2(TEXT_BASE_WIDTH*60, TEXT_BASE_HEIGHT*10)
 						);
+					ImGui::SameLine();
+					std::string raw = R"(Если чуточку разобраться, то Dear ImGui оказывается очень даже ручной.
+Строительство интерфейса напоминает конструирование таблиц-на-лету, и
+ощущения чем-то похожи на сайтостроительство тех времён, когда в ходу
+были преимущественно таблицы.
+
+<-- А синусоида-то анимированная!)";
+					// ImGui::TextColored({0.6f, 1.0f, 0.7f, 1.0f}, raw.c_str());
+					ImGui::Text(raw.c_str());
 				}
 				
 //				ImGui::ShowStackToolWindow();
@@ -129,136 +141,14 @@ namespace Savannah
 					ImGui::SetColumnWidth(1, TEXT_BASE_WIDTH * 32);
 					ImGui::SetColumnWidth(2, TEXT_BASE_WIDTH * 32);
 					ImGui::SetColumnWidth(3, TEXT_BASE_WIDTH * 32);
-					ImGui::TextColored({1.0f, 0.7f, 0.5f, 1.0f}, "Технологии");
-					if (ImGui::BeginTable("Технологии", 2, ImGuiTableFlags_ScrollY, {TEXT_BASE_WIDTH * 30, TEXT_BASE_HEIGHT * 10}))
-					{
-						// PushStyleCompact();
-						SkillGroup* group = (m_SkillsRegistry->GetGroups())["Технологии"];
-						for (auto skillsIterator = group->children.begin(); skillsIterator != group->children.end(); skillsIterator++)
-						{
-							std::string nameID = (*skillsIterator)->name;
-							ImGui::TableNextColumn();
-							ImGui::PushID(nameID.c_str());
-							ImGui::Text("%s", nameID.c_str());
-							ImGui::Spacing();
-							ImGui::TableNextColumn();
-							std::string valueID = (*skillsIterator)->name;
-							// ImGui::PushID(valueID.c_str());
-							std::string value = "";
-							for (int i = 0; i < 10; i++)
-							{
-								if (i < (*skillsIterator)->level)
-								{
-									value += "+";
-								} else {
-									value += " ";
-								}
-							}
-							ImGui::Text("%s", value.c_str());
-							ImGui::PopID();
-						}
-						// PopStyleCompact();
-						ImGui::EndTable();
-					}
 					
+					ShowSkillsTable("Технологии");
 					ImGui::NextColumn();
-					ImGui::TextColored({1.0f, 0.7f, 0.5f, 1.0f}, "Инструменты");
-					if (ImGui::BeginTable("Инструменты", 2, ImGuiTableFlags_ScrollY, {TEXT_BASE_WIDTH * 30, TEXT_BASE_HEIGHT * 10}))
-					{
-						// PushStyleCompact();
-						SkillGroup* group = (m_SkillsRegistry->GetGroups())["Инструменты"];
-						for (auto skillsIterator = group->children.begin(); skillsIterator != group->children.end(); skillsIterator++)
-						{
-							std::string nameID = (*skillsIterator)->name;
-							ImGui::TableNextColumn();
-							ImGui::PushID(nameID.c_str());
-							ImGui::Text("%s", nameID.c_str());
-							ImGui::Spacing();
-							ImGui::TableNextColumn();
-							std::string valueID = (*skillsIterator)->name;
-							// ImGui::PushID(valueID.c_str());
-							std::string value = "";
-							for (int i = 0; i < 10; i++)
-							{
-								if (i < (*skillsIterator)->level)
-								{
-									value += "+";
-								} else {
-									value += " ";
-								}
-							}
-							ImGui::Text("%s", value.c_str());
-							ImGui::PopID();
-						}
-						// PopStyleCompact();
-						ImGui::EndTable();
-					}
-					
+					ShowSkillsTable("Инструменты");
 					ImGui::NextColumn();
-					ImGui::TextColored({1.0f, 0.7f, 0.5f, 1.0f}, "Запчасти");
-					if (ImGui::BeginTable("Запчасти", 2, ImGuiTableFlags_ScrollY, {TEXT_BASE_WIDTH * 30, TEXT_BASE_HEIGHT * 10}))
-					{
-						// PushStyleCompact();
-						SkillGroup* group = (m_SkillsRegistry->GetGroups())["Запчасти"];
-						for (auto skillsIterator = group->children.begin(); skillsIterator != group->children.end(); skillsIterator++)
-						{
-							std::string nameID = (*skillsIterator)->name;
-							ImGui::TableNextColumn();
-							ImGui::PushID(nameID.c_str());
-							ImGui::Text("%s", nameID.c_str());
-							ImGui::Spacing();
-							ImGui::TableNextColumn();
-							std::string valueID = (*skillsIterator)->name;
-							// ImGui::PushID(valueID.c_str());
-							std::string value = "";
-							for (int i = 0; i < 10; i++)
-							{
-								if (i < (*skillsIterator)->level)
-								{
-									value += "+";
-								} else {
-									value += " ";
-								}
-							}
-							ImGui::Text("%s", value.c_str());
-							ImGui::PopID();
-						}
-						// PopStyleCompact();
-						ImGui::EndTable();
-					}
-					
+					ShowSkillsTable("Запчасти");
 					ImGui::NextColumn();
-					ImGui::TextColored({1.0f, 0.7f, 0.5f, 1.0f}, "Знания");
-					if (ImGui::BeginTable("Знания", 2, ImGuiTableFlags_ScrollY, {TEXT_BASE_WIDTH * 30, TEXT_BASE_HEIGHT * 10}))
-					{
-						// PushStyleCompact();
-						SkillGroup* group = (m_SkillsRegistry->GetGroups())["Знания"];
-						for (auto skillsIterator = group->children.begin(); skillsIterator != group->children.end(); skillsIterator++)
-						{
-							std::string nameID = (*skillsIterator)->name;
-							ImGui::TableNextColumn();
-							ImGui::PushID(nameID.c_str());
-							ImGui::Text("%s", nameID.c_str());
-							ImGui::Spacing();
-							ImGui::TableNextColumn();
-							std::string valueID = (*skillsIterator)->name;
-							// ImGui::PushID(valueID.c_str());
-							std::string value = "";
-							for (int i = 0; i < 10; i++)
-							{
-								if (i < (*skillsIterator)->level)
-								{
-									value += "+";
-								} else {
-									value += " ";
-								}
-							}
-							ImGui::Text("%s", value.c_str());
-							ImGui::PopID();
-						}
-						// PopStyleCompact();
-						ImGui::EndTable();
-					}
+					ShowSkillsTable("Знания");
 					
 					ImGui::NextColumn();
 				}
@@ -272,6 +162,44 @@ namespace Savannah
 		std::string m_SkillsFile = "";
 		SkillRegistry* m_SkillsRegistry = nullptr;
 		YamlWrapper* m_YAMLWrapperObject = nullptr;
+		
+		float TEXT_BASE_WIDTH = 0.0f;
+		float TEXT_BASE_HEIGHT = 0.0f;
+		
+		void ShowSkillsTable(const std::string& groupName)
+		{
+			ImGui::TextColored({1.0f, 0.7f, 0.5f, 1.0f}, groupName.c_str());
+			if (ImGui::BeginTable(groupName.c_str(), 2, ImGuiTableFlags_ScrollY, {TEXT_BASE_WIDTH * 30, TEXT_BASE_HEIGHT * 10}))
+			{
+				// PushStyleCompact();
+				SkillGroup* group = (m_SkillsRegistry->GetGroups())[groupName];
+				for (auto skillsIterator = group->children.begin(); skillsIterator != group->children.end(); skillsIterator++)
+				{
+					std::string nameID = (*skillsIterator)->name;
+					ImGui::TableNextColumn();
+					ImGui::PushID(nameID.c_str());
+					ImGui::Text("%s", nameID.c_str());
+					ImGui::Spacing();
+					ImGui::TableNextColumn();
+					std::string valueID = (*skillsIterator)->name;
+					// ImGui::PushID(valueID.c_str());
+					std::string value = "";
+					for (int i = 0; i < 10; i++)
+					{
+						if (i < (*skillsIterator)->level)
+						{
+							value += "+";
+						} else {
+							value += " ";
+						}
+					}
+					ImGui::Text("%s", value.c_str());
+					ImGui::PopID();
+				}
+				// PopStyleCompact();
+				ImGui::EndTable();
+			}
+		}
 	};
 	
 	App* CreateApplication()
