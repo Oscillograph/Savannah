@@ -216,12 +216,14 @@ namespace Savannah
 <-- А синусоида-то анимированная!
 
 )";
-			// ImGui::TextColored({0.6f, 1.0f, 0.7f, 1.0f}, raw.c_str());
 			ImGui::Text(raw.c_str());
 			if (m_SkillSelected != nullptr)
 			{
-				std::string selected = "Выбран навык: " + m_SkillSelected->name;
+				std::string selected = "Выбран навык: ";
 				ImGui::Text(selected.c_str());
+				ImGui::SameLine();
+				ImGui::InputText("###Name", &(m_SkillSelected->name));
+				
 				int level = (int)(m_SkillSelected->level);
 				ImGui::Text("Уровень: ");
 				ImGui::SameLine();
@@ -266,30 +268,22 @@ namespace Savannah
 				for (auto skillsIterator = group->children.begin(); skillsIterator != group->children.end(); skillsIterator++)
 				{
 					std::string nameID = (*skillsIterator)->name;
-					//ImGui::PushStyleColor(ImGuiCol_TableRowBg, ImVec4(0.2f, 0.5f, 0.2f, 1.0f)); 
-					//ImGui::PushStyleColor(ImGuiCol_TableRowBgAlt, ImVec4(0.2f, 0.5f, 0.2f, 1.0f));
 					ImGui::TableNextColumn();
 					bool selected = false;
 					if ((*skillsIterator) == m_SkillSelected)
 					{
 						selected = true;
-						// ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, ImGui::GetColorU32(ImVec4(0.2f, 0.5f, 0.2f, 1.0f)));
 					} else {
 						selected = false;
-						// ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, ImGui::GetColorU32(ImGuiCol_TableRowBg));
 					}
-					//ImGui::TableSetBgColor(ImGuiTableBgTarget_CellBg, ImGui::GetColorU32(ImVec4(0.2f, 0.3f, 0.5f, 1.0f)));
 					ImGui::PushID(nameID.c_str());
 					if (ImGui::Selectable(nameID.c_str(), &selected, ImGuiSelectableFlags_SpanAllColumns))
 					{
 						m_SkillSelected = *skillsIterator;
 					}
-					// ImGui::Text("%s", nameID.c_str());
 					ImGui::Spacing();
 					ImGui::TableNextColumn();
-					// ImGui::PushStyleVar();
 					std::string valueID = (*skillsIterator)->name;
-					// ImGui::PushID(valueID.c_str());
 					std::string value = "";
 					for (int i = 0; i < 10; i++)
 					{
@@ -300,16 +294,20 @@ namespace Savannah
 							value += " ";
 						}
 					}
-					// ImGui::Text("%s", value.c_str());
 					if (ImGui::Selectable(value.c_str(), &selected, ImGuiSelectableFlags_SpanAllColumns))
 					{
 						m_SkillSelected = *skillsIterator;
 					}
-					//ImGui::PopStyleColor(2);
 					ImGui::PopID();
 				}
-				// PopStyleCompact();
 				ImGui::EndTable();
+				
+				ImGui::Text("");
+				std::string buttonName = "Новый навык##" + group->name;
+				if (ImGui::Button(buttonName.c_str(), {TEXT_BASE_WIDTH * 30, TEXT_BASE_HEIGHT * 2}))
+				{
+					m_SkillSelected = m_SkillsRegistry->NewSkill("Новый навык", group->name, 0);
+				}
 			}
 		}
 	};
