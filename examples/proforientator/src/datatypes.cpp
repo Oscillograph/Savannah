@@ -117,6 +117,125 @@ void SkillRegistry::AddGroup(SkillGroup* group)
 	}
 }
 
+void SkillRegistry::SortGroups()
+{
+	for (auto groupIt = m_GroupsRegistry.begin(); groupIt != m_GroupsRegistry.end(); groupIt++)
+	{
+		SkillGroup* group = (*groupIt).second;
+		// sort skills in the group
+		Sort(group->children);
+	}
+}
+
+void SkillRegistry::SortGroup(SkillGroup* group)
+{
+	Sort(group->children);
+}
+
+void SkillRegistry::Sort(std::vector<Skill*>& source)
+{
+	  //////////////////////////////////////////////
+	 // Merge Sort  ///////////////////////////////
+	//////////////////////////////////////////////
+	std::vector<Skill*> temp = source;
+	
+	// characteristics of intervals
+	int length = 1; // it starts from 1 and grows to lengthMax
+	int lengthMax = source.size();
+	
+	// left part of the interval
+	int leftStart = 0;
+	int leftIndex = 0;
+	int leftEnd = 0;
+	
+	// right part of the interval
+	int rightStart = 0;
+	int rightIndex = 0;
+	int rightEnd = 0;
+	
+	int tempIndex = 0; // where we put an item
+	
+	while (length < lengthMax)
+	{
+		tempIndex = 0; // reset the position of where we put items
+		
+		// build one interval and then move it across all the source
+		leftStart = 0;
+		leftEnd = leftStart + length - 1;
+		rightStart = leftEnd + 1;
+		rightEnd = leftStart + 2 * length - 1;
+		
+		while (leftStart < lengthMax) // only process when we have the left part
+		{
+			if (rightStart >= lengthMax)
+			{
+				break; // don't process the case where we have no right part
+			}
+			
+			if (rightEnd >= lengthMax)
+			{
+				rightEnd = lengthMax - 1; // always fit the array size
+			}
+			
+			// set up indexes in both parts of the interval...
+			leftIndex = leftStart;
+			rightIndex = rightStart;
+			tempIndex = leftStart; // ...and the writing place as well
+			
+			// sort things in the interval
+			while ((leftIndex <= leftEnd) && (rightIndex <= rightEnd)) // compare items
+			{ 
+				if (source[rightIndex]->level <= source[leftIndex]->level)
+				{
+					temp[tempIndex] = source[leftIndex];
+					leftIndex++;
+					tempIndex++;
+				} else {
+					temp[tempIndex] = source[rightIndex];
+					rightIndex++;
+					tempIndex++;
+				}
+			}
+			
+			// unprocessed part is considered sorted by default, and there are
+			// two special situations possible:
+			while (leftIndex <= leftEnd) // 1) no more items left on the right;
+			{
+				temp[tempIndex] = source[leftIndex];
+				leftIndex++;
+				tempIndex++;
+			}
+			
+			while (rightIndex <= rightEnd) // 2) no more items left on the left
+			{
+				temp[tempIndex] = source[rightIndex];
+				rightIndex++;
+				tempIndex++;
+			}
+			
+			// move the interval
+			leftStart += 2*length;
+			leftEnd += 2*length;
+			rightStart += 2*length;
+			rightEnd += 2*length;
+		}
+		
+		// update the source
+		for (int i = 0; i < source.size(); i++)
+		{
+			source[i] = temp[i];
+		}
+		
+		length = length*2; // increase the interval length
+	}
+	
+	// clean the temporary array
+	for (int i = 0; i < temp.size(); i++)
+	{
+		temp[i] = nullptr;
+	}
+}
+
 std::unordered_map<std::string, SkillGroup*>& SkillRegistry::GetGroups()
 {
 	return m_GroupsRegistry;

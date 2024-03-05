@@ -31,12 +31,16 @@ struct SkillRegistry
 	void RemoveSkill(Skill* skill);
 	void RemoveSkill(const std::string& name);
 	void AddGroup(SkillGroup* group);
+	void SortGroups();
+	void SortGroup(SkillGroup* group);
 	
 	std::unordered_map<std::string, SkillGroup*>& GetGroups();
 	
 private:
 	std::unordered_map<std::string, SkillGroup*> m_GroupsRegistry = {};
 	std::vector<Skill*> m_SkillsRegistry = {};
+	
+	void Sort(std::vector<Skill*>& source);
 };
 
 struct Job

@@ -22,6 +22,7 @@ namespace Savannah
 			m_YAMLWrapperObject = new YamlWrapper();
 			m_YAMLWrapperObject->UseSkillRegistry(m_SkillsRegistry);
 			m_YAMLWrapperObject->LoadDocument(m_SkillsFile);
+			m_SkillsRegistry->SortGroups();
 			
 			m_LevelDescription.push_back("незнаком"); // 0
 			m_LevelDescription.push_back("слышал"); // 1
@@ -101,23 +102,6 @@ namespace Savannah
 						ShowSkillsTable("Знания");
 						ImGui::EndTable();
 					}
-					/*
-					ImGui::Columns(4);
-					ImGui::SetColumnWidth(0, TEXT_BASE_WIDTH * 40);
-					ImGui::SetColumnWidth(1, TEXT_BASE_WIDTH * 40);
-					ImGui::SetColumnWidth(2, TEXT_BASE_WIDTH * 40);
-					ImGui::SetColumnWidth(3, TEXT_BASE_WIDTH * 40);
-					
-					ShowSkillsTable("Технологии");
-					ImGui::NextColumn();
-					ShowSkillsTable("Инструменты");
-					ImGui::NextColumn();
-					ShowSkillsTable("Запчасти");
-					ImGui::NextColumn();
-					ShowSkillsTable("Знания");
-					
-					ImGui::NextColumn();
-					*/
 				}
 				
 				ImGui::End();
@@ -265,6 +249,7 @@ namespace Savannah
 			{
 				// PushStyleCompact();
 				SkillGroup* group = (m_SkillsRegistry->GetGroups())[groupName];
+//				m_SkillsRegistry->SortGroup(group);
 				for (auto skillsIterator = group->children.begin(); skillsIterator != group->children.end(); skillsIterator++)
 				{
 					std::string nameID = (*skillsIterator)->name;
