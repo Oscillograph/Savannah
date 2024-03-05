@@ -18,6 +18,7 @@
 #endif
 
 #include <external/imgui/imgui.h>
+#include <external/imgui/imgui_internal.h> // for advanced selectable flags
 #include <external/imgui/misc/cpp/imgui_stdlib.h> // for strings
 
 #include <external/imgui/backends/imgui_impl_glfw.h>

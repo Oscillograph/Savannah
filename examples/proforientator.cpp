@@ -262,7 +262,7 @@ namespace Savannah
 						selected = false;
 					}
 					ImGui::PushID(nameID.c_str());
-					if (ImGui::Selectable(nameID.c_str(), &selected, ImGuiSelectableFlags_SpanAllColumns))
+					if (ImGui::Selectable(nameID.c_str(), &selected, ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_SelectOnNav))
 					{
 						m_SkillSelected = *skillsIterator;
 					}
@@ -279,10 +279,11 @@ namespace Savannah
 							value += " ";
 						}
 					}
-					if (ImGui::Selectable(value.c_str(), &selected, ImGuiSelectableFlags_SpanAllColumns))
+					if (ImGui::Selectable(value.c_str(), &selected, ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_SelectOnNav))
 					{
 						m_SkillSelected = *skillsIterator;
 					}
+					
 					ImGui::PopID();
 				}
 				ImGui::EndTable();
