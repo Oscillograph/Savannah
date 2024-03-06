@@ -1,5 +1,5 @@
 ## TODO list ##
-# Savannah #
+### Savannah ###
 * Prebuilt GUI functions (popup-windows, tables, text containers, image containers, 3D scenes, datatype editors, etc.)
 * Event system and events stack to access and manipulate from the app
 * Custom console logger instead of spdlog
@@ -10,7 +10,7 @@
 * More examples
 * CMake support
 
-# Examples #
+### Examples ###
 Proforientator:
 * Scale GUI elements according to the actual window size
 * Implement skill descriptions
