@@ -1,6 +1,6 @@
 MIT License
 
-Copyright (c) 2024 Kamenskiy Kirill aka ÒåõíÎêğàÒ / Living Oscillograph
+Copyright (c) 2024 Kamenskiy Kirill aka Ğ¢ĞµÑ…Ğ½ĞĞºÑ€Ğ°Ğ¢ / Living Oscillograph
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
