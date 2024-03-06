@@ -14,6 +14,8 @@ int main(int, char**)
 	while ((!glfwWindowShouldClose(application->GetWindow())) && !application->doExit){
 		float time_current = (float)glfwGetTime();
 		
+		glfwWaitEventsTimeout(application->GetFPS());
+		
 		application->ProcessInput();
 		// App::Logic();
 		

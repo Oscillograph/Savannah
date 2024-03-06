@@ -161,7 +161,7 @@ namespace Savannah
 					}
 					ImGui::EndMenu();
 				}
-				if (ImGui::BeginMenu("Правка"))
+				/*if (ImGui::BeginMenu("Правка"))
 				{
 					if (ImGui::MenuItem("Отменить", "CTRL+Z")) {}
 					if (ImGui::MenuItem("Повторить", "CTRL+Y", false, false)) {}  // Disabled item
@@ -170,7 +170,7 @@ namespace Savannah
 					if (ImGui::MenuItem("Копировать", "CTRL+C")) {}
 					if (ImGui::MenuItem("Вставить", "CTRL+V")) {}
 					ImGui::EndMenu();
-				}
+				}*/
 				ImGui::EndMainMenuBar();
 			}
 		}
@@ -203,14 +203,15 @@ namespace Savannah
 					// for (int n = 0; n < IM_ARRAYSIZE(values); n++)
 					//	average += values[n];
 					// average /= (float)IM_ARRAYSIZE(values);
-					char overlay[32];
+					// char overlay[32];
 					// sprintf(overlay, "avg %f", average);
 					ImGui::PlotLines(
 						"###Lines", 
 						values, 
 						IM_ARRAYSIZE(values), 
 						values_offset, 
-						overlay, 
+						// overlay,
+						NULL,
 						-1.0f, 
 						1.0f, 
 						ImVec2(TEXT_BASE_WIDTH*60, TEXT_BASE_HEIGHT*10)
