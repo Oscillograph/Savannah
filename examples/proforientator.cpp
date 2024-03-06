@@ -114,6 +114,7 @@ namespace Savannah
 		SkillRegistry* m_SkillsRegistry = nullptr;
 		Skill* m_SkillSelected = nullptr;
 		YamlWrapper* m_YAMLWrapperObject = nullptr;
+		bool m_ChangesInDatabase = false;
 		
 		float TEXT_BASE_WIDTH = 0.0f;
 		float TEXT_BASE_HEIGHT = 0.0f;
@@ -130,7 +131,13 @@ namespace Savannah
 		
 		void UnloadDatabase()
 		{
-			m_YAMLWrapperObject->SaveDocument(m_SkillsFile);
+			if (m_ChangesInDatabase)
+			{
+				m_YAMLWrapperObject->SaveDocument(m_SkillsFile);
+				CONSOLE_LOG("Changes saved.");
+			} else {
+				CONSOLE_LOG("No changes.");
+			}
 			delete m_SkillsRegistry;
 			delete m_YAMLWrapperObject;
 		}
@@ -140,6 +147,7 @@ namespace Savannah
 			m_SkillSelected = nullptr;
 			UnloadDatabase();
 			LoadDatabase(m_SkillsFile);
+			m_ChangesInDatabase = false;
 		}
 		
 		void ShowMainMenu()
@@ -237,7 +245,10 @@ namespace Savannah
 				std::string selected = "Выбран навык: ";
 				ImGui::Text(selected.c_str());
 				ImGui::SameLine();
-				ImGui::InputText("###Name", &(m_SkillSelected->name));
+				if (ImGui::InputText("###Name", &(m_SkillSelected->name)))
+				{
+					m_ChangesInDatabase = true;
+				}
 				ImGui::SameLine();
 				std::string buttonName = "Удалить##" + m_SkillSelected->group + m_SkillSelected->name;
 				ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{0.8f, 0.3f, 0.3f, 1.0f});
@@ -245,6 +256,7 @@ namespace Savannah
 				ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{1.0f, 0.7f, 0.7f, 1.0f});
 				if (ImGui::Button(buttonName.c_str(), {TEXT_BASE_WIDTH * 10, TEXT_BASE_HEIGHT * 1}))
 				{
+					m_ChangesInDatabase = true;
 					m_SkillsRegistry->RemoveSkill(m_SkillSelected);
 					m_SkillSelected = nullptr;
 					CONSOLE_LOG("m_SkillSelected equals nullptr now.");
@@ -256,8 +268,11 @@ namespace Savannah
 					int level = (int)(m_SkillSelected->level);
 					ImGui::Text("Уровень: ");
 					ImGui::SameLine();
-					ImGui::SliderInt("###Level", &level, 0, 10);
-					m_SkillSelected->level = (uint32_t)level;
+					if (ImGui::SliderInt("###Level", &level, 0, 10))
+					{
+						m_ChangesInDatabase = true;
+						m_SkillSelected->level = (uint32_t)level;
+					}
 					ImVec4 color;
 					if (level < 2)
 					{ // red
@@ -338,6 +353,7 @@ namespace Savannah
 				std::string buttonName = "Новый навык##" + group->name;
 				if (ImGui::Button(buttonName.c_str(), {TEXT_BASE_WIDTH * 30, TEXT_BASE_HEIGHT * 2}))
 				{
+					m_ChangesInDatabase = true;
 					m_SkillSelected = m_SkillsRegistry->NewSkill("Новый навык", group->name, 0);
 				}
 			}
