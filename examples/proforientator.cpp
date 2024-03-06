@@ -17,12 +17,7 @@ namespace Savannah
 			SetWindowTitle("Профориентатор 1.0");
 			
 			// load database
-			m_SkillsFile = "../examples/proforientator/data/skillsDB.txt";
-			m_SkillsRegistry = new SkillRegistry();
-			m_YAMLWrapperObject = new YamlWrapper();
-			m_YAMLWrapperObject->UseSkillRegistry(m_SkillsRegistry);
-			m_YAMLWrapperObject->LoadDocument(m_SkillsFile);
-			m_SkillsRegistry->SortGroups();
+			LoadDatabase("../examples/proforientator/data/skillsDB.txt");
 			
 			m_LevelDescription.push_back("незнаком"); // 0
 			m_LevelDescription.push_back("слышал"); // 1
@@ -49,9 +44,7 @@ namespace Savannah
 		
 		~Proforientator()
 		{
-			m_YAMLWrapperObject->SaveDocument(m_SkillsFile);
-			delete m_SkillsRegistry;
-			delete m_YAMLWrapperObject;
+			UnloadDatabase();
 		}
 		
 		void GUIContent() override 
@@ -125,6 +118,30 @@ namespace Savannah
 		float TEXT_BASE_WIDTH = 0.0f;
 		float TEXT_BASE_HEIGHT = 0.0f;
 		
+		void LoadDatabase(const std::string& file)
+		{
+			m_SkillsFile = file;
+			m_SkillsRegistry = new SkillRegistry();
+			m_YAMLWrapperObject = new YamlWrapper();
+			m_YAMLWrapperObject->UseSkillRegistry(m_SkillsRegistry);
+			m_YAMLWrapperObject->LoadDocument(file);
+			m_SkillsRegistry->SortGroups();
+		}
+		
+		void UnloadDatabase()
+		{
+			m_YAMLWrapperObject->SaveDocument(m_SkillsFile);
+			delete m_SkillsRegistry;
+			delete m_YAMLWrapperObject;
+		}
+		
+		void ReloadDatabase()
+		{
+			m_SkillSelected = nullptr;
+			UnloadDatabase();
+			LoadDatabase(m_SkillsFile);
+		}
+		
 		void ShowMainMenu()
 		{
 			if (ImGui::BeginMainMenuBar())
@@ -132,6 +149,12 @@ namespace Savannah
 				if (ImGui::BeginMenu("Файл"))
 				{
 					// ShowExampleMenuFile();
+					if (ImGui::MenuItem("Перезагрузить БД")) 
+					{ 
+						ReloadDatabase();
+					}
+					//ImGui::Separator();
+					ImGui::MenuItem(" ");
 					if (ImGui::MenuItem("Выход")) 
 					{ 
 						doExit = true; 
