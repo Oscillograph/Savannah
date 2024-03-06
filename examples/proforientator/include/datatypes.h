@@ -2,6 +2,7 @@
 #define PROFORIENTATOR_DATATYPES_H
 
 #include "./common.h"
+#include <map>
 #include <unordered_map>
 
 struct Skill
@@ -34,10 +35,10 @@ struct SkillRegistry
 	void SortGroups();
 	void SortGroup(SkillGroup* group);
 	
-	std::unordered_map<std::string, SkillGroup*>& GetGroups();
+	std::map<std::string, SkillGroup*>& GetGroups();
 	
 private:
-	std::unordered_map<std::string, SkillGroup*> m_GroupsRegistry = {};
+	std::map<std::string, SkillGroup*> m_GroupsRegistry = {};
 	std::vector<Skill*> m_SkillsRegistry = {};
 	
 	void Sort(std::vector<Skill*>& source);

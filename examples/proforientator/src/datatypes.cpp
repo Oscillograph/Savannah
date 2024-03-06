@@ -66,6 +66,7 @@ void SkillRegistry::RemoveSkill(Skill* skill)
 		if (*it == skill)
 		{
 			*it = nullptr;
+			m_GroupsRegistry[skill->group]->children.erase(it);
 			break;
 		}
 	}
@@ -74,7 +75,8 @@ void SkillRegistry::RemoveSkill(Skill* skill)
 	{
 		if (*it == skill)
 		{
-			*it = nullptr;
+			delete *it;
+			// *it = nullptr;
 			m_SkillsRegistry.erase(it);
 			break;
 		}
@@ -236,7 +238,7 @@ void SkillRegistry::Sort(std::vector<Skill*>& source)
 	}
 }
 
-std::unordered_map<std::string, SkillGroup*>& SkillRegistry::GetGroups()
+std::map<std::string, SkillGroup*>& SkillRegistry::GetGroups()
 {
 	return m_GroupsRegistry;
 }

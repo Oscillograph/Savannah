@@ -78,7 +78,7 @@ namespace Savannah
 			
 			if (ImGui::Begin("Example: Fullscreen window", &p_open, flags))
 			{
-				if (ImGui::BeginTable("Top Table", 2, ImGuiTableFlags_ScrollY, {TEXT_BASE_WIDTH * 160, TEXT_BASE_HEIGHT * 11}))
+				if (ImGui::BeginTable("Top Table", 2, ImGuiTableFlags_ScrollY, {TEXT_BASE_WIDTH * 140, TEXT_BASE_HEIGHT * 11}))
 				{
 					ImGui::TableNextColumn();
 					ShowLogo();
@@ -92,14 +92,20 @@ namespace Savannah
 				{
 					if (ImGui::BeginTable("Middle Table", 4, ImGuiTableFlags_RowBg, {TEXT_BASE_WIDTH * 140, TEXT_BASE_HEIGHT * 12}))
 					{
-						ImGui::TableNextColumn();
-						ShowSkillsTable("Технологии");
-						ImGui::TableNextColumn();
-						ShowSkillsTable("Инструменты");
-						ImGui::TableNextColumn();
-						ShowSkillsTable("Запчасти");
-						ImGui::TableNextColumn();
-						ShowSkillsTable("Знания");
+						int i = 0;
+						std::map<std::string, SkillGroup*>& groups = m_SkillsRegistry->GetGroups();
+						for (auto it = groups.begin();
+							it != groups.end();
+							it++)
+						{
+							ImGui::TableNextColumn();
+							ShowSkillsTable((*it).first);
+							i++;
+							if (i == 4)
+							{
+								break;
+							}
+						}
 						ImGui::EndTable();
 					}
 				}
@@ -192,12 +198,13 @@ namespace Savannah
 		
 		void ShowContent()
 		{
-			std::string raw = R"(Если чуточку разобраться, то Dear ImGui оказывается очень даже ручной.
-Строительство интерфейса напоминает конструирование таблиц-на-лету, и
-ощущения чем-то похожи на сайтостроительство тех времён, когда в ходу
-были преимущественно таблицы.
+			std::string raw = R"(Профориентатор -- программа, предназначенная для учёта, оценки и анализа
+знаний, умений и навыков пользователя, которые следует указывать в соот-
+ветствующих табличках, отмечая ползунком уровень своего мастерства.
+Оценки,  варьирующиеся от 0  до  10, можно использовать, чтобы подобрать
+подходящую по набору и уровню компетенций сферу работы и должность.
 
-<-- А синусоида-то анимированная!
+<-- Анимированная синусоида!
 
 )";
 			ImGui::Text(raw.c_str());
@@ -207,38 +214,53 @@ namespace Savannah
 				ImGui::Text(selected.c_str());
 				ImGui::SameLine();
 				ImGui::InputText("###Name", &(m_SkillSelected->name));
-				
-				int level = (int)(m_SkillSelected->level);
-				ImGui::Text("Уровень: ");
 				ImGui::SameLine();
-				ImGui::SliderInt("###Level", &level, 0, 10);
-				m_SkillSelected->level = (uint32_t)level;
-				ImVec4 color;
-				if (level < 2)
-				{ // red
-					color = {1.0f, 0.4f, 0.4f, 1.0f};
-				} else {
-					if (level < 4)
-					{ // orange
-						color = {1.0f, 0.7f, 0.5f, 1.0f};
+				std::string buttonName = "Удалить##" + m_SkillSelected->group + m_SkillSelected->name;
+				ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{0.8f, 0.3f, 0.3f, 1.0f});
+				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{0.8f, 0.6f, 0.4f, 1.0f});
+				ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{1.0f, 0.7f, 0.7f, 1.0f});
+				if (ImGui::Button(buttonName.c_str(), {TEXT_BASE_WIDTH * 10, TEXT_BASE_HEIGHT * 1}))
+				{
+					m_SkillsRegistry->RemoveSkill(m_SkillSelected);
+					m_SkillSelected = nullptr;
+					CONSOLE_LOG("m_SkillSelected equals nullptr now.");
+				}
+				ImGui::PopStyleColor(3);
+				
+				if (m_SkillSelected != nullptr)
+				{
+					int level = (int)(m_SkillSelected->level);
+					ImGui::Text("Уровень: ");
+					ImGui::SameLine();
+					ImGui::SliderInt("###Level", &level, 0, 10);
+					m_SkillSelected->level = (uint32_t)level;
+					ImVec4 color;
+					if (level < 2)
+					{ // red
+						color = {1.0f, 0.4f, 0.4f, 1.0f};
 					} else {
-						if (level < 6)
-						{ // yellow
-							color = {1.0f, 1.0f, 0.5f, 1.0f};
+						if (level < 4)
+						{ // orange
+							color = {1.0f, 0.7f, 0.5f, 1.0f};
 						} else {
-							if (level < 10)
-							{ // green
-								color = {0.6f, 1.0f, 0.5f, 1.0f};
+							if (level < 6)
+							{ // yellow
+								color = {1.0f, 1.0f, 0.5f, 1.0f};
 							} else {
-								if (level == 10)
-								{ // magenta
-									color = {1.0f, 0.5f, 1.0f, 1.0f};
+								if (level < 10)
+								{ // green
+									color = {0.6f, 1.0f, 0.5f, 1.0f};
+								} else {
+									if (level == 10)
+									{ // magenta
+										color = {1.0f, 0.5f, 1.0f, 1.0f};
+									}
 								}
 							}
 						}
 					}
+					ImGui::TextColored(color, m_LevelDescription[level].c_str());
 				}
-				ImGui::TextColored(color, m_LevelDescription[level].c_str());
 			}
 		}
 		
