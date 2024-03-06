@@ -84,19 +84,24 @@ namespace Savannah
 	
 	void App::ProcessInput()
 	{
+//		m_IdleFrames = 0;
 		// Poll and handle events (inputs, window resize, etc.)
 		// You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if dear imgui wants to use your inputs.
 		// - When io.WantCaptureMouse is true, do not dispatch mouse input data to your main application, or clear/overwrite your copy of the mouse data.
 		// - When io.WantCaptureKeyboard is true, do not dispatch keyboard input data to your main application, or clear/overwrite your copy of the keyboard data.
 		// Generally you may always pass all inputs to dear imgui, and hide them from your application based on those two flags.
+		UpdateWindowMinimizedStatus();
 		glfwPollEvents();
 	}
 	
 	void App::Render()
 	{
-		GUIBegin();
-		GUIContent();
-		GUIEnd();
+		if (!IsWindowMinimized())
+		{
+			GUIBegin();
+			GUIContent();
+			GUIEnd();
+		}
 	}
 	
 	void App::GUIBegin()
@@ -187,13 +192,55 @@ namespace Savannah
 		glfwTerminate();
 	}
 	
+	void App::SetFPS(float fps)
+	{
+		FPS = fps;
+	}
+	
 	float App::GetFPS()
 	{ 
 		return FPS; 
 	}
 	
+	int App::GetIdleFrames()
+	{
+		return m_IdleFrames;
+	}
+	
 	void App::SetWindowTitle(const std::string& title)
 	{
 		m_WindowTitle = title;
+	}
+	
+	void App::UpdateWindowMinimizedStatus()
+	{
+		int iconified = glfwGetWindowAttrib(GetWindow(), GLFW_ICONIFIED);
+		if (iconified)
+		{
+			m_WindowMinimized = true;
+		} else {
+			m_WindowMinimized = false;
+		}
+	}
+	
+	void App::OnWindowMinimized()
+	{
+		if (!m_WindowMinimized)
+		{
+			m_WindowMinimized = true;
+		}
+	}
+	
+	void App::OnWindowRestored()
+	{
+		if (m_WindowMinimized)
+		{
+			m_WindowMinimized = true;
+		}
+	}
+	
+	bool App::IsWindowMinimized()
+	{
+		return m_WindowMinimized;
 	}
 }

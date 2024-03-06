@@ -346,6 +346,8 @@ namespace Savannah
 	
 	App* CreateApplication()
 	{
-		return new Proforientator();
+		Proforientator* app = new Proforientator();
+		app->SetFPS(SAVANNAH_FPS30);
+		return app;
 	}
 }

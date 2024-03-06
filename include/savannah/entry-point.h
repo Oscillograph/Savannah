@@ -10,6 +10,7 @@ int main(int, char**)
 	application->Init();
 	
 	float time_previous = (float)glfwGetTime();
+	int idle_frames = 0;
 	
 	while ((!glfwWindowShouldClose(application->GetWindow())) && !application->doExit){
 		float time_current = (float)glfwGetTime();

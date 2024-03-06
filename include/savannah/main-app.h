@@ -49,7 +49,9 @@ namespace Savannah {
 		virtual void GUIEnd();
 		virtual void GUIContent();
 		virtual void ShutDown();
+		virtual void SetFPS(float fps);
 		virtual float GetFPS();
+		virtual int GetIdleFrames();
 		
 		bool doExit = false;
 		
@@ -59,10 +61,18 @@ namespace Savannah {
 		ImVec4 m_ClearColor = {0.0f, 0.0f, 0.0f, 0.0f};
 		std::string m_WindowTitle = "Превед, мир!";
 		const char* m_glsl_version = "#version 410";
+		bool m_WindowMinimized = false;
 		float FPS = SAVANNAH_FPS60;
+		int m_IdleFrames = 0;
 		
 	protected:
 		void SetWindowTitle(const std::string& title);
+		
+	protected:
+		void UpdateWindowMinimizedStatus();
+		void OnWindowMinimized();
+		void OnWindowRestored();
+		bool IsWindowMinimized();
 	};
 	
 	App* CreateApplication();
