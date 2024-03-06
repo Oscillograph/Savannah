@@ -217,9 +217,9 @@ namespace Savannah
 		int iconified = glfwGetWindowAttrib(GetWindow(), GLFW_ICONIFIED);
 		if (iconified)
 		{
-			m_WindowMinimized = true;
+			OnWindowMinimized();
 		} else {
-			m_WindowMinimized = false;
+			OnWindowRestored();
 		}
 	}
 	
@@ -235,7 +235,7 @@ namespace Savannah
 	{
 		if (m_WindowMinimized)
 		{
-			m_WindowMinimized = true;
+			m_WindowMinimized = false;
 		}
 	}
 	
