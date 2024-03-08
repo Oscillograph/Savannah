@@ -238,7 +238,7 @@ namespace Savannah
 					ImGui::Text("");
 					std::string raw = R"(Профориентатор -- учёт, оценка и анализ компетенций пользователя.
 Навыки разделены по группам и собраны в таблички.
-Чтобы править информацию о навыке, его нужно выбрать в табличке.
+Чтобы править информацию о навыке, его нужно выбрать мышкой.
 Ползунком отмечается уровень мастерства с от оценкой от 0 до 10.)";
 					ImGui::Text(raw.c_str());
 				}
@@ -253,7 +253,7 @@ namespace Savannah
 			ImGui::Text(raw.c_str());
 			if (m_SkillSelected != nullptr)
 			{
-				std::string columnsID = "##" + m_SkillSelected->name;
+				std::string columnsID = "###EditSkill";
 				
 				if (ImGui::BeginTable((columnsID.c_str()), 3, ImGuiTableFlags_SizingFixedFit))
 				{
@@ -277,6 +277,7 @@ namespace Savannah
 					if (ImGui::InputText("###Name", &(m_SkillSelected->name)))
 					{
 						m_ChangesInDatabase = true;
+//						ImGui::SetKeyboardFocusHere(-1);
 					}
 					
 					ImGui::TableSetColumnIndex(2);
@@ -323,25 +324,40 @@ namespace Savannah
 					
 					if (ImGui::BeginTable("##Требования", 2, ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_ScrollY))
 					{
-						ImGui::TableSetupColumn("Связанные навыки##passed", ImGuiTableColumnFlags_WidthFixed, TEXT_BASE_WIDTH * 40);
+						ImGui::TableSetupColumn("Полученные навыки##passed", ImGuiTableColumnFlags_WidthFixed, TEXT_BASE_WIDTH * 40);
 						ImGui::TableSetupColumn("Нужны ещё##notpassed", ImGuiTableColumnFlags_WidthFixed, TEXT_BASE_WIDTH * 40);
 						ImGui::TableHeadersRow();
 						ImGui::TableNextRow();
 						
 						std::string reqName = "";
+						std::string upToLevel = "";
 						int reqLevel = 0;
 						for (int i = 0; i < m_SkillSelected->GetRequirementsArray().size(); i++)
 						{
 							reqName = m_SkillSelected->GetRequirementsArray()[i]->name;
 							reqLevel = m_SkillSelected->GetRequirementsArray()[i]->level;
 							
-							if (m_SkillsRegistry->FindSkill(reqName)->level >= reqLevel)
+							int column = 1;
+							Skill* skillStored = m_SkillsRegistry->FindSkill(reqName);
+							if (skillStored != nullptr)
 							{
-								ImGui::TableSetColumnIndex(0);
+								if (skillStored->level >= reqLevel)
+								{
+									sprintf((char*)upToLevel.c_str(), " (%d)", skillStored->level);
+									column = 0;
+								} else {
+									sprintf((char*)upToLevel.c_str(), " (%d)", reqLevel);
+								}
+								ImGui::TableSetColumnIndex(column);
+								TextColoredSkillName(skillStored);
+								ImGui::SameLine();
+								ImGui::Text(upToLevel.c_str());
 							} else {
-								ImGui::TableSetColumnIndex(1);
+								ImGui::TableSetColumnIndex(column);
+								ImGui::TextColored({1.0f, 0.2f, 0.2f, 1.0f}, reqName.c_str());
+								ImGui::SameLine();
+								ImGui::Text(upToLevel.c_str());
 							}
-							TextColoredSkillName(m_SkillSelected);
 						}
 						
 						ImGui::EndTable();

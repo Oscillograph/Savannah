@@ -5,6 +5,23 @@ SkillRequirementSet::SkillRequirementSet()
 {
 }
 
+SkillRequirementSet::~SkillRequirementSet()
+{
+	for (int i = 0; i < m_Requirements.size(); i++)
+	{
+		delete m_Requirements[i];
+		m_Requirements[i] = nullptr;
+	}
+}
+
+void SkillRequirementSet::AddRequirement(const SkillRequirement& req)
+{
+	SkillRequirement* requirement = new SkillRequirement();
+	requirement->name = req.name;
+	requirement->level = req.level;
+	m_Requirements.push_back(requirement);
+}
+
 void SkillRequirementSet::AddRequirement(SkillRequirement* skill)
 {
 	m_Requirements.push_back(skill);

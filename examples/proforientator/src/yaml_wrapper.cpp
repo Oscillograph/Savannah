@@ -6,6 +6,16 @@ YAML::Emitter& operator<<(YAML::Emitter& out, Skill* rhs){
 	out << YAML::BeginMap;
 	out << YAML::Key << "Name" << YAML::Value << rhs->name.c_str();
 	out << YAML::Key << "Level" << YAML::Value << rhs->level;
+	
+	out << YAML::Key << "Requirements" << YAML::Value;
+	out << YAML::BeginSeq;
+	for (int i = 0; i < rhs->GetRequirementsArray().size(); i++)
+	{
+		out << YAML::Key << "Name" << YAML::Value << rhs->GetRequirementsArray()[i]->name;
+		out << YAML::Key << "Level" << YAML::Value << rhs->GetRequirementsArray()[i]->level;
+	}
+	out << YAML::EndSeq;
+	
 	out << YAML::EndMap;
 	return out;
 }
@@ -56,13 +66,22 @@ bool YamlWrapper::LoadDocument(const std::string& filename) // load an existing 
 			group->name = skillsGroupName;
 			m_SkillRegistry->AddGroup(group);
 			
-			YAML::Node skills = skillsGroup["Skills"];
-			for (YAML::Node skill : skills)
+			YAML::Node skillNodes = skillsGroup["Skills"];
+			for (YAML::Node skillNode : skillNodes)
 			{
-				std::string name = skill["Name"].as<std::string>();
-				uint32_t level = skill["Level"].as<int>();
+				std::string name = skillNode["Name"].as<std::string>();
+				uint32_t level = skillNode["Level"].as<int>();
 //				CONSOLE_LOG(name, " : ", level);
-				m_SkillRegistry->NewSkill(name, group->name, level);
+				Skill* skill = m_SkillRegistry->NewSkill(name, group->name, level);
+				
+				YAML::Node requirementNodes = skillNode["Requirements"];
+				for (YAML::Node requirementNode : requirementNodes)
+				{
+					std::string reqName = requirementNode["Name"].as<std::string>();
+					uint32_t reqLevel = requirementNode["Level"].as<int>();
+					
+					skill->AddRequirement({reqName, reqLevel});
+				}
 			}
 		}
 //		CONSOLE_TEAL("File parsed.");

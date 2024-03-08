@@ -15,6 +15,7 @@ struct SkillRequirement
 struct SkillRequirementSet
 {
 	SkillRequirementSet();
+	~SkillRequirementSet();
 	void AddRequirement(const SkillRequirement& req = {"None", 0});
 	void AddRequirement(SkillRequirement* skill);
 	void RemoveRequirement(SkillRequirement* skill);
