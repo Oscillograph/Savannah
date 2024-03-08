@@ -20,3 +20,7 @@ This framework is meant to be used with:
 - JSON for Modern C++ v3.11.2
 - Utf-8 for Cpp
 - spdlog
+
+## Examples ##
+Proforientator -- a tool to store, evaluate and analize user's skills.
+<img src="https://raw.githubusercontent.com/Oscillograph/Savannah/main/examples/proforientator/screenshot.png" alt="Профориентатор" width="400"/>
