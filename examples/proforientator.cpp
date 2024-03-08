@@ -71,11 +71,15 @@ namespace Savannah
 			
 			if (ImGui::Begin("Example: Fullscreen window", &p_open, flags))
 			{
-				if (ImGui::BeginTable("Top Table", 2, ImGuiTableFlags_ScrollY, {TEXT_BASE_WIDTH * 140, TEXT_BASE_HEIGHT * 11}))
+				if (ImGui::BeginTable("Top Table", 2, ImGuiTableFlags_ScrollY | ImGuiTableFlags_SizingFixedFit, {TEXT_BASE_WIDTH * 160, TEXT_BASE_HEIGHT * 16}))
 				{
-					ImGui::TableNextColumn();
+					ImGui::TableSetupColumn("##LeftHalf", ImGuiTableColumnFlags_WidthFixed, TEXT_BASE_WIDTH * 60);
+					ImGui::TableSetupColumn("##RightHalf", ImGuiTableColumnFlags_WidthFixed, TEXT_BASE_WIDTH * 80);
+//					ImGui::TableHeadersRow();
+					ImGui::TableNextRow();
+					ImGui::TableSetColumnIndex(0);
 					ShowLogo();
-					ImGui::TableNextColumn();
+					ImGui::TableSetColumnIndex(1);
 					ShowContent();
 					ImGui::EndTable();
 				}
@@ -85,13 +89,19 @@ namespace Savannah
 				{
 					if (ImGui::BeginTable("Middle Table", 4, ImGuiTableFlags_RowBg, {TEXT_BASE_WIDTH * 140, TEXT_BASE_HEIGHT * 12}))
 					{
+						ImGui::TableSetupColumn("##Group1", ImGuiTableColumnFlags_WidthFixed, TEXT_BASE_WIDTH * 35);
+						ImGui::TableSetupColumn("##Group2", ImGuiTableColumnFlags_WidthFixed, TEXT_BASE_WIDTH * 35);
+						ImGui::TableSetupColumn("##Group3", ImGuiTableColumnFlags_WidthFixed, TEXT_BASE_WIDTH * 35);
+						ImGui::TableSetupColumn("##Group4", ImGuiTableColumnFlags_WidthFixed, TEXT_BASE_WIDTH * 35);
+						ImGui::TableNextRow();
+						
 						int i = 0;
 						std::map<std::string, SkillGroup*>& groups = m_SkillsRegistry->GetGroups();
 						for (auto it = groups.begin();
 							it != groups.end();
 							it++)
 						{
-							ImGui::TableNextColumn();
+							ImGui::TableSetColumnIndex(i);
 							ShowSkillsTable((*it).first);
 							i++;
 							if (i == 4)
@@ -224,81 +234,118 @@ namespace Savannah
 						1.0f, 
 						ImVec2(TEXT_BASE_WIDTH*60, TEXT_BASE_HEIGHT*10)
 						);
+					
+					ImGui::Text("");
+					std::string raw = R"(Профориентатор -- учёт, оценка и анализ компетенций пользователя.
+Навыки разделены по группам и собраны в таблички.
+Чтобы править информацию о навыке, его нужно выбрать в табличке.
+Ползунком отмечается уровень мастерства с от оценкой от 0 до 10.)";
+					ImGui::Text(raw.c_str());
 				}
 			}
 		}
 		
 		void ShowContent()
 		{
-			std::string raw = R"(Профориентатор -- программа, предназначенная для учёта, оценки и анализа
-знаний, умений и навыков пользователя, которые следует указывать в соот-
-ветствующих табличках, отмечая ползунком уровень своего мастерства.
-Оценки,  варьирующиеся от 0  до  10, можно использовать, чтобы подобрать
-подходящую по набору и уровню компетенций сферу работы и должность.
-
-<-- Анимированная синусоида!
+			std::string raw = R"(<-- Анимированная синусоида!
 
 )";
 			ImGui::Text(raw.c_str());
 			if (m_SkillSelected != nullptr)
 			{
-				std::string selected = "Выбран навык: ";
-				ImGui::Text(selected.c_str());
-				ImGui::SameLine();
-				if (ImGui::InputText("###Name", &(m_SkillSelected->name)))
-				{
-					m_ChangesInDatabase = true;
-				}
-				ImGui::SameLine();
-				std::string buttonName = "Удалить##" + m_SkillSelected->group + m_SkillSelected->name;
-				ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{0.8f, 0.3f, 0.3f, 1.0f});
-				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{0.8f, 0.6f, 0.4f, 1.0f});
-				ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{1.0f, 0.7f, 0.7f, 1.0f});
-				if (ImGui::Button(buttonName.c_str(), {TEXT_BASE_WIDTH * 10, TEXT_BASE_HEIGHT * 1}))
-				{
-					m_ChangesInDatabase = true;
-					m_SkillsRegistry->RemoveSkill(m_SkillSelected);
-					m_SkillSelected = nullptr;
-					CONSOLE_LOG("m_SkillSelected equals nullptr now.");
-				}
-				ImGui::PopStyleColor(3);
+				std::string columnsID = "##" + m_SkillSelected->name;
 				
-				if (m_SkillSelected != nullptr)
+				if (ImGui::BeginTable((columnsID.c_str()), 3, ImGuiTableFlags_SizingFixedFit))
 				{
-					int level = (int)(m_SkillSelected->level);
-					ImGui::Text("Уровень: ");
-					ImGui::SameLine();
-					if (ImGui::SliderInt("###Level", &level, 0, 10))
+					ImGui::TableSetupColumn("##skill", ImGuiTableColumnFlags_WidthFixed, TEXT_BASE_WIDTH * 10);
+//					ImGui::TableSetupColumn("##control", ImGuiTableColumnFlags_WidthFixed, TEXT_BASE_WIDTH * 40);
+//					ImGui::TableSetupColumn("##buttons", ImGuiTableColumnFlags_WidthFixed, TEXT_BASE_WIDTH * 10);
+//					ImGui::TableSetupColumn("##skill");
+					ImGui::TableSetupColumn("##control", ImGuiTableColumnFlags_WidthFixed, TEXT_BASE_WIDTH * 59);
+					ImGui::TableSetupColumn("##buttons", ImGuiTableColumnFlags_WidthFixed, TEXT_BASE_WIDTH * 11);
+					ImGui::TableHeadersRow();
+					
+					ImGui::TableNextRow();
+					ImGui::TableSetColumnIndex(0);
+					ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x);
+					std::string selected = "Навык: ";
+					ImGui::Text(selected.c_str());
+					
+					ImGui::TableSetColumnIndex(1);
+					ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x);
+//					ImGui::SetNextItemWidth(TEXT_BASE_WIDTH * 39);
+					if (ImGui::InputText("###Name", &(m_SkillSelected->name)))
 					{
 						m_ChangesInDatabase = true;
-						m_SkillSelected->level = (uint32_t)level;
 					}
-					ImVec4 color;
-					if (level < 2)
-					{ // red
-						color = {1.0f, 0.4f, 0.4f, 1.0f};
-					} else {
-						if (level < 4)
-						{ // orange
-							color = {1.0f, 0.7f, 0.5f, 1.0f};
-						} else {
-							if (level < 6)
-							{ // yellow
-								color = {1.0f, 1.0f, 0.5f, 1.0f};
-							} else {
-								if (level < 10)
-								{ // green
-									color = {0.6f, 1.0f, 0.5f, 1.0f};
-								} else {
-									if (level == 10)
-									{ // magenta
-										color = {1.0f, 0.5f, 1.0f, 1.0f};
-									}
-								}
-							}
+					
+					ImGui::TableSetColumnIndex(2);
+					ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x);
+					std::string buttonName = "Удалить##" + m_SkillSelected->group + m_SkillSelected->name;
+					ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{0.8f, 0.3f, 0.3f, 1.0f});
+					ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{0.8f, 0.6f, 0.4f, 1.0f});
+					ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{1.0f, 0.7f, 0.7f, 1.0f});
+					if (ImGui::Button(buttonName.c_str()))
+					{
+						m_ChangesInDatabase = true;
+						m_SkillsRegistry->RemoveSkill(m_SkillSelected);
+						m_SkillSelected = nullptr;
+						CONSOLE_LOG("m_SkillSelected equals nullptr now.");
+					}
+					ImGui::PopStyleColor(3);
+					
+					if (m_SkillSelected != nullptr)
+					{
+						ImGui::TableNextRow();
+						ImGui::TableSetColumnIndex(0);
+						int level = (int)(m_SkillSelected->level);
+						ImGui::Text("Уровень: ");
+						
+						ImGui::TableSetColumnIndex(1);
+//						ImGui::SetNextItemWidth(TEXT_BASE_WIDTH * 39);
+						if (ImGui::SliderInt("###Level", &level, 0, 10))
+						{
+							m_ChangesInDatabase = true;
+							m_SkillSelected->level = (uint32_t)level;
 						}
+						
+						ImGui::TableSetColumnIndex(2);
 					}
-					ImGui::TextColored(color, m_LevelDescription[level].c_str());
+					ImGui::EndTable();
+				}
+				
+				if (m_SkillSelected != nullptr)
+				{	
+					TextColoredSkillLevelDescription((int)m_SkillSelected->level);
+					std::string requirements = m_SkillsRegistry->GetRequirements(m_SkillSelected);
+					ImGui::Text("");
+//					ImGui::Text((std::string("Связанные навыки: ") + requirements).c_str());
+					
+					if (ImGui::BeginTable("##Требования", 2, ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_ScrollY))
+					{
+						ImGui::TableSetupColumn("Связанные навыки##passed", ImGuiTableColumnFlags_WidthFixed, TEXT_BASE_WIDTH * 40);
+						ImGui::TableSetupColumn("Нужны ещё##notpassed", ImGuiTableColumnFlags_WidthFixed, TEXT_BASE_WIDTH * 40);
+						ImGui::TableHeadersRow();
+						ImGui::TableNextRow();
+						
+						std::string reqName = "";
+						int reqLevel = 0;
+						for (int i = 0; i < m_SkillSelected->GetRequirementsArray().size(); i++)
+						{
+							reqName = m_SkillSelected->GetRequirementsArray()[i]->name;
+							reqLevel = m_SkillSelected->GetRequirementsArray()[i]->level;
+							
+							if (m_SkillsRegistry->FindSkill(reqName)->level >= reqLevel)
+							{
+								ImGui::TableSetColumnIndex(0);
+							} else {
+								ImGui::TableSetColumnIndex(1);
+							}
+							TextColoredSkillName(m_SkillSelected);
+						}
+						
+						ImGui::EndTable();
+					}
 				}
 			}
 		}
@@ -358,12 +405,76 @@ namespace Savannah
 				}
 			}
 		}
+		
+		void TextColoredSkillName(Skill* skill)
+		{
+			if (skill != nullptr)
+			{
+				int level = (int)(skill->level);
+				ImVec4 color;
+				if (level < 2)
+				{ // red
+					color = {1.0f, 0.4f, 0.4f, 1.0f};
+				} else {
+					if (level < 4)
+					{ // orange
+						color = {1.0f, 0.7f, 0.5f, 1.0f};
+					} else {
+						if (level < 6)
+						{ // yellow
+							color = {1.0f, 1.0f, 0.5f, 1.0f};
+						} else {
+							if (level < 10)
+							{ // green
+								color = {0.6f, 1.0f, 0.5f, 1.0f};
+							} else {
+								if (level == 10)
+								{ // magenta
+									color = {1.0f, 0.5f, 1.0f, 1.0f};
+								}
+							}
+						}
+					}
+				}
+				ImGui::TextColored(color, skill->name.c_str());
+			}
+		}
+		
+		void TextColoredSkillLevelDescription(int level)
+		{
+			ImVec4 color;
+			if (level < 2)
+			{ // red
+				color = {1.0f, 0.4f, 0.4f, 1.0f};
+			} else {
+				if (level < 4)
+				{ // orange
+					color = {1.0f, 0.7f, 0.5f, 1.0f};
+				} else {
+					if (level < 6)
+					{ // yellow
+						color = {1.0f, 1.0f, 0.5f, 1.0f};
+					} else {
+						if (level < 10)
+						{ // green
+							color = {0.6f, 1.0f, 0.5f, 1.0f};
+						} else {
+							if (level == 10)
+							{ // magenta
+								color = {1.0f, 0.5f, 1.0f, 1.0f};
+							}
+						}
+					}
+				}
+			}
+			ImGui::TextColored(color, m_LevelDescription[level].c_str());
+		}
 	};
 	
 	App* CreateApplication()
 	{
 		Proforientator* app = new Proforientator();
-		app->SetFPS(SAVANNAH_FPS30);
+		app->SetFPS(SAVANNAH_FPS60);
 		return app;
 	}
 }

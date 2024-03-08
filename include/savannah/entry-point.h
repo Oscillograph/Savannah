@@ -13,9 +13,9 @@ int main(int, char**)
 	int idle_frames = 0;
 	
 	while ((!glfwWindowShouldClose(application->GetWindow())) && !application->doExit){
-		float time_current = (float)glfwGetTime();
-		
 		glfwWaitEventsTimeout(application->GetFPS());
+		
+		float time_current = (float)glfwGetTime();
 		
 		application->ProcessInput();
 		// App::Logic();

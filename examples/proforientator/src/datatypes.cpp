@@ -1,8 +1,48 @@
 #include "../include/datatypes.h"
 #include "../include/logger.h"
 
+SkillRequirementSet::SkillRequirementSet()
+{
+}
+
+void SkillRequirementSet::AddRequirement(SkillRequirement* skill)
+{
+	m_Requirements.push_back(skill);
+}
+
+void SkillRequirementSet::RemoveRequirement(SkillRequirement* skill)
+{
+	for (auto it = m_Requirements.begin(); it != m_Requirements.end(); it++)
+	{
+		if (*it == skill)
+		{
+			delete *it;
+			m_Requirements.erase(it);
+			break;
+		}
+	}
+}
+
+void SkillRequirementSet::RemoveRequirement(const std::string& name)
+{
+	for (auto it = m_Requirements.begin(); it != m_Requirements.end(); it++)
+	{
+		if ((*it)->name.c_str() == name.c_str())
+		{
+			delete *it;
+			m_Requirements.erase(it);
+			break;
+		}
+	}
+}
+
+std::vector<SkillRequirement*>& SkillRequirementSet::GetRequirementsArray()
+{
+	return m_Requirements;
+}
+
 Skill::Skill(const std::string& _name, const std::string& _group, uint32_t _level)
-: name(_name), group(_group), level(_level) 
+	: name(_name), group(_group), level(_level) 
 {
 };
 
@@ -55,6 +95,21 @@ void SkillRegistry::AddSkill(Skill* skill)
 	} else {
 		m_GroupsRegistry[skill->group]->children.push_back(skill);
 	}
+}
+
+// It is important than skill name in requirement matches the skill name in the registry
+Skill* SkillRegistry::FindSkill(const std::string& name)
+{
+	Skill* skill = nullptr;
+	for (auto it = m_SkillsRegistry.begin(); it != m_SkillsRegistry.end(); it++)
+	{
+		if ((*it)->name.compare(name) == 0)
+		{
+			skill = *it;
+			break;
+		}
+	}
+	return skill;
 }
 
 void SkillRegistry::RemoveSkill(Skill* skill)
@@ -243,9 +298,27 @@ std::map<std::string, SkillGroup*>& SkillRegistry::GetGroups()
 	return m_GroupsRegistry;
 }
 
-Job::Job(const std::vector<Skill*>& reqs)
-: m_Requirements(reqs) 
+std::string SkillRegistry::GetRequirements(Skill* skill)
 {
+	std::string out = "";
+	if (skill != nullptr)
+	{
+		int requirementsTotal = (skill->GetRequirementsArray()).size();
+		for (int i = 0; i < requirementsTotal; i++)
+		{
+			out += (skill->GetRequirementsArray())[i]->name;
+			if (i < (requirementsTotal-1))
+			{
+				out += ", ";
+			}
+		}
+	}
+	return out;
+}
+
+Job::Job(const std::vector<SkillRequirement*>& reqs) 
+{
+	m_Requirements = reqs;
 };
 
 Job::~Job()
@@ -254,36 +327,5 @@ Job::~Job()
 	{
 		delete *it;
 		*it = nullptr;
-	}
-}
-
-void Job::AddSkill(Skill* skill)
-{
-	m_Requirements.push_back(skill);
-}
-
-void Job::RemoveSkill(Skill* skill)
-{
-	for (auto it = m_Requirements.begin(); it != m_Requirements.end(); it++)
-	{
-		if (*it == skill)
-		{
-			delete *it;
-			m_Requirements.erase(it);
-			break;
-		}
-	}
-}
-
-void Job::RemoveSkill(const std::string& name)
-{
-	for (auto it = m_Requirements.begin(); it != m_Requirements.end(); it++)
-	{
-		if ((*it)->name.c_str() == name.c_str())
-		{
-			delete *it;
-			m_Requirements.erase(it);
-			break;
-		}
 	}
 }
