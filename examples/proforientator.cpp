@@ -75,7 +75,6 @@ namespace Savannah
 				{
 					ImGui::TableSetupColumn("##LeftHalf", ImGuiTableColumnFlags_WidthFixed, TEXT_BASE_WIDTH * 60);
 					ImGui::TableSetupColumn("##RightHalf", ImGuiTableColumnFlags_WidthFixed, TEXT_BASE_WIDTH * 80);
-//					ImGui::TableHeadersRow();
 					ImGui::TableNextRow();
 					ImGui::TableSetColumnIndex(0);
 					ShowLogo();
@@ -166,12 +165,10 @@ namespace Savannah
 			{
 				if (ImGui::BeginMenu("Файл"))
 				{
-					// ShowExampleMenuFile();
 					if (ImGui::MenuItem("Перезагрузить БД")) 
 					{ 
 						ReloadDatabase();
 					}
-					//ImGui::Separator();
 					ImGui::MenuItem(" ");
 					if (ImGui::MenuItem("Выход")) 
 					{ 
@@ -179,16 +176,7 @@ namespace Savannah
 					}
 					ImGui::EndMenu();
 				}
-				/*if (ImGui::BeginMenu("Правка"))
-				{
-					if (ImGui::MenuItem("Отменить", "CTRL+Z")) {}
-					if (ImGui::MenuItem("Повторить", "CTRL+Y", false, false)) {}  // Disabled item
-					ImGui::Separator();
-					if (ImGui::MenuItem("Вырезать", "CTRL+X")) {}
-					if (ImGui::MenuItem("Копировать", "CTRL+C")) {}
-					if (ImGui::MenuItem("Вставить", "CTRL+V")) {}
-					ImGui::EndMenu();
-				}*/
+
 				ImGui::EndMainMenuBar();
 			}
 		}
@@ -198,7 +186,6 @@ namespace Savannah
 			// A beautiful sinusoid
 			{
 				static bool animate = true;
-				// ImGui::Checkbox("Animate", &animate);
 				
 				static float values[90] = {};
 				static int values_offset = 0;
@@ -258,9 +245,6 @@ namespace Savannah
 				if (ImGui::BeginTable((columnsID.c_str()), 3, ImGuiTableFlags_SizingFixedFit))
 				{
 					ImGui::TableSetupColumn("##skill", ImGuiTableColumnFlags_WidthFixed, TEXT_BASE_WIDTH * 10);
-//					ImGui::TableSetupColumn("##control", ImGuiTableColumnFlags_WidthFixed, TEXT_BASE_WIDTH * 40);
-//					ImGui::TableSetupColumn("##buttons", ImGuiTableColumnFlags_WidthFixed, TEXT_BASE_WIDTH * 10);
-//					ImGui::TableSetupColumn("##skill");
 					ImGui::TableSetupColumn("##control", ImGuiTableColumnFlags_WidthFixed, TEXT_BASE_WIDTH * 59);
 					ImGui::TableSetupColumn("##buttons", ImGuiTableColumnFlags_WidthFixed, TEXT_BASE_WIDTH * 11);
 					ImGui::TableHeadersRow();
@@ -273,11 +257,9 @@ namespace Savannah
 					
 					ImGui::TableSetColumnIndex(1);
 					ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x);
-//					ImGui::SetNextItemWidth(TEXT_BASE_WIDTH * 39);
 					if (ImGui::InputText("###Name", &(m_SkillSelected->name)))
 					{
 						m_ChangesInDatabase = true;
-//						ImGui::SetKeyboardFocusHere(-1);
 					}
 					
 					ImGui::TableSetColumnIndex(2);
@@ -303,7 +285,6 @@ namespace Savannah
 						ImGui::Text("Уровень: ");
 						
 						ImGui::TableSetColumnIndex(1);
-//						ImGui::SetNextItemWidth(TEXT_BASE_WIDTH * 39);
 						if (ImGui::SliderInt("###Level", &level, 0, 10))
 						{
 							m_ChangesInDatabase = true;
@@ -320,7 +301,6 @@ namespace Savannah
 					TextColoredSkillLevelDescription((int)m_SkillSelected->level);
 					std::string requirements = m_SkillsRegistry->GetRequirements(m_SkillSelected);
 					ImGui::Text("");
-//					ImGui::Text((std::string("Связанные навыки: ") + requirements).c_str());
 					
 					if (ImGui::BeginTable("##Требования", 2, ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_ScrollY))
 					{
@@ -371,9 +351,7 @@ namespace Savannah
 			ImGui::TextColored({1.0f, 0.7f, 0.5f, 1.0f}, groupName.c_str());
 			if (ImGui::BeginTable(groupName.c_str(), 2, ImGuiTableFlags_ScrollY, {TEXT_BASE_WIDTH * 30, TEXT_BASE_HEIGHT * 10}))
 			{
-				// PushStyleCompact();
 				SkillGroup* group = (m_SkillsRegistry->GetGroups())[groupName];
-//				m_SkillsRegistry->SortGroup(group);
 				for (auto skillsIterator = group->children.begin(); skillsIterator != group->children.end(); skillsIterator++)
 				{
 					std::string nameID = (*skillsIterator)->name;
