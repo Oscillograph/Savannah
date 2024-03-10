@@ -440,6 +440,11 @@ std::vector<std::string>& SkillRegistry::GetGroupsNames()
 	return m_GroupsNames;
 }
 
+std::vector<Skill*>& SkillRegistry::GetGrouplessSkills()
+{
+	return m_SkillsWithoutGroup;
+}
+
 std::string SkillRegistry::GetRequirements(Skill* skill)
 {
 	std::string out = "";

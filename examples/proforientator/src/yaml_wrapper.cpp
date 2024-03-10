@@ -64,7 +64,7 @@ bool YamlWrapper::LoadDocument(const std::string& filename) // load an existing 
 		for (YAML::Node skillsGroup : skillsGroups) {
 			std::string skillsGroupName = skillsGroup["SkillsGroup"].as<std::string>();
 //			CONSOLE_LOG(skillsGroupName);
-			if (skillsGroupName != "Groupless")
+			if (skillsGroupName.compare("Groupless") != 0)
 			{
 				SkillGroup* group = new SkillGroup();
 				group->name = skillsGroupName;
