@@ -94,6 +94,10 @@ namespace Savannah
 		glfwPollEvents();
 	}
 	
+	void App::Logic()
+	{
+	}
+	
 	void App::Render()
 	{
 		if (!IsWindowMinimized())

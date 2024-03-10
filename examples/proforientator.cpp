@@ -7,6 +7,28 @@
 // Result: 40+ seconds to build -> 4-7 seconds to build.
 // I am very glad.
 
+enum class ProforientatorTasks : int
+{
+	AddSkill 					= 0,
+	EditSkill 					= 1,
+	DeleteSkill 				= 2,
+	
+	AddSkillRequirement 		= 3,
+	EditSkillRequirement 		= 4,
+	DeleteSkillRequirement 		= 5,
+	
+	AddSkillGroup 				= 6,
+	EditSkillGroup 				= 7,
+	DeleteSkillGroup 			= 8,
+	
+	Idle						= 9,
+	LoadData					= 10,
+	ReloadData					= 11,
+	UpdateData					= 12,
+	SaveData					= 13,
+	Exit						= 14
+};
+
 namespace Savannah 
 {
 	class Proforientator : public App 
@@ -17,7 +39,7 @@ namespace Savannah
 			SetWindowTitle("Профориентатор 1.0");
 			
 			// load database
-			LoadDatabase("../examples/proforientator/data/skillsDB.txt");
+			m_TaskStack.push_back(ProforientatorTasks::LoadData);
 			
 			m_LevelDescription.push_back("незнаком"); // 0
 			m_LevelDescription.push_back("слышал"); // 1
@@ -45,6 +67,57 @@ namespace Savannah
 		~Proforientator()
 		{
 			UnloadDatabase();
+		}
+		
+		void Logic()
+		{
+			while (m_TaskStack.size() > 0)
+			{
+				m_CurrentTask = m_TaskStack.back();
+				m_TaskStack.pop_back();
+				
+				switch (m_CurrentTask)
+				{
+				case ProforientatorTasks::AddSkill:
+					break;
+				case ProforientatorTasks::EditSkill:
+					break;
+				case ProforientatorTasks::DeleteSkill:
+					{
+						m_ChangesInDatabase = true;
+						m_SkillsRegistry->RemoveSkill(m_SkillSelected);
+						m_SkillSelected = nullptr;
+						CONSOLE_LOG("m_SkillSelected equals nullptr now.");
+					}
+					break;
+				case ProforientatorTasks::Exit:
+					{
+						doExit = true;
+					}
+					break;
+				case ProforientatorTasks::LoadData:
+					{
+						LoadDatabase(m_SkillsFile);
+					}
+					break;
+				case ProforientatorTasks::ReloadData:
+					{
+						ReloadDatabase();
+					}
+					break;
+				case ProforientatorTasks::SaveData:
+					{
+						SaveDatabase(m_SkillsFile);
+					}
+					break;
+				case ProforientatorTasks::Idle:
+					// do nothing
+					break;
+				default:
+					break;
+				}
+			}
+			m_CurrentTask = ProforientatorTasks::Idle;
 		}
 		
 		void GUIContent() override 
@@ -118,12 +191,14 @@ namespace Savannah
 		}
 		
 	private:
-		std::string m_SkillsFile = "";
+		std::string m_SkillsFile = "../examples/proforientator/data/skillsDB.txt";
 		std::vector<std::string> m_LevelDescription = {};
 		SkillRegistry* m_SkillsRegistry = nullptr;
 		Skill* m_SkillSelected = nullptr;
 		YamlWrapper* m_YAMLWrapperObject = nullptr;
 		bool m_ChangesInDatabase = false;
+		ProforientatorTasks m_CurrentTask = ProforientatorTasks::Idle;
+		std::vector<ProforientatorTasks> m_TaskStack = {};
 		
 		float TEXT_BASE_WIDTH = 0.0f;
 		float TEXT_BASE_HEIGHT = 0.0f;
@@ -138,11 +213,16 @@ namespace Savannah
 			m_SkillsRegistry->SortGroups();
 		}
 		
+		void SaveDatabase(const std::string& file)
+		{
+			m_YAMLWrapperObject->SaveDocument(file);
+		}
+		
 		void UnloadDatabase()
 		{
 			if (m_ChangesInDatabase)
 			{
-				m_YAMLWrapperObject->SaveDocument(m_SkillsFile);
+				SaveDatabase(m_SkillsFile);
 				CONSOLE_LOG("Changes saved.");
 			} else {
 				CONSOLE_LOG("No changes.");
@@ -167,12 +247,12 @@ namespace Savannah
 				{
 					if (ImGui::MenuItem("Перезагрузить БД")) 
 					{ 
-						ReloadDatabase();
+						m_TaskStack.push_back(ProforientatorTasks::ReloadData);
 					}
 					ImGui::MenuItem(" ");
 					if (ImGui::MenuItem("Выход")) 
-					{ 
-						doExit = true; 
+					{
+						m_TaskStack.push_back(ProforientatorTasks::Exit);
 					}
 					ImGui::EndMenu();
 				}
@@ -263,85 +343,91 @@ namespace Savannah
 					}
 					
 					ImGui::TableSetColumnIndex(2);
-					ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x);
-					std::string buttonName = "Удалить##" + m_SkillSelected->group + m_SkillSelected->name;
-					ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{0.8f, 0.3f, 0.3f, 1.0f});
-					ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{0.8f, 0.6f, 0.4f, 1.0f});
-					ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{1.0f, 0.7f, 0.7f, 1.0f});
-					if (ImGui::Button(buttonName.c_str()))
+					{
+						ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x);
+						std::string buttonName = "Удалить##" + m_SkillSelected->group + m_SkillSelected->name;
+						ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{0.8f, 0.3f, 0.3f, 1.0f});
+						ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{0.8f, 0.6f, 0.4f, 1.0f});
+						ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{1.0f, 0.7f, 0.7f, 1.0f});
+						if (ImGui::Button(buttonName.c_str()))
+						{
+							m_TaskStack.push_back(ProforientatorTasks::DeleteSkill);
+						}
+						ImGui::PopStyleColor(3);
+					}
+					
+					ImGui::TableNextRow();
+					ImGui::TableSetColumnIndex(0);
+					int level = (int)(m_SkillSelected->level);
+					ImGui::Text("Уровень: ");
+					
+					ImGui::TableSetColumnIndex(1);
+					if (ImGui::SliderInt("###Level", &level, 0, 10))
 					{
 						m_ChangesInDatabase = true;
-						m_SkillsRegistry->RemoveSkill(m_SkillSelected);
-						m_SkillSelected = nullptr;
-						CONSOLE_LOG("m_SkillSelected equals nullptr now.");
+						m_SkillSelected->level = (uint32_t)level;
 					}
-					ImGui::PopStyleColor(3);
 					
-					if (m_SkillSelected != nullptr)
+					ImGui::TableSetColumnIndex(2);
 					{
-						ImGui::TableNextRow();
-						ImGui::TableSetColumnIndex(0);
-						int level = (int)(m_SkillSelected->level);
-						ImGui::Text("Уровень: ");
-						
-						ImGui::TableSetColumnIndex(1);
-						if (ImGui::SliderInt("###Level", &level, 0, 10))
+						ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x);
+						std::string buttonName = "Сохранить##" + m_SkillSelected->group + m_SkillSelected->name;
+						ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{0.3f, 0.8f, 0.3f, 1.0f});
+						ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{0.4f, 0.8f, 0.6f, 1.0f});
+						ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{0.7f, 1.0f, 0.7f, 1.0f});
+						if (ImGui::Button(buttonName.c_str()))
 						{
-							m_ChangesInDatabase = true;
-							m_SkillSelected->level = (uint32_t)level;
+							m_TaskStack.push_back(ProforientatorTasks::EditSkill);
 						}
-						
-						ImGui::TableSetColumnIndex(2);
+						ImGui::PopStyleColor(3);
 					}
+					
 					ImGui::EndTable();
 				}
 				
-				if (m_SkillSelected != nullptr)
-				{	
-					TextColoredSkillLevelDescription((int)m_SkillSelected->level);
-					std::string requirements = m_SkillsRegistry->GetRequirements(m_SkillSelected);
-					ImGui::Text("");
+				TextColoredSkillLevelDescription((int)m_SkillSelected->level);
+				std::string requirements = m_SkillsRegistry->GetRequirements(m_SkillSelected);
+				ImGui::Text("");
+				
+				if (ImGui::BeginTable("##Требования", 2, ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_ScrollY))
+				{
+					ImGui::TableSetupColumn("Полученные навыки##passed", ImGuiTableColumnFlags_WidthFixed, TEXT_BASE_WIDTH * 40);
+					ImGui::TableSetupColumn("Нужны ещё##notpassed", ImGuiTableColumnFlags_WidthFixed, TEXT_BASE_WIDTH * 40);
+					ImGui::TableHeadersRow();
+					ImGui::TableNextRow();
 					
-					if (ImGui::BeginTable("##Требования", 2, ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_ScrollY))
+					std::string reqName = "";
+					std::string upToLevel = "";
+					int reqLevel = 0;
+					for (int i = 0; i < m_SkillSelected->GetRequirementsArray().size(); i++)
 					{
-						ImGui::TableSetupColumn("Полученные навыки##passed", ImGuiTableColumnFlags_WidthFixed, TEXT_BASE_WIDTH * 40);
-						ImGui::TableSetupColumn("Нужны ещё##notpassed", ImGuiTableColumnFlags_WidthFixed, TEXT_BASE_WIDTH * 40);
-						ImGui::TableHeadersRow();
-						ImGui::TableNextRow();
+						reqName = m_SkillSelected->GetRequirementsArray()[i]->name;
+						reqLevel = m_SkillSelected->GetRequirementsArray()[i]->level;
 						
-						std::string reqName = "";
-						std::string upToLevel = "";
-						int reqLevel = 0;
-						for (int i = 0; i < m_SkillSelected->GetRequirementsArray().size(); i++)
+						int column = 1;
+						Skill* skillStored = m_SkillsRegistry->FindSkill(reqName);
+						if (skillStored != nullptr)
 						{
-							reqName = m_SkillSelected->GetRequirementsArray()[i]->name;
-							reqLevel = m_SkillSelected->GetRequirementsArray()[i]->level;
-							
-							int column = 1;
-							Skill* skillStored = m_SkillsRegistry->FindSkill(reqName);
-							if (skillStored != nullptr)
+							if (skillStored->level >= reqLevel)
 							{
-								if (skillStored->level >= reqLevel)
-								{
-									sprintf((char*)upToLevel.c_str(), " (%d)", skillStored->level);
-									column = 0;
-								} else {
-									sprintf((char*)upToLevel.c_str(), " (%d)", reqLevel);
-								}
-								ImGui::TableSetColumnIndex(column);
-								TextColoredSkillName(skillStored);
-								ImGui::SameLine();
-								ImGui::Text(upToLevel.c_str());
+								sprintf((char*)upToLevel.c_str(), " (%d)", skillStored->level);
+								column = 0;
 							} else {
-								ImGui::TableSetColumnIndex(column);
-								ImGui::TextColored({1.0f, 0.2f, 0.2f, 1.0f}, reqName.c_str());
-								ImGui::SameLine();
-								ImGui::Text(upToLevel.c_str());
+								sprintf((char*)upToLevel.c_str(), " (%d)", reqLevel);
 							}
+							ImGui::TableSetColumnIndex(column);
+							TextColoredSkillName(skillStored);
+							ImGui::SameLine();
+							ImGui::Text(upToLevel.c_str());
+						} else {
+							ImGui::TableSetColumnIndex(column);
+							ImGui::TextColored({1.0f, 0.2f, 0.2f, 1.0f}, reqName.c_str());
+							ImGui::SameLine();
+							ImGui::Text(upToLevel.c_str());
 						}
-						
-						ImGui::EndTable();
 					}
+					
+					ImGui::EndTable();
 				}
 			}
 		}

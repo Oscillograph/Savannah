@@ -44,6 +44,7 @@ namespace Savannah {
 		virtual void SetupGUI();
 		virtual GLFWwindow* GetWindow();
 		virtual void ProcessInput();
+		virtual void Logic();
 		virtual void Render();
 		virtual void GUIBegin();
 		virtual void GUIEnd();

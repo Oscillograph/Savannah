@@ -18,7 +18,7 @@ int main(int, char**)
 		float time_current = (float)glfwGetTime();
 		
 		application->ProcessInput();
-		// App::Logic();
+		application->Logic();
 		
 		if ((time_current - time_previous) >= application->GetFPS()){
 			time_previous = time_current;
