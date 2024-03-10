@@ -16,7 +16,10 @@ Proforientator:
 * Scale GUI elements according to the actual window size
 * Implement skill descriptions
 * Advise jobs
-* Implement skill requirements (need to advance in several other skills first to unlock this one and improve)
+* Implement skill requirements (disable editing a skill level if requirements in other skills not met)
+* Add/Edit/Remove skill requirements
+* Add/Edit/Remove skill groups
+* Add a default group for "groupless" skills
 
 Mediaplayer:
 * Develop MVP

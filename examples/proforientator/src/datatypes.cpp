@@ -114,6 +114,7 @@ void SkillRegistry::AddSkill(Skill* skill)
 		if (m == skill)
 		{
 			skillExists = true;
+			CONSOLE_LOG(skill->name, " : ", skill->level, " - exists in the registry.");
 			break;
 		}
 	}
@@ -134,24 +135,26 @@ void SkillRegistry::AddSkillToGroup(Skill* skill, const std::string& name)
 	{
 		if (m_GroupsRegistry.find(skill->group) == m_GroupsRegistry.end())
 		{
-			m_GroupsRegistry[skill->group] = new SkillGroup();
-			m_GroupsRegistry[skill->group]->name = skill->group;
+			CONSOLE_LOG("There is no group called \"\"", skill->group);
+			SkillGroup* group = new SkillGroup();
+			group->name = skill->group;
+			AddGroup(group);
+		} 
+		
+		bool alreadyExists = false;
+		for (auto m : m_GroupsRegistry[skill->group]->children)
+		{
+			if (m == skill)
+			{
+				alreadyExists = true;
+			}
+			break;
+		}
+		if (!alreadyExists)
+		{
+			m_GroupsRegistry[skill->group]->children.push_back(skill);
 		} else {
-			bool alreadyExists = false;
-			for (auto m : m_GroupsRegistry[skill->group]->children)
-			{
-				if (m == skill)
-				{
-					alreadyExists = true;
-				}
-				break;
-			}
-			if (!alreadyExists)
-			{
-				m_GroupsRegistry[skill->group]->children.push_back(skill);
-			} else {
-				CONSOLE_LOG("Couldn't add a skill to group \"", skill->group, "\": already exists there;")
-			}
+			CONSOLE_LOG("Couldn't add a skill to group \"", skill->group, "\": already exists there;")
 		}
 	} else {
 		m_SkillsWithoutGroup.push_back(skill);
@@ -289,7 +292,7 @@ void SkillRegistry::AddGroup(SkillGroup* group)
 	{
 		m_GroupsNames.push_back(group->name);
 		
-		if (m_GroupsRegistry.find(group->name) == m_GroupsRegistry.end())
+		if (m_GroupsRegistry.find(group->name) != m_GroupsRegistry.end())
 		{
 			groupAlreadyExists = true;
 			CONSOLE_LOG("Couldn't add a group \"", group->name, "\": already exists in the map registry.");
