@@ -91,6 +91,16 @@ namespace Savannah
 		~Proforientator()
 		{
 			UnloadDatabase();
+			
+			delete m_NewSkill;
+			m_NewSkill = nullptr;
+			delete m_EditSkill;
+			m_EditSkill = nullptr;
+			m_SkillSelected = nullptr;
+			
+			m_SkillGroupSelected = nullptr;
+			delete m_NewGroup;
+			m_NewGroup = nullptr;
 		}
 		
 		void Logic()
@@ -124,7 +134,16 @@ namespace Savannah
 					}
 					break;
 				case ProforientatorTasks::EditSkill:
-					// this means I need a temporary Skill* variable
+					{
+						if (m_EditSkill != nullptr)
+						{
+							m_SkillSelected->name = m_EditSkill->name;
+							m_SkillSelected->group = m_EditSkill->group;
+							m_SkillSelected->level = m_EditSkill->level;
+							m_ChangesInDatabase = true;
+							CONSOLE_LOG("Skill \"", m_EditSkill->name, " updated.\"");
+						}
+					}
 					break;
 				case ProforientatorTasks::DeleteSkill:
 					{
@@ -244,6 +263,7 @@ namespace Savannah
 		SkillRegistry* m_SkillsRegistry = nullptr;
 		Skill* m_SkillSelected = nullptr; // the one selected from a table
 		Skill* m_NewSkill = nullptr; // the one being created or not to be saved at all
+		Skill* m_EditSkill = nullptr; // the one being edited but not immediately
 		SkillGroup* m_SkillGroupSelected = nullptr; // specifically selected to be edited or deleted
 		SkillGroup* m_NewGroup = nullptr; // the one being created or not to be saved at all
 		YamlWrapper* m_YAMLWrapperObject = nullptr;
@@ -289,6 +309,18 @@ namespace Savannah
 			UnloadDatabase();
 			LoadDatabase(m_SkillsFile);
 			m_ChangesInDatabase = false;
+		}
+		
+		void CopySkillSelectedToEditSkill()
+		{
+			if (m_EditSkill == nullptr)
+			{
+				m_EditSkill = new Skill(m_SkillSelected->name, m_SkillSelected->group, m_SkillSelected->level);
+			} else {
+				m_EditSkill->name = m_SkillSelected->name;
+				m_EditSkill->group = m_SkillSelected->group;
+				m_EditSkill->level = m_SkillSelected->level;
+			}
 		}
 		
 		void ShowMainMenu()
@@ -372,70 +404,7 @@ namespace Savannah
 			ImGui::Text(raw.c_str());
 			if (m_SkillSelected != nullptr)
 			{
-				std::string columnsID = "###EditSkill";
-				
-				if (ImGui::BeginTable((columnsID.c_str()), 3, ImGuiTableFlags_SizingFixedFit))
-				{
-					ImGui::TableSetupColumn("##skill", ImGuiTableColumnFlags_WidthFixed, TEXT_BASE_WIDTH * 10);
-					ImGui::TableSetupColumn("##control", ImGuiTableColumnFlags_WidthFixed, TEXT_BASE_WIDTH * 59);
-					ImGui::TableSetupColumn("##buttons", ImGuiTableColumnFlags_WidthFixed, TEXT_BASE_WIDTH * 11);
-					ImGui::TableHeadersRow();
-					
-					ImGui::TableNextRow();
-					ImGui::TableSetColumnIndex(0);
-					ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x);
-					std::string selected = "Навык: ";
-					ImGui::Text(selected.c_str());
-					
-					ImGui::TableSetColumnIndex(1);
-					ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x);
-					if (ImGui::InputText("###Name", &(m_SkillSelected->name)))
-					{
-						m_ChangesInDatabase = true;
-					}
-					
-					ImGui::TableSetColumnIndex(2);
-					{
-						ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x);
-						std::string buttonName = "Удалить##" + m_SkillSelected->group + m_SkillSelected->name;
-						ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{0.8f, 0.3f, 0.3f, 1.0f});
-						ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{0.8f, 0.6f, 0.4f, 1.0f});
-						ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{1.0f, 0.7f, 0.7f, 1.0f});
-						if (ImGui::Button(buttonName.c_str()))
-						{
-							m_TaskStack.push_back(ProforientatorTasks::DeleteSkill);
-						}
-						ImGui::PopStyleColor(3);
-					}
-					
-					ImGui::TableNextRow();
-					ImGui::TableSetColumnIndex(0);
-					int level = (int)(m_SkillSelected->level);
-					ImGui::Text("Уровень: ");
-					
-					ImGui::TableSetColumnIndex(1);
-					if (ImGui::SliderInt("###Level", &level, 0, 10))
-					{
-						m_ChangesInDatabase = true;
-						m_SkillSelected->level = (uint32_t)level;
-					}
-					
-					ImGui::TableSetColumnIndex(2);
-					{
-						ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x);
-						std::string buttonName = "Сохранить##" + m_SkillSelected->group + m_SkillSelected->name;
-						ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{0.3f, 0.8f, 0.3f, 1.0f});
-						ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{0.4f, 0.8f, 0.6f, 1.0f});
-						ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{0.7f, 1.0f, 0.7f, 1.0f});
-						if (ImGui::Button(buttonName.c_str()))
-						{
-							m_TaskStack.push_back(ProforientatorTasks::EditSkill);
-						}
-						ImGui::PopStyleColor(3);
-					}
-					
-					ImGui::EndTable();
-				}
+				ShowEditSkillTable();
 				
 				TextColoredSkillLevelDescription((int)m_SkillSelected->level);
 				std::string requirements = m_SkillsRegistry->GetRequirements(m_SkillSelected);
@@ -484,6 +453,111 @@ namespace Savannah
 			}
 		}
 		
+		void ShowEditSkillTable()
+		{
+			std::string columnsID = "###EditSkill";
+			
+			if (ImGui::BeginTable((columnsID.c_str()), 3, ImGuiTableFlags_SizingFixedFit))
+			{
+				ImGui::TableSetupColumn("##skill", ImGuiTableColumnFlags_WidthFixed, TEXT_BASE_WIDTH * 10);
+				ImGui::TableSetupColumn("##control", ImGuiTableColumnFlags_WidthFixed, TEXT_BASE_WIDTH * 59);
+				ImGui::TableSetupColumn("##buttons", ImGuiTableColumnFlags_WidthFixed, TEXT_BASE_WIDTH * 11);
+				ImGui::TableHeadersRow();
+				
+				ImGui::TableNextRow();
+				ImGui::TableSetColumnIndex(0);
+				ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x);
+				std::string skillSelectedName = "Навык: ";
+				ImGui::Text(skillSelectedName.c_str());
+				
+				ImGui::TableSetColumnIndex(1);
+				ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x);
+				if (ImGui::InputText("###Name", &(m_SkillSelected->name)))
+				{
+					m_ChangesInDatabase = true;
+				}
+				
+				ImGui::TableSetColumnIndex(2);
+				{
+					ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x);
+					std::string buttonName = "Удалить##" + m_SkillSelected->group + m_SkillSelected->name;
+					ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{0.8f, 0.3f, 0.3f, 1.0f});
+					ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{0.8f, 0.6f, 0.4f, 1.0f});
+					ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{1.0f, 0.7f, 0.7f, 1.0f});
+					if (ImGui::Button(buttonName.c_str()))
+					{
+						m_TaskStack.push_back(ProforientatorTasks::DeleteSkill);
+					}
+					ImGui::PopStyleColor(3);
+				}
+				
+				ImGui::TableNextRow();
+				ImGui::TableSetColumnIndex(0);
+				ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x);
+				std::string skillSelectedGroup = "Группа: ";
+				ImGui::Text(skillSelectedGroup.c_str());
+				
+				ImGui::TableSetColumnIndex(1);
+				{
+					ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x);
+					std::string groupsToSelect = "";
+					std::string temp = "";
+					int comboSelected = -1;
+					
+					for (int i = 0; i <= m_SkillsRegistry->GetGroupsNames().size(); i++)
+					{
+						if (i < m_SkillsRegistry->GetGroupsNames().size())
+						{
+							if (m_SkillsRegistry->GetGroupsNames()[i].compare(m_EditSkill->group) == 0)
+							{
+								comboSelected = i;
+							}
+							groupsToSelect.append(((i == 0) ? m_SkillsRegistry->GetGroupsNames()[i] : ('\0' + m_SkillsRegistry->GetGroupsNames()[i])));
+						} else {
+							groupsToSelect.append('\0' + std::string("Groupless"));
+						}
+					}
+					if (comboSelected == -1)
+					{
+						comboSelected = m_SkillsRegistry->GetGroupsNames().size();
+					}
+
+					if (ImGui::Combo("###Group", &comboSelected, groupsToSelect.c_str()))
+					{
+						m_EditSkill->group = (comboSelected == m_SkillsRegistry->GetGroupsNames().size()) ? "Groupless" : m_SkillsRegistry->GetGroupsNames()[comboSelected];
+					}
+				}
+				
+				ImGui::TableNextRow();
+				ImGui::TableSetColumnIndex(0);
+				int level = (int)(m_SkillSelected->level);
+				ImGui::Text("Уровень: ");
+				
+				ImGui::TableSetColumnIndex(1);
+				if (ImGui::SliderInt("###Level", &level, 0, 10))
+				{
+					m_ChangesInDatabase = true;
+					m_SkillSelected->level = (uint32_t)level;
+				}
+				
+				ImGui::TableSetColumnIndex(2);
+				{
+					ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x);
+					std::string buttonName = "Сохранить##" + m_SkillSelected->group + m_SkillSelected->name;
+					ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{0.3f, 0.8f, 0.3f, 1.0f});
+					ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{0.4f, 0.8f, 0.6f, 1.0f});
+					ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{0.7f, 1.0f, 0.7f, 1.0f});
+					if (ImGui::Button(buttonName.c_str()))
+					{
+						m_TaskStack.push_back(ProforientatorTasks::EditSkill);
+					}
+					ImGui::PopStyleColor(3);
+				}
+				
+				ImGui::EndTable();
+			}
+		}
+		
 		void ShowSkillsTable(const std::string& groupName)
 		{
 			ImGui::TextColored({1.0f, 0.7f, 0.5f, 1.0f}, (groupName.compare("Groupless") == 0) ? "Без группы" : groupName.c_str());
@@ -518,6 +592,7 @@ namespace Savannah
 					{
 						m_SkillSelected = *skillsIterator;
 						m_CurrentMode = ProforientatorMode::EditSkill;
+						CopySkillSelectedToEditSkill();
 					}
 					ImGui::Spacing();
 					ImGui::TableSetColumnIndex(1);
@@ -536,6 +611,7 @@ namespace Savannah
 					{
 						m_SkillSelected = *skillsIterator;
 						m_CurrentMode = ProforientatorMode::EditSkill;
+						CopySkillSelectedToEditSkill();
 					}
 					
 					ImGui::PopID();
