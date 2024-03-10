@@ -81,6 +81,11 @@ SkillRegistry::SkillRegistry()
 
 SkillRegistry::~SkillRegistry()
 {
+	for (auto m : m_SkillsWithoutGroup)
+	{
+		m = nullptr;
+	}
+	
 	for (auto m : m_SkillsRegistry)
 	{
 		delete m;
@@ -103,14 +108,53 @@ Skill* SkillRegistry::NewSkill(const std::string& name, const std::string& group
 
 void SkillRegistry::AddSkill(Skill* skill)
 {
-	m_SkillsRegistry.push_back(skill);
-	
-	if (m_GroupsRegistry.find(skill->group) == m_GroupsRegistry.end())
+	bool skillExists = false;
+	for (auto m : m_SkillsRegistry)
 	{
-		m_GroupsRegistry[skill->group] = new SkillGroup();
-		m_GroupsRegistry[skill->group]->name = skill->group;
+		if (m == skill)
+		{
+			skillExists = true;
+			break;
+		}
+	}
+	if (!skillExists)
+	{
+		m_SkillsRegistry.push_back(skill);
+		AddSkillToGroup(skill, skill->group);
 	} else {
-		m_GroupsRegistry[skill->group]->children.push_back(skill);
+		CONSOLE_LOG("Couldn't add a skill \"", skill->name, "\": already exists in the registry.");
+	}
+}
+
+void SkillRegistry::AddSkillToGroup(Skill* skill, const std::string& name)
+{
+	skill->group = name;
+	
+	if (skill->group != "Groupless")
+	{
+		if (m_GroupsRegistry.find(skill->group) == m_GroupsRegistry.end())
+		{
+			m_GroupsRegistry[skill->group] = new SkillGroup();
+			m_GroupsRegistry[skill->group]->name = skill->group;
+		} else {
+			bool alreadyExists = false;
+			for (auto m : m_GroupsRegistry[skill->group]->children)
+			{
+				if (m == skill)
+				{
+					alreadyExists = true;
+				}
+				break;
+			}
+			if (!alreadyExists)
+			{
+				m_GroupsRegistry[skill->group]->children.push_back(skill);
+			} else {
+				CONSOLE_LOG("Couldn't add a skill to group \"", skill->group, "\": already exists there;")
+			}
+		}
+	} else {
+		m_SkillsWithoutGroup.push_back(skill);
 	}
 }
 
@@ -180,14 +224,82 @@ void SkillRegistry::RemoveSkill(const std::string& name)
 	}
 }
 
+void SkillRegistry::RemoveSkillFromGroup(Skill* skill)
+{
+	for (auto itg = m_GroupsRegistry[skill->group]->children.begin();
+		itg != m_GroupsRegistry[skill->group]->children.end();
+		itg++)
+	{
+		if ((*itg)->name == skill->name)
+		{
+			*itg = nullptr;
+			skill->group = "Groupless";
+			break;
+		}
+	}
+}
+
+void SkillRegistry::NewGroup(const std::string& name)
+{
+	bool groupAlreadyExists = false;
+	
+	for (int i = 0; i < m_GroupsNames.size(); i++)
+	{
+		if (m_GroupsNames[i] == name)
+		{
+			groupAlreadyExists = true;
+			CONSOLE_LOG("Couldn't add a group \"", name, "\": already exists in the vector registry.");
+			break;
+		}
+	}
+	
+	if (!groupAlreadyExists)
+	{
+		m_GroupsNames.push_back(name);
+		
+		if (m_GroupsRegistry.find(name) == m_GroupsRegistry.end())
+		{
+			CONSOLE_LOG("Couldn't add a group \"", name, "\": already exists in the map registry.");
+		}
+		
+		if (!groupAlreadyExists)
+		{
+			m_GroupsRegistry[name] = new SkillGroup;
+			m_GroupsRegistry[name]->name = name;
+			return;
+		}
+	}
+}
+
 void SkillRegistry::AddGroup(SkillGroup* group)
 {
-	if (m_GroupsRegistry.find(group->name) == m_GroupsRegistry.end())
+	bool groupAlreadyExists = false;
+	
+	for (int i = 0; i < m_GroupsNames.size(); i++)
 	{
-		m_GroupsRegistry[group->name] = new SkillGroup;
-		m_GroupsRegistry[group->name]->name = group->name;
-	} else {
-		CONSOLE_LOG("Couldn't add a group - it already existed in the registry.");
+		if (m_GroupsNames[i] == group->name)
+		{
+			groupAlreadyExists = true;
+			CONSOLE_LOG("Couldn't add a group \"", group->name, "\": already exists in the vector registry.");
+			break;
+		}
+	}
+	
+	if (!groupAlreadyExists)
+	{
+		m_GroupsNames.push_back(group->name);
+		
+		if (m_GroupsRegistry.find(group->name) == m_GroupsRegistry.end())
+		{
+			groupAlreadyExists = true;
+			CONSOLE_LOG("Couldn't add a group \"", group->name, "\": already exists in the map registry.");
+		}
+		
+		if (!groupAlreadyExists)
+		{
+			m_GroupsRegistry[group->name] = group;
+			return;
+		}
 	}
 }
 
@@ -313,6 +425,16 @@ void SkillRegistry::Sort(std::vector<Skill*>& source)
 std::map<std::string, SkillGroup*>& SkillRegistry::GetGroups()
 {
 	return m_GroupsRegistry;
+}
+
+SkillGroup* SkillRegistry::GetGroupByName(const std::string& groupName)
+{
+	return m_GroupsRegistry[groupName];
+}
+
+std::vector<std::string>& SkillRegistry::GetGroupsNames()
+{
+	return m_GroupsNames;
 }
 
 std::string SkillRegistry::GetRequirements(Skill* skill)

@@ -79,8 +79,10 @@ namespace Savannah
 				switch (m_CurrentTask)
 				{
 				case ProforientatorTasks::AddSkill:
+					// this means I need a temporary Skill* variable
 					break;
 				case ProforientatorTasks::EditSkill:
+					// this means I need a temporary Skill* variable
 					break;
 				case ProforientatorTasks::DeleteSkill:
 					{
@@ -194,7 +196,10 @@ namespace Savannah
 		std::string m_SkillsFile = "../examples/proforientator/data/skillsDB.txt";
 		std::vector<std::string> m_LevelDescription = {};
 		SkillRegistry* m_SkillsRegistry = nullptr;
-		Skill* m_SkillSelected = nullptr;
+		Skill* m_SkillSelected = nullptr; // the one selected from a table
+		Skill* m_NewSkill = nullptr; // the one being created or not to be saved at all
+		SkillGroup* m_SkillGroupSelected = nullptr; // specifically selected to be edited or deleted
+		SkillGroup* m_NewGroup = nullptr; // the one being created or not to be saved at all
 		YamlWrapper* m_YAMLWrapperObject = nullptr;
 		bool m_ChangesInDatabase = false;
 		ProforientatorTasks m_CurrentTask = ProforientatorTasks::Idle;

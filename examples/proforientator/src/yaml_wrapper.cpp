@@ -64,9 +64,12 @@ bool YamlWrapper::LoadDocument(const std::string& filename) // load an existing 
 		for (YAML::Node skillsGroup : skillsGroups) {
 			std::string skillsGroupName = skillsGroup["SkillsGroup"].as<std::string>();
 //			CONSOLE_LOG(skillsGroupName);
-			SkillGroup* group = new SkillGroup();
-			group->name = skillsGroupName;
-			m_SkillRegistry->AddGroup(group);
+			if (skillsGroupName != "Groupless")
+			{
+				SkillGroup* group = new SkillGroup();
+				group->name = skillsGroupName;
+				m_SkillRegistry->AddGroup(group);
+			}
 			
 			YAML::Node skillNodes = skillsGroup["Skills"];
 			for (YAML::Node skillNode : skillNodes)
@@ -74,7 +77,7 @@ bool YamlWrapper::LoadDocument(const std::string& filename) // load an existing 
 				std::string name = skillNode["Name"].as<std::string>();
 				uint32_t level = skillNode["Level"].as<int>();
 //				CONSOLE_LOG(name, " : ", level);
-				Skill* skill = m_SkillRegistry->NewSkill(name, group->name, level);
+				Skill* skill = m_SkillRegistry->NewSkill(name, skillsGroupName, level);
 				
 				YAML::Node requirementNodes = skillNode["Requirements"];
 				for (YAML::Node requirementNode : requirementNodes)

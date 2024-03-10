@@ -51,19 +51,26 @@ struct SkillRegistry
 	~SkillRegistry();
 	Skill* NewSkill(const std::string& name = "", const std::string& group = "", uint32_t level = 0);
 	void AddSkill(Skill* skill);
+	void AddSkillToGroup(Skill* skill, const std::string& name);
 	Skill* FindSkill(const std::string& name); // a skill name in requirement must be equal to a skill name in the registry
 	void RemoveSkill(Skill* skill);
+	void RemoveSkillFromGroup(Skill* skill);
 	void RemoveSkill(const std::string& name);
+	void NewGroup(const std::string& name);
 	void AddGroup(SkillGroup* group);
 	void SortGroups();
 	void SortGroup(SkillGroup* group);
 	std::string GetRequirements(Skill* skill);
 	
 	std::map<std::string, SkillGroup*>& GetGroups();
+	SkillGroup* GetGroupByName(const std::string& groupName);
+	std::vector<std::string>& GetGroupsNames();
 	
 private:
-	std::map<std::string, SkillGroup*> m_GroupsRegistry = {};
-	std::vector<Skill*> m_SkillsRegistry = {};
+	std::vector<Skill*> m_SkillsRegistry = {}; // all skills are here
+	std::vector<std::string> m_GroupsNames = {}; // all group names are here
+	std::map<std::string, SkillGroup*> m_GroupsRegistry = {}; // this ties group names with groups
+	std::vector<Skill*> m_SkillsWithoutGroup = {};
 	
 	void Sort(std::vector<Skill*>& source);
 };
