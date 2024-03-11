@@ -22,6 +22,7 @@ struct SkillRequirementSet
 	void RemoveRequirement(const std::string& name);
 	
 	std::vector<SkillRequirement*>& GetRequirementsArray();
+	void CopyRequirementsArray(const std::vector<SkillRequirement*>& reqSet);
 	
 protected:
 	std::vector<SkillRequirement*> m_Requirements = {};
@@ -30,6 +31,8 @@ protected:
 struct Skill : SkillRequirementSet
 {
 	Skill(const std::string& _name = "", const std::string& _group = "", uint32_t _level = 0);
+	Skill(Skill* skill);
+	std::string GetRequirements();
 	
 	std::string name = "";
 	std::string group = "";
@@ -40,6 +43,7 @@ struct SkillGroup
 {
 	SkillGroup();
 	~SkillGroup();
+	void RemoveSkill(Skill* skill);
 	
 	std::string name = "";
 	std::vector<Skill*> children = {};

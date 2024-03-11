@@ -118,29 +118,34 @@ namespace Savannah
 				{
 				case ProforientatorTasks::NewSkill:
 					{
-						m_NewSkill = new Skill("Новый навык", "Groupless", 0);
-						m_EditSkill = m_NewSkill;
-						m_SkillSelected = m_NewSkill;
+						m_EditSkill = new Skill("Новый навык", "Groupless", 0);
+						m_SkillSelected = m_EditSkill;
+						m_CurrentMode = ProforientatorMode::NewSkill;
 					}
 					break;
 				case ProforientatorTasks::CancelNewSkill:
 					{
 						delete m_NewSkill;
 						m_NewSkill = nullptr;
+						delete m_EditSkill;
 						m_EditSkill = nullptr;
 						m_SkillSelected = nullptr;
+						m_CurrentMode = ProforientatorMode::Idle;
 					}
 					break;
 				case ProforientatorTasks::AddSkill:
 					{
-						if (m_NewSkill != nullptr)
+						if (m_EditSkill != nullptr)
 						{
-							m_SkillsRegistry->AddSkill(m_NewSkill);
-							m_SkillSelected = m_SkillsRegistry->FindSkill(m_NewSkill->name);
-							m_NewSkill = nullptr;
+							m_SkillsRegistry->AddSkill(m_EditSkill);
+							m_SkillSelected = m_SkillsRegistry->FindSkill(m_EditSkill->name);
+							m_EditSkill = nullptr;
+							m_EditSkill = new Skill(m_SkillSelected);
 							m_ChangesInDatabase = true;
+							m_CurrentMode = ProforientatorMode::EditSkill;
+							CONSOLE_LOG("Skill \"", m_EditSkill->name, "\" added to group \"", m_SkillSelected->group, "\".");
 						} else {
-							CONSOLE_LOG("Called Task AddSkill when m_NewSkill is nullptr.");
+							CONSOLE_LOG("Called Task AddSkill when m_EditSkill is nullptr.");
 						}
 					}
 					break;
@@ -149,14 +154,16 @@ namespace Savannah
 						if (m_EditSkill != nullptr)
 						{
 							m_SkillSelected->name = m_EditSkill->name;
-							if (m_EditSkill->group.compare(m_SkillSelected->group) != 0)
+							if (m_EditSkill->group != m_SkillSelected->group)
 							{
 								m_SkillsRegistry->RemoveSkillFromGroup(m_SkillSelected);
 								m_SkillsRegistry->AddSkillToGroup(m_SkillSelected, m_EditSkill->group);
 							}
 							m_SkillSelected->level = m_EditSkill->level;
+							m_SkillSelected->CopyRequirementsArray(m_EditSkill->GetRequirementsArray());
 							m_ChangesInDatabase = true;
-							CONSOLE_LOG("Skill \"", m_EditSkill->name, " from group \"", m_SkillSelected->group, "\" updated.\"");
+							m_CurrentMode = ProforientatorMode::EditSkill;
+							CONSOLE_LOG("Skill \"", m_EditSkill->name, "\" from group \"", m_SkillSelected->group, "\" updated.");
 						} else {
 							CONSOLE_LOG("Called Task EditSkill when m_EditSkill is nullptr.");
 						}
@@ -166,6 +173,8 @@ namespace Savannah
 					{
 						m_SkillsRegistry->RemoveSkill(m_SkillSelected);
 						m_SkillSelected = nullptr;
+						delete m_EditSkill;
+						m_EditSkill = nullptr;
 						m_ChangesInDatabase = true;
 						CONSOLE_LOG("m_SkillSelected equals nullptr now.");
 					}
@@ -333,14 +342,8 @@ namespace Savannah
 		
 		void CopySkillSelectedToEditSkill()
 		{
-			if (m_EditSkill == nullptr)
-			{
-				m_EditSkill = new Skill(m_SkillSelected->name, m_SkillSelected->group, m_SkillSelected->level);
-			} else {
-				m_EditSkill->name = m_SkillSelected->name;
-				m_EditSkill->group = m_SkillSelected->group;
-				m_EditSkill->level = m_SkillSelected->level;
-			}
+			delete m_EditSkill;
+			m_EditSkill = new Skill(m_SkillSelected);
 		}
 		
 		void ShowMainMenu()
@@ -428,10 +431,10 @@ namespace Savannah
 					(m_CurrentMode == ProforientatorMode::NewSkill))
 				{
 					ShowEditSkillTable();
+					TextColoredSkillLevelDescription((int)m_EditSkill->level);
+					std::string requirements = m_EditSkill->GetRequirements();
 				}
 				
-				TextColoredSkillLevelDescription((int)m_SkillSelected->level);
-				std::string requirements = m_SkillsRegistry->GetRequirements(m_SkillSelected);
 				ImGui::Text("");
 				
 				if (ImGui::BeginTable("##Требования", 2, ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_ScrollY))
@@ -504,7 +507,7 @@ namespace Savannah
 				ImGui::TableSetColumnIndex(2);
 				{
 					ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x);
-					std::string buttonName = "Удалить##" + m_SkillSelected->group + m_SkillSelected->name;
+					std::string buttonName = "Удалить##";
 					ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{0.8f, 0.3f, 0.3f, 1.0f});
 					ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{0.8f, 0.6f, 0.4f, 1.0f});
 					ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{1.0f, 0.7f, 0.7f, 1.0f});
@@ -559,26 +562,32 @@ namespace Savannah
 				ImGui::TableSetColumnIndex(1);
 				if (ImGui::SliderInt("###Level", &level, 0, 10))
 				{
-					m_ChangesInDatabase = true;
+					if (m_CurrentMode == ProforientatorMode::EditSkill)
+					{
+						m_ChangesInDatabase = true;
+					}
 					m_EditSkill->level = (uint32_t)level;
 				}
 				
 				ImGui::TableSetColumnIndex(2);
 				{
 					ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x);
-					std::string buttonName = "Сохранить##" + m_SkillSelected->group + m_SkillSelected->name;
+					std::string buttonName = "Сохранить##";
 					ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{0.3f, 0.8f, 0.3f, 1.0f});
 					ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{0.4f, 0.8f, 0.6f, 1.0f});
 					ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{0.7f, 1.0f, 0.7f, 1.0f});
 					if (ImGui::Button(buttonName.c_str()))
 					{
+						CONSOLE_LOG("Click!");
 						switch (m_CurrentMode)
 						{
 						case ProforientatorMode::EditSkill:
 							m_TaskStack.push_back(ProforientatorTasks::EditSkill);
+							CONSOLE_LOG("EditSkill Proc.");
 							break;
 						case ProforientatorMode::NewSkill:
 							m_TaskStack.push_back(ProforientatorTasks::AddSkill);
+							CONSOLE_LOG("AddSkill Proc.");
 							break;
 						default:
 							CONSOLE_LOG("EditSkill mode active, but m_CurrentMode is not set to it.");

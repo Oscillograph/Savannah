@@ -40,6 +40,24 @@ YAML::Emitter& operator<<(YAML::Emitter& out, SkillGroup* rhs)
 	return out;
 }
 
+YAML::Emitter& operator<<(YAML::Emitter& out, std::vector<Skill*>& rhs)
+{
+//		out << YAML::Flow;
+	out << YAML::BeginMap;
+	out << YAML::Key << "SkillsGroup" << YAML::Value << "Groupless";
+	out << YAML::Key << "Skills" << YAML::Value;
+	
+	out << YAML::BeginSeq;
+	for (auto it = rhs.begin(); it != rhs.end(); it++)
+	{
+		out << *it;
+	}
+	out << YAML::EndSeq;
+	out << YAML::EndMap;
+	
+	return out;
+}
+
 void YamlWrapper::UseSkillRegistry(SkillRegistry* skillRegistry)
 {
 	m_SkillRegistry = skillRegistry;
@@ -106,6 +124,7 @@ bool YamlWrapper::SaveDocument(const std::string& filename) // save a yaml docum
 	{
 		out << (*it).second;
 	};
+	out << m_SkillRegistry->GetGrouplessSkills();
 	out << YAML::EndSeq;
 	out << YAML::EndMap;
 	
