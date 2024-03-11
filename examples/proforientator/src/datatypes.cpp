@@ -131,17 +131,19 @@ void SkillRegistry::AddSkillToGroup(Skill* skill, const std::string& name)
 {
 	skill->group = name;
 	
-	if (skill->group != "Groupless")
+	bool alreadyExists = false;
+	
+	if (skill->group.compare("Groupless") != 0)
 	{
 		if (m_GroupsRegistry.find(skill->group) == m_GroupsRegistry.end())
 		{
-			CONSOLE_LOG("There is no group called \"\"", skill->group);
+			CONSOLE_LOG("There is no group called \"\"", skill->group, ",..");
 			SkillGroup* group = new SkillGroup();
 			group->name = skill->group;
 			AddGroup(group);
+			CONSOLE_LOG("...so it has been created.");
 		} 
 		
-		bool alreadyExists = false;
 		for (auto m : m_GroupsRegistry[skill->group]->children)
 		{
 			if (m == skill)
@@ -153,11 +155,28 @@ void SkillRegistry::AddSkillToGroup(Skill* skill, const std::string& name)
 		if (!alreadyExists)
 		{
 			m_GroupsRegistry[skill->group]->children.push_back(skill);
+			CONSOLE_LOG("Added a skill to group \"", skill->group, "\".");
 		} else {
-			CONSOLE_LOG("Couldn't add a skill to group \"", skill->group, "\": already exists there;")
+			CONSOLE_LOG("Couldn't add a skill to group \"", skill->group, "\": already exists there;");
 		}
 	} else {
-		m_SkillsWithoutGroup.push_back(skill);
+		
+		for (auto m : m_SkillsWithoutGroup)
+		{
+			if (m == skill)
+			{
+				alreadyExists = true;
+				break;
+			}
+		}
+		
+		if (!alreadyExists)
+		{
+			m_SkillsWithoutGroup.push_back(skill);
+			CONSOLE_LOG("Added a skill to group \"", skill->group, "\".");
+		} else {
+			CONSOLE_LOG("Couldn't add a skill to group \"", skill->group, "\": already exists there;");
+		}
 	}
 }
 
@@ -205,18 +224,26 @@ void SkillRegistry::RemoveSkill(Skill* skill)
 void SkillRegistry::RemoveSkill(const std::string& name)
 {
 	std::string group = "";
+	std::vector<Skill*> skillCollection;
+	
 	for (auto it = m_SkillsRegistry.begin(); it != m_SkillsRegistry.end(); it++)
 	{
 		if ((*it)->name == name)
 		{
-			group = (*it)->group;
-			for (auto itg = m_GroupsRegistry[group]->children.begin();
-				itg != m_GroupsRegistry[group]->children.end();
-				itg++)
+			if ((*it)->group.compare("Groupless") == 0)
+			{
+				skillCollection = GetGrouplessSkills();
+			} else {
+				group = (*it)->group;
+				skillCollection = m_GroupsRegistry[group]->children;
+			}
+			
+			for (auto itg = skillCollection.begin(); itg != skillCollection.end(); itg++)
 			{
 				if ((*itg)->name == name)
 				{
 					*itg = nullptr;
+					skillCollection.erase(itg);
 					break;
 				}
 			}
@@ -229,14 +256,21 @@ void SkillRegistry::RemoveSkill(const std::string& name)
 
 void SkillRegistry::RemoveSkillFromGroup(Skill* skill)
 {
-	for (auto itg = m_GroupsRegistry[skill->group]->children.begin();
-		itg != m_GroupsRegistry[skill->group]->children.end();
-		itg++)
+	std::vector<Skill*> skillCollection;
+	if (skill->group.compare("Groupless") == 0)
+	{
+		skillCollection = GetGrouplessSkills();
+	} else {
+		skillCollection = m_GroupsRegistry[skill->group]->children;
+	}
+	for (auto itg = skillCollection.begin(); itg != skillCollection.end(); itg++)
 	{
 		if ((*itg)->name == skill->name)
 		{
 			*itg = nullptr;
-			skill->group = "Groupless";
+			itg = skillCollection.erase(itg);
+			CONSOLE_LOG("Removed a skill from group \"", skill->group, "\".");
+			skill->group = "Groupless"; // if it's groupless but is not in groupless collection, then it's kind of lost, but still can be retrieved as it is in the registry anyway
 			break;
 		}
 	}
