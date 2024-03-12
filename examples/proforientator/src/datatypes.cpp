@@ -407,6 +407,7 @@ void SkillRegistry::SortGroups()
 		// sort skills in the group
 		Sort(group->children);
 	}
+	Sort(m_SkillsWithoutGroup);
 }
 
 void SkillRegistry::SortGroup(SkillGroup* group)
