@@ -170,7 +170,7 @@ void SkillRegistry::AddSkill(Skill* skill)
 	{
 		m_SkillsRegistry.push_back(skill);
 		AddSkillToGroup(skill, skill->group);
-		CONSOLE_LOG("Added a skill to the group.");
+//		CONSOLE_LOG("Added a skill to the group.");
 	} else {
 		CONSOLE_LOG("Couldn't add a skill \"", skill->name, "\": already exists in the registry.");
 	}

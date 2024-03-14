@@ -4,10 +4,8 @@ namespace Savannah
 {
 	Proforientator::Proforientator()
 	{
+		CONSOLE_GREEN("Savannah Framework initialization succesful.");
 		SetWindowTitle("Профориентатор 1.0");
-		
-		m_TaskStack.push_back(ProforientatorTasks::LoadData);
-		m_CurrentMode = ProforientatorMode::Idle;
 		
 		m_LevelDescription.push_back("незнаком"); // 0
 		m_LevelDescription.push_back("слышал"); // 1
@@ -21,15 +19,21 @@ namespace Savannah
 		m_LevelDescription.push_back("могу руководить работой команды"); // 9
 		m_LevelDescription.push_back("БОГ"); // 10
 		
-		CONSOLE_GREY("Skill not aquaried");
-		CONSOLE_WHITE("Skill aquired.");
-		CONSOLE_CYAN("Skill is almost perfect.");
+		m_CurrentMode = ProforientatorMode::Idle;
+		CONSOLE_LOG("Enter Idle mode");
 		
-		CONSOLE_CAPTION_BLACK("- - - - - - - - - - - - - - - - - ------- - - - - - - - - - - - - - - - - - - -");
-		CONSOLE_CAPTION_BLACK("- - - - - - - - -  Job requirements  - - - - - - - - - -");
-		CONSOLE_RED("Skill doesn't match requirements.");
-		CONSOLE_YELLOW("Skill matches requirements.");
-		CONSOLE_GREEN("Skill excedes requirements.");
+		m_TaskStack.push_back(ProforientatorTasks::LoadData);
+		CONSOLE_LOG("Add a new Task: LoadData");
+
+//		CONSOLE_GREY("Skill not aquaried");
+//		CONSOLE_WHITE("Skill aquired.");
+//		CONSOLE_CYAN("Skill is almost perfect.");
+//		
+//		CONSOLE_CAPTION_BLACK("- - - - - - - - - - - - - - - - - ------- - - - - - - - - - - - - - - - - - - -");
+//		CONSOLE_CAPTION_BLACK("- - - - - - - - -  Job requirements  - - - - - - - - - -");
+//		CONSOLE_RED("Skill doesn't match requirements.");
+//		CONSOLE_YELLOW("Skill matches requirements.");
+//		CONSOLE_GREEN("Skill excedes requirements.");
 	}
 	
 	Proforientator::~Proforientator()
@@ -61,6 +65,7 @@ namespace Savannah
 					m_EditSkill = new Skill("Новый навык", "Groupless", 0);
 					m_SkillSelected = m_EditSkill;
 					m_CurrentMode = ProforientatorMode::NewSkill;
+					CONSOLE_LOG("Enter NewSkill mode");
 				}
 				break;
 			case ProforientatorTasks::CancelNewSkill:
@@ -71,6 +76,7 @@ namespace Savannah
 					m_EditSkill = nullptr;
 					m_SkillSelected = nullptr;
 					m_CurrentMode = ProforientatorMode::Idle;
+					CONSOLE_LOG("Enter Idle mode");
 				}
 				break;
 			case ProforientatorTasks::AddSkill:
@@ -82,8 +88,9 @@ namespace Savannah
 						m_EditSkill = nullptr;
 						m_EditSkill = new Skill(m_SkillSelected);
 						m_ChangesInDatabase = true;
-						m_CurrentMode = ProforientatorMode::EditSkill;
 						CONSOLE_LOG("Skill \"", m_EditSkill->name, "\" added to group \"", m_SkillSelected->group, "\".");
+						m_CurrentMode = ProforientatorMode::EditSkill;
+						CONSOLE_LOG("Enter EditSkill mode");
 					} else {
 						CONSOLE_LOG("Called Task AddSkill when m_EditSkill is nullptr.");
 					}
@@ -102,8 +109,9 @@ namespace Savannah
 						m_SkillSelected->level = m_EditSkill->level;
 						m_SkillSelected->CopyRequirementsArray(m_EditSkill->GetRequirementsArray());
 						m_ChangesInDatabase = true;
-						m_CurrentMode = ProforientatorMode::EditSkill;
 						CONSOLE_LOG("Skill \"", m_EditSkill->name, "\" from group \"", m_SkillSelected->group, "\" updated.");
+						m_CurrentMode = ProforientatorMode::EditSkill;
+						CONSOLE_LOG("Enter EditSkill mode");
 					} else {
 						CONSOLE_LOG("Called Task EditSkill when m_EditSkill is nullptr.");
 					}
@@ -222,6 +230,7 @@ namespace Savannah
 						if (ImGui::Button("+", {TEXT_BASE_WIDTH * 30, TEXT_BASE_HEIGHT * 10}))
 						{
 							m_CurrentMode = ProforientatorMode::NewSkillGroup;
+							CONSOLE_LOG("Enter NewSkillGroup mode");
 						}
 						ImGui::EndTable();
 					}
@@ -290,11 +299,13 @@ namespace Savannah
 				if (ImGui::MenuItem("Перезагрузить БД")) 
 				{ 
 					m_TaskStack.push_back(ProforientatorTasks::ReloadData);
+					CONSOLE_LOG("Add a new Task: ReloadData");
 				}
 				ImGui::MenuItem(" ");
 				if (ImGui::MenuItem("Выход")) 
 				{
 					m_TaskStack.push_back(ProforientatorTasks::Exit);
+					CONSOLE_LOG("Add a new Task: Exit");
 				}
 				ImGui::EndMenu();
 			}
@@ -458,6 +469,7 @@ namespace Savannah
 				if (ImGui::Button(buttonName.c_str()))
 				{
 					m_TaskStack.push_back(ProforientatorTasks::DeleteSkill);
+					CONSOLE_LOG("Add a new Task: DeleteSkill");
 				}
 				ImGui::PopStyleColor(3);
 			}
@@ -522,16 +534,15 @@ namespace Savannah
 				ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{0.7f, 1.0f, 0.7f, 1.0f});
 				if (ImGui::Button(buttonName.c_str()))
 				{
-					CONSOLE_LOG("Click!");
 					switch (m_CurrentMode)
 					{
 					case ProforientatorMode::EditSkill:
 						m_TaskStack.push_back(ProforientatorTasks::EditSkill);
-						CONSOLE_LOG("EditSkill Proc.");
+						CONSOLE_LOG("Add a new Task: EditSkill");
 						break;
 					case ProforientatorMode::NewSkill:
 						m_TaskStack.push_back(ProforientatorTasks::AddSkill);
-						CONSOLE_LOG("AddSkill Proc.");
+						CONSOLE_LOG("Add a new Task: AddSkill");
 						break;
 					default:
 						CONSOLE_LOG("EditSkill mode active, but m_CurrentMode is not set to it.");
@@ -558,10 +569,12 @@ namespace Savannah
 		if (ImGui::BeginTable(groupName.c_str(), 2, ImGuiTableFlags_ScrollY, {TEXT_BASE_WIDTH * 30, TEXT_BASE_HEIGHT * 10}))
 		{
 			SkillGroup* group = nullptr;
+			bool groupless = false;
 			
 			std::vector<Skill*> skillsCollection;
 			if (groupName.compare("Groupless") == 0)
 			{
+				groupless = true;
 				skillsCollection = m_SkillsRegistry->GetGrouplessSkills();
 			} else {
 				group = (m_SkillsRegistry->GetGroups())[groupName];
@@ -587,6 +600,7 @@ namespace Savannah
 				{
 					m_SkillSelected = *skillsIterator;
 					m_CurrentMode = ProforientatorMode::EditSkill;
+					CONSOLE_LOG("Enter EditSkill mode");
 					CopySkillSelectedToEditSkill();
 				}
 				ImGui::Spacing();
@@ -606,6 +620,7 @@ namespace Savannah
 				{
 					m_SkillSelected = *skillsIterator;
 					m_CurrentMode = ProforientatorMode::EditSkill;
+					CONSOLE_LOG("Enter EditSkill mode");
 					CopySkillSelectedToEditSkill();
 				}
 				
@@ -620,15 +635,20 @@ namespace Savannah
 				std::string buttonName = "Новый навык##" + ((group == nullptr) ? "Groupless" : group->name);
 				if (ImGui::Button(buttonName.c_str(), {TEXT_BASE_WIDTH * 14, TEXT_BASE_HEIGHT * 2}))
 				{
+					CONSOLE_LOG("Add a new Task: NewSkill");
 					m_TaskStack.push_back(ProforientatorTasks::NewSkill);
 				}
 			}
-			ImGui::SameLine();
+			if (!groupless)
 			{
-				std::string buttonName = "Править группу##" + ((group == nullptr) ? "Groupless" : group->name);
-				if (ImGui::Button(buttonName.c_str(), {TEXT_BASE_WIDTH * 14, TEXT_BASE_HEIGHT * 2}))
+				ImGui::SameLine();
 				{
-					m_CurrentMode = ProforientatorMode::EditSkillGroup;
+					std::string buttonName = "Править группу##" + ((group == nullptr) ? "Groupless" : group->name);
+					if (ImGui::Button(buttonName.c_str(), {TEXT_BASE_WIDTH * 14, TEXT_BASE_HEIGHT * 2}))
+					{
+						m_CurrentMode = ProforientatorMode::EditSkillGroup;
+						CONSOLE_LOG("Enter EditSkillGroup mode");
+					}
 				}
 			}
 		}
