@@ -25,6 +25,7 @@
 #include <external/imgui/backends/imgui_impl_opengl3.h>
 
 // #include <savannah/utils/dearimgui-backend.h>
+#include <savannah/platforms/opengl/opengl_texture.h> // probably, it's better to make a separate renderer module
 
 #define GL_SILENCE_DEPRECATION
 
@@ -41,6 +42,7 @@ namespace Savannah {
 		virtual void Init();
 		virtual void PreSetup();
 		virtual void SetupWindow();
+		virtual void SetupResources();
 		virtual void SetupGUI();
 		virtual GLFWwindow* GetWindow();
 		virtual void ProcessInput();

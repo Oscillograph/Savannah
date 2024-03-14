@@ -59,4 +59,32 @@ namespace Savannah {
 	// So, usefulness of these aliases is doubtful at best. 
 }
 
+// basic types
+namespace Savannah
+{
+	struct iVec2
+	{
+		int x = 0;
+		int y = 0;
+	};
+	
+	struct uVec2
+	{
+		unsigned int x = 0;
+		unsigned int y = 0;
+	};
+	
+	struct fVec2
+	{
+		float x = 0.0f;
+		float y = 0.0f;
+	};
+	
+	struct dVec2
+	{
+		double x = 0.0;
+		double y = 0.0;
+	};
+}
+
 #endif

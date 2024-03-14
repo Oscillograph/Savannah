@@ -60,6 +60,9 @@ namespace Savannah
 	public:
 		Proforientator();
 		~Proforientator();
+		
+		// void PreSetup() override;
+		void SetupResources() override;
 		void Logic() override;
 		void GUIContent() override;
 		
@@ -78,9 +81,11 @@ namespace Savannah
 		ProforientatorMode m_CurrentMode = ProforientatorMode::Idle;
 		ProforientatorTasks m_CurrentTask = ProforientatorTasks::Idle;
 		std::vector<ProforientatorTasks> m_TaskStack = {};
-		
 		float TEXT_BASE_WIDTH = 0.0f;
 		float TEXT_BASE_HEIGHT = 0.0f;
+		
+		// media resources
+		OpenGLTexture2D* m_NewSkillsGroupIcon = nullptr;
 		
 		void LoadDatabase(const std::string& file);
 		void SaveDatabase(const std::string& file);

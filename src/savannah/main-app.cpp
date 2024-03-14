@@ -14,6 +14,7 @@ namespace Savannah
 	{
 		PreSetup();
 		SetupWindow();
+		SetupResources();
 		SetupGUI();
 	}
 	
@@ -43,6 +44,10 @@ namespace Savannah
 		glfwMakeContextCurrent(m_Window);
 		gladLoadGL();
 		glfwSwapInterval(1); // Enable vsync
+	}
+	
+	void App::SetupResources()
+	{
 	}
 	
 	void App::SetupGUI()
