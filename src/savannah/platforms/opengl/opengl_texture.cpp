@@ -29,45 +29,46 @@ namespace Savannah
 		// Load from file
 		bool result = false;
 		int imageWidth, imageHeight, channels;
-		stbi_set_flip_vertically_on_load(1);
+//		stbi_set_flip_vertically_on_load(1);
 		stbi_uc* data = stbi_load(filename.c_str(), &imageWidth, &imageHeight, &channels, 0);
-		printf("Couldn't load a texture from \"%s\"\n", filename.c_str());
-		
-		uint32_t internalFormat = GL_RGB8;
-		uint32_t dataFormat = GL_RGB8;
-		
-		if (channels == 4){
-			internalFormat = GL_RGBA8;
-			dataFormat = GL_RGBA;
-		} else if (channels == 3){
-			internalFormat = GL_RGB8;
-			dataFormat = GL_RGB;
-		}
-		
-		m_InternalFormat = internalFormat;
-		m_DataFormat = dataFormat;
-		
-		if ((internalFormat == 0) && ( dataFormat == 0))
-		{
-			printf("Image format is not supported\n");
-		}
 		
 		if (data)
 		{
-			m_TextureID = 0;
-			m_ImageSize = {imageWidth, imageHeight};
+			uint32_t internalFormat = GL_RGB8;
+			uint32_t dataFormat = GL_RGB8;
 			
-			// Create a OpenGL texture identifier
-			glGenTextures(1, &m_TextureID);
-			glBindTexture(GL_TEXTURE_2D, m_TextureID);
+			if (channels == 4){
+				internalFormat = GL_RGBA8;
+				dataFormat = GL_RGBA;
+			} else if (channels == 3){
+				internalFormat = GL_RGB8;
+				dataFormat = GL_RGB;
+			}
 			
-			// What to do if the texture doesn't fit the place
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+			m_InternalFormat = internalFormat;
+			m_DataFormat = dataFormat;
 			
-			glTexImage2D(GL_TEXTURE_2D, 0, m_InternalFormat, imageWidth, imageHeight, 0, m_DataFormat, GL_UNSIGNED_BYTE, data);
-			stbi_image_free(data);
-			result = true;
+			if ((internalFormat == 0) && ( dataFormat == 0))
+			{
+				printf("Image format is not supported\n");
+			} else {
+				m_TextureID = 0;
+				m_ImageSize = {imageWidth, imageHeight};
+				
+				// Create a OpenGL texture identifier
+				glGenTextures(1, &m_TextureID);
+				glBindTexture(GL_TEXTURE_2D, m_TextureID);
+				
+				// What to do if the texture doesn't fit the place
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+				
+				glTexImage2D(GL_TEXTURE_2D, 0, m_InternalFormat, imageWidth, imageHeight, 0, m_DataFormat, GL_UNSIGNED_BYTE, data);
+				stbi_image_free(data);
+				result = true;
+			}
+		} else {
+			printf("Couldn't load a texture from \"%s\"\n", filename.c_str());
 		}
 		
 		return result;

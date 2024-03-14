@@ -58,8 +58,8 @@ namespace Savannah
 	{
 		// load resources
 //		m_NewSkillsGroupIcon = new OpenGLTexture2D("..\\examples\\proforientator\\data\\img\\icon_add.png");
-//		m_NewSkillsGroupIcon = new OpenGLTexture2D("../examples/proforientator/data/img/icon_add.png");
-		m_NewSkillsGroupIcon = new OpenGLTexture2D("../examples/proforientator/data/img/broscillograph.png");
+		m_NewSkillsGroupIcon = new OpenGLTexture2D("../examples/proforientator/data/img/icon_add.png");
+//		m_NewSkillsGroupIcon = new OpenGLTexture2D("../examples/proforientator/data/img/broscillograph.png");
 	}
 	
 	void Proforientator::Logic()
@@ -238,12 +238,11 @@ namespace Savannah
 					{
 						ImGui::TableNextRow();
 						ImGui::TableSetColumnIndex(0);
-//						if (ImGui::Button("+", {TEXT_BASE_WIDTH * 30, TEXT_BASE_HEIGHT * 10}))
-//						{
-//							m_CurrentMode = ProforientatorMode::NewSkillGroup;
-//							CONSOLE_LOG("Enter NewSkillGroup mode");
-//						}
-//						ImGui::ImageButton("##AddSkillGroup", (ImTextureID)m_NewSkillsGroupIcon->GetID(), {TEXT_BASE_WIDTH * 30, TEXT_BASE_HEIGHT * 10}, ImVec2(0, 0), ImVec2(1, 1));
+						if (ImGui::ImageButton("##AddSkillGroup", (ImTextureID)m_NewSkillsGroupIcon->GetID(), {TEXT_BASE_WIDTH * 25, TEXT_BASE_HEIGHT * 10}, ImVec2(0, 0), ImVec2(1, 1)))
+						{
+							m_CurrentMode = ProforientatorMode::NewSkillGroup;
+							CONSOLE_LOG("Enter NewSkillGroup mode");
+						}
 						ImGui::EndTable();
 					}
 					
