@@ -5,7 +5,7 @@ A tool to store, evaluate and analize user's skills.
 + Add/Edit/Remove skills
 + Assign levels of expertise to skills
 + Put skills in a category
-+ Sort ategories of skills
++ Add/Edit/Delete categories of skills
 + Store skills data in a YAML file
 + The YAML file supports adding skill requirements
 + View skill requirements met and not met yet

@@ -18,7 +18,6 @@ Proforientator:
 * Advise jobs
 * Implement skill requirements (disable editing a skill level if requirements in other skills not met)
 * Add/Edit/Remove skill requirements
-* Add/Edit/Remove skill groups
 
 Mediaplayer:
 * Develop MVP
