@@ -49,6 +49,8 @@ namespace Savannah
 		m_SkillGroupSelected = nullptr;
 		delete m_NewGroup;
 		m_NewGroup = nullptr;
+		delete m_EditGroup;
+		m_EditGroup = nullptr;
 		
 		delete m_NewSkillsGroupIcon;
 		m_NewSkillsGroupIcon = nullptr;
@@ -210,7 +212,7 @@ namespace Savannah
 						
 						m_ChangesInDatabase = true;
 						CONSOLE_LOG("Skill group \"", oldName, "\" updated to \"", m_EditGroup->name, "\".");
-						m_CurrentMode = ProforientatorMode::EditSkill;
+						m_CurrentMode = ProforientatorMode::EditSkillGroup;
 						CONSOLE_LOG("Enter EditGroup mode");
 					} else {
 						CONSOLE_LOG("Called Task EditSkillGroup when m_EditGroup is nullptr.");
@@ -376,6 +378,7 @@ namespace Savannah
 	void Proforientator::ReloadDatabase()
 	{
 		m_SkillSelected = nullptr;
+		m_SkillGroupSelected = nullptr;
 		UnloadDatabase();
 		LoadDatabase(m_SkillsFile);
 		m_ChangesInDatabase = false;
@@ -389,7 +392,7 @@ namespace Savannah
 	
 	void Proforientator::CopySkillGroupSelectedToEditGroup()
 	{
-		delete m_EditSkill;
+		delete m_EditGroup;
 		m_EditGroup = new SkillGroup(m_SkillGroupSelected);
 	}
 	
@@ -814,7 +817,7 @@ namespace Savannah
 			{
 				ImGui::SameLine();
 				{
-					std::string buttonName = "Править группу##" + ((group == nullptr) ? "Groupless" : group->name);
+					std::string buttonName = "Править группу##" + group->name;
 					if (ImGui::Button(buttonName.c_str(), {TEXT_BASE_WIDTH * 14, TEXT_BASE_HEIGHT * 2}))
 					{
 //						CONSOLE_LOG("Previous m_SkillGroupSelected value: ", ((m_SkillGroupSelected == nullptr) ? "nullptr" : m_SkillGroupSelected->name));

@@ -21,7 +21,7 @@ enum class ProforientatorTasks : int
 	NewSkillGroup				= 10, // create a new skill group and prepare to edit it
 	CancelNewSkillGroup			= 11, // cancel the new skill group editing
 	AddSkillGroup 				= 12, // add a skill group to registry
-	EditSkillGroup 				= 13, // edit a skill group in registry
+	EditSkillGroup 				= 13, // [+] edit a skill group in registry
 	DeleteSkillGroup 			= 14, // delete a skill group from registry
 	
 	Idle						= 15, // [+] wait for user anything
