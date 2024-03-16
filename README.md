@@ -2,6 +2,10 @@
 
 *Savannah* is a Windows application framework built on OpenGL & Dear ImGui.
 
+## Features ##
+- Window abstraction
+- Texure load-unload
+- GUI construction based on Dear ImGui
 
 ## Build notes ##
 This framework is meant to be used with:

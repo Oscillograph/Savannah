@@ -143,6 +143,38 @@ namespace Savannah
 					doExit = true;
 				}
 				break;
+			case ProforientatorTasks::NewSkillGroup:
+				{
+//					m_EditGroup = new SkillGroup();
+//					m_EditGroup->name = "Новая группа";
+//					m_EditGroup->children = {};
+//					m_SkillGroupSelected = m_EditGroup;
+//
+//					m_CurrentMode = ProforientatorMode::NewSkillGroup;
+//					CONSOLE_LOG("Enter NewSkillGroup mode");
+				}
+				break;
+			case ProforientatorTasks::CancelNewSkillGroup:
+				{}
+				break;
+			case ProforientatorTasks::AddSkillGroup:
+				{}
+				break;
+			case ProforientatorTasks::EditSkillGroup:
+				{}
+				break;
+			case ProforientatorTasks::DeleteSkillGroup:
+				{}
+				break;
+			case ProforientatorTasks::AddSkillRequirement:
+				{}
+				break;
+			case ProforientatorTasks::EditSkillRequirement:
+				{}
+				break;
+			case ProforientatorTasks::RemoveSkillRequirement:
+				{}
+				break;
 			case ProforientatorTasks::LoadData:
 				{
 					LoadDatabase(m_SkillsFile);
@@ -240,8 +272,8 @@ namespace Savannah
 						ImGui::TableSetColumnIndex(0);
 						if (ImGui::ImageButton("##AddSkillGroup", (ImTextureID)m_NewSkillsGroupIcon->GetID(), {TEXT_BASE_WIDTH * 25, TEXT_BASE_HEIGHT * 10}, ImVec2(0, 0), ImVec2(1, 1)))
 						{
-							m_CurrentMode = ProforientatorMode::NewSkillGroup;
-							CONSOLE_LOG("Enter NewSkillGroup mode");
+							m_TaskStack.push_back(ProforientatorTasks::NewSkillGroup);
+							CONSOLE_LOG("Add a new Task: NewSkillGroup");
 						}
 						ImGui::EndTable();
 					}
@@ -299,6 +331,12 @@ namespace Savannah
 	{
 		delete m_EditSkill;
 		m_EditSkill = new Skill(m_SkillSelected);
+	}
+	
+	void Proforientator::CopySkillGroupSelectedToEditGroup()
+	{
+		delete m_EditSkill;
+		m_EditGroup = new SkillGroup(m_SkillGroupSelected);
 	}
 	
 	void Proforientator::ShowMainMenu()
@@ -382,23 +420,22 @@ namespace Savannah
 
 )";
 		ImGui::Text(raw.c_str());
-		if (m_SkillSelected != nullptr)
+		if ((m_CurrentMode == ProforientatorMode::EditSkill) ||
+			(m_CurrentMode == ProforientatorMode::NewSkill))
 		{
-			if ((m_CurrentMode == ProforientatorMode::EditSkill) ||
-				(m_CurrentMode == ProforientatorMode::NewSkill))
+			if (m_SkillSelected != nullptr)
 			{
 				ShowEditSkillTable();
 				TextColoredSkillLevelDescription((int)m_EditSkill->level);
-//				std::string requirements = m_EditSkill->GetRequirements();
 				ImGui::Text("");
 				ShowSkillRequirementsTable();
 			}
-			
-			if ((m_CurrentMode == ProforientatorMode::NewSkillGroup) ||
-				(m_CurrentMode == ProforientatorMode::EditSkillGroup))
-			{
-				ShowEditSkillGroupTable();
-			}
+		}
+		
+		if ((m_CurrentMode == ProforientatorMode::NewSkillGroup) ||
+			(m_CurrentMode == ProforientatorMode::EditSkillGroup))
+		{
+			ShowEditSkillGroupTable();
 		}
 	}
 	
@@ -568,6 +605,72 @@ namespace Savannah
 	
 	void Proforientator::ShowEditSkillGroupTable()
 	{
+		if (m_EditGroup != nullptr)
+		{
+			if (ImGui::BeginTable("##ПравитьГруппу", 3, ImGuiTableFlags_SizingFixedFit))
+			{
+				ImGui::TableSetupColumn("##skill", ImGuiTableColumnFlags_WidthFixed, TEXT_BASE_WIDTH * 10);
+				ImGui::TableSetupColumn("##control", ImGuiTableColumnFlags_WidthFixed, TEXT_BASE_WIDTH * 59);
+				ImGui::TableSetupColumn("##buttons", ImGuiTableColumnFlags_WidthFixed, TEXT_BASE_WIDTH * 11);
+				
+				{
+					ImGui::TableNextRow();
+					ImGui::TableSetColumnIndex(0);
+					ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x);
+					ImGui::Text("Группа: ");
+					
+					ImGui::TableSetColumnIndex(1);
+					ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x);
+					if (ImGui::InputText("###Name", &(m_EditGroup->name)))
+					{
+						m_ChangesInDatabase = true;
+					}
+					
+					ImGui::TableSetColumnIndex(2);
+					{
+						ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x);
+						ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{0.8f, 0.3f, 0.3f, 1.0f});
+						ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{0.8f, 0.6f, 0.4f, 1.0f});
+						ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{1.0f, 0.7f, 0.7f, 1.0f});
+						if (ImGui::Button("Удалить##"))
+						{
+							m_TaskStack.push_back(ProforientatorTasks::DeleteSkillGroup);
+							CONSOLE_LOG("Add a new Task: DeleteSkillGroup");
+						}
+						ImGui::PopStyleColor(3);
+					}
+				}
+				
+				{
+					ImGui::TableNextRow();
+					ImGui::TableSetColumnIndex(0);
+//					ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x);
+//					ImGui::Text("Порядок: ");
+					
+					ImGui::TableSetColumnIndex(1);
+//					ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x);
+//					if (ImGui::InputText("###Order", &(m_EditGroup->name)))
+//					{
+//						m_ChangesInDatabase = true;
+//					}
+					
+					ImGui::TableSetColumnIndex(2);
+					{
+						ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x);
+						ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{0.3f, 0.8f, 0.3f, 1.0f});
+						ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{0.6f, 0.8f, 0.4f, 1.0f});
+						ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{0.7f, 1.0f, 0.7f, 1.0f});
+						if (ImGui::Button("Сохранить##"))
+						{
+							m_TaskStack.push_back(ProforientatorTasks::EditSkillGroup);
+							CONSOLE_LOG("Add a new Task: EditSkillGroup");
+						}
+						ImGui::PopStyleColor(3);
+					}
+				}
+				ImGui::EndTable();
+			}
+		}
 	}
 	
 	void Proforientator::ShowEditSkillRequirementsTable()
@@ -657,8 +760,12 @@ namespace Savannah
 					std::string buttonName = "Править группу##" + ((group == nullptr) ? "Groupless" : group->name);
 					if (ImGui::Button(buttonName.c_str(), {TEXT_BASE_WIDTH * 14, TEXT_BASE_HEIGHT * 2}))
 					{
+//						CONSOLE_LOG("Previous m_SkillGroupSelected value: ", ((m_SkillGroupSelected == nullptr) ? "nullptr" : m_SkillGroupSelected->name));
+						m_SkillGroupSelected = group;
+						
 						m_CurrentMode = ProforientatorMode::EditSkillGroup;
 						CONSOLE_LOG("Enter EditSkillGroup mode");
+						CopySkillGroupSelectedToEditGroup();
 					}
 				}
 			}

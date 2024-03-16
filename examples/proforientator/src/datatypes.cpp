@@ -72,7 +72,7 @@ Skill::Skill(const std::string& _name, const std::string& _group, uint32_t _leve
 };
 
 Skill::Skill(Skill* skill)
-: name(skill->name), group(skill->group), level(skill->level)
+	: name(skill->name), group(skill->group), level(skill->level)
 {
 	for (int i = 0; i < skill->GetRequirementsArray().size(); i++)
 	{
@@ -99,6 +99,15 @@ std::string Skill::GetRequirements()
 
 SkillGroup::SkillGroup()
 {
+}
+
+SkillGroup::SkillGroup(SkillGroup* group)
+	: name(group->name)
+{
+	for (int i = 0; i < group->children.size(); i++)
+	{
+		children.push_back(group->children[i]);
+	}
 }
 
 SkillGroup::~SkillGroup()

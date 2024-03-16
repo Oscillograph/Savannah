@@ -42,6 +42,7 @@ struct Skill : SkillRequirementSet
 struct SkillGroup
 {
 	SkillGroup();
+	SkillGroup(SkillGroup* group);
 	~SkillGroup();
 	void RemoveSkill(Skill* skill);
 	

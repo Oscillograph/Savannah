@@ -16,10 +16,10 @@ enum class ProforientatorTasks : int
 //	CancelNewSkillRequirement	= 6, // NOT USED
 	AddSkillRequirement 		= 7, // add a requirement to skill requirements set
 	EditSkillRequirement 		= 8, // change level of a requirement
-	RemoveSkillRequirement 		= 9, // remove a requirement from a skill requirements set
+	RemoveSkillRequirement 		= 9, // remove a requirement from a skill requirements set (we do not delete anything here!)
 	
-	NewSkillGroup				= 10, // 
-	CancelNewSkillGroup			= 11, // 
+	NewSkillGroup				= 10, // create a new skill group and prepare to edit it
+	CancelNewSkillGroup			= 11, // cancel the new skill group editing
 	AddSkillGroup 				= 12, // add a skill group to registry
 	EditSkillGroup 				= 13, // edit a skill group in registry
 	DeleteSkillGroup 			= 14, // delete a skill group from registry
@@ -76,6 +76,7 @@ namespace Savannah
 		Skill* m_EditSkill = nullptr; // created in EditSkill mode to separate from the selected one
 		SkillGroup* m_SkillGroupSelected = nullptr; // specifically selected to be edited or deleted
 		SkillGroup* m_NewGroup = nullptr; // the one being created or not to be saved at all
+		SkillGroup* m_EditGroup = nullptr; // created in EditSkill mode to separate from the selected one
 		YamlWrapper* m_YAMLWrapperObject = nullptr;
 		bool m_ChangesInDatabase = false;
 		ProforientatorMode m_CurrentMode = ProforientatorMode::Idle;
@@ -92,6 +93,7 @@ namespace Savannah
 		void UnloadDatabase();
 		void ReloadDatabase();
 		void CopySkillSelectedToEditSkill();
+		void CopySkillGroupSelectedToEditGroup();
 		void ShowMainMenu();
 		void ShowLogo();
 		void ShowContent();
