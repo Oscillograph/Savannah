@@ -14,21 +14,21 @@ enum class ProforientatorTasks : int
 	
 //	NewSkillRequirement			= 5, // NOT USED
 //	CancelNewSkillRequirement	= 6, // NOT USED
-	AddSkillRequirement 		= 7, // add a requirement to skill requirements set
-	EditSkillRequirement 		= 8, // change level of a requirement
-	RemoveSkillRequirement 		= 9, // remove a requirement from a skill requirements set (we do not delete anything here!)
+	AddSkillRequirement 		= 7, // TODO: add a requirement to skill requirements set
+	EditSkillRequirement 		= 8, // TODO: change level of a requirement
+	RemoveSkillRequirement 		= 9, // TODO: remove a requirement from a skill requirements set (we do not delete anything here!)
 	
 	NewSkillGroup				= 10, // [+] create a new skill group and prepare to edit it
 	CancelNewSkillGroup			= 11, // [+] cancel the new skill group editing
-	AddSkillGroup 				= 12, // add a skill group to registry
+	AddSkillGroup 				= 12, // [+] add a skill group to registry
 	EditSkillGroup 				= 13, // [+] edit a skill group in registry
-	DeleteSkillGroup 			= 14, // delete a skill group from registry
+	DeleteSkillGroup 			= 14, // [+] delete a skill group from registry
 	
 	Idle						= 15, // [+] wait for user anything
 	
 	LoadData					= 16, // [+] load a database
 	ReloadData					= 17, // [+] unload the database and load it back again
-	UpdateData					= 18, // when should it be done?
+	UpdateData					= 18, // TODO: when should it be done?
 	SaveData					= 19, // [+] save the database
 	
 	Exit						= 20  // [+]
@@ -68,6 +68,8 @@ namespace Savannah
 		
 	private:
 		std::string m_SkillsFile = "../examples/proforientator/data/skillsDB.txt";
+		std::string m_ErrorMessage = ""; // this is shown to the user
+		bool m_ErrorFlag = false; // this is used to control the program flow
 		std::vector<std::string> m_LevelDescription = {};
 		SkillRegistry* m_SkillsRegistry = nullptr;
 		Skill* m_SkillSelected = nullptr; // selection from one of skills tables
@@ -88,6 +90,7 @@ namespace Savannah
 		// media resources
 		OpenGLTexture2D* m_NewSkillsGroupIcon = nullptr;
 		
+		void NewTask(ProforientatorTasks task);
 		void LoadDatabase(const std::string& file);
 		void SaveDatabase(const std::string& file);
 		void UnloadDatabase();
