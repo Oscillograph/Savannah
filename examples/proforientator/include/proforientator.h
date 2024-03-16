@@ -18,8 +18,8 @@ enum class ProforientatorTasks : int
 	EditSkillRequirement 		= 8, // change level of a requirement
 	RemoveSkillRequirement 		= 9, // remove a requirement from a skill requirements set (we do not delete anything here!)
 	
-	NewSkillGroup				= 10, // create a new skill group and prepare to edit it
-	CancelNewSkillGroup			= 11, // cancel the new skill group editing
+	NewSkillGroup				= 10, // [+] create a new skill group and prepare to edit it
+	CancelNewSkillGroup			= 11, // [+] cancel the new skill group editing
 	AddSkillGroup 				= 12, // add a skill group to registry
 	EditSkillGroup 				= 13, // [+] edit a skill group in registry
 	DeleteSkillGroup 			= 14, // delete a skill group from registry
