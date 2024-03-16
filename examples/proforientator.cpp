@@ -172,6 +172,7 @@ namespace Savannah
 					if (m_EditGroup != nullptr)
 					{
 						std::string oldName = m_SkillGroupSelected->name;
+
 						// update group names registry
 						CONSOLE_LOG("Update group names registry...");
 						std::vector<std::string>& groupsNames = m_SkillsRegistry->GetGroupsNames();
@@ -184,6 +185,14 @@ namespace Savannah
 							}
 						}
 						
+						// update the map in the skill registry
+						CONSOLE_LOG("Update the map in the skill registry...");
+						std::map<std::string, SkillGroup*>& groupRegistry = m_SkillsRegistry->GetGroups();
+						auto itg = groupRegistry.find(oldName);
+						(*itg).second = nullptr;
+						groupRegistry.erase(itg);
+						groupRegistry[m_EditGroup->name] = m_SkillGroupSelected;
+						
 						// update group names in skills
 						CONSOLE_LOG("Update group names in skills...");
 						for (int i = 0; i < m_SkillGroupSelected->children.size(); i++)
@@ -193,18 +202,18 @@ namespace Savannah
 						
 						// update the group name
 						CONSOLE_LOG("Update the group name...");
-						m_SkillGroupSelected->name = m_EditSkill->name; // WHAT IS WRONG WITH THIS?
+						m_SkillGroupSelected->name = m_EditGroup->name; // WHAT IS WRONG WITH THIS?
 						
 						// update the EditGroup object
 						CONSOLE_LOG("Update EditGroup object...");
 						CopySkillGroupSelectedToEditGroup();
 						
 						m_ChangesInDatabase = true;
-						CONSOLE_LOG("Skill group \"", oldName, "\" updated to \"", m_EditSkill->name, "\".");
+						CONSOLE_LOG("Skill group \"", oldName, "\" updated to \"", m_EditGroup->name, "\".");
 						m_CurrentMode = ProforientatorMode::EditSkill;
 						CONSOLE_LOG("Enter EditGroup mode");
 					} else {
-						CONSOLE_LOG("Called Task EditSkill when m_EditGroup is nullptr.");
+						CONSOLE_LOG("Called Task EditSkillGroup when m_EditGroup is nullptr.");
 					}
 				}
 				break;
