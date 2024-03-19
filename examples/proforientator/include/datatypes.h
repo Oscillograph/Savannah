@@ -8,6 +8,8 @@
 
 struct SkillRequirement
 {
+	SkillRequirement(const std::string& _name = "", uint32_t _level = 0);
+	
 	std::string name = "";
 	uint32_t level = 0;
 };

@@ -74,6 +74,8 @@ namespace Savannah
 		SkillRegistry* m_SkillsRegistry = nullptr;
 		Skill* m_SkillSelected = nullptr; // selection from one of skills tables
 		Skill* m_SkillRequirementSelected = nullptr; // selected in EditRequirements mode
+		std::string m_SkillRequirementSelectedName = "";
+		SkillRequirement m_SkillRequirementNew = {"", 0}; // a new skill requirement template
 		Skill* m_NewSkill = nullptr; // created in NewSkill mode
 		Skill* m_EditSkill = nullptr; // created in EditSkill mode to separate from the selected one
 		SkillGroup* m_SkillGroupSelected = nullptr; // specifically selected to be edited or deleted

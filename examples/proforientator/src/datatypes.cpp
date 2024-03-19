@@ -1,6 +1,11 @@
 #include "../include/datatypes.h"
 #include "../include/logger.h"
 
+SkillRequirement::SkillRequirement(const std::string& _name, uint32_t _level)
+	: name(_name), level(_level)
+{
+}
+
 SkillRequirementSet::SkillRequirementSet()
 {
 }

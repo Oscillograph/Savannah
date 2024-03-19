@@ -828,6 +828,71 @@ namespace Savannah
 	
 	void Proforientator::ShowEditSkillRequirementsTable()
 	{
+		if (m_SkillSelected != nullptr)
+		{
+			if (ImGui::BeginTable("##EditSkillRequirementsTable", 3, 0))
+			{
+				ImGui::TableSetupColumn("##Left", ImGuiTableColumnFlags_WidthFixed, TEXT_BASE_WIDTH * 35);
+				ImGui::TableSetupColumn("##Middle", ImGuiTableColumnFlags_WidthFixed, TEXT_BASE_WIDTH * 10);
+				ImGui::TableSetupColumn("##Right", ImGuiTableColumnFlags_WidthFixed, TEXT_BASE_WIDTH * 35);
+				
+				ImGui::TableNextRow(); // top row
+				{
+					ImGui::TableSetColumnIndex(0); // add a new requirement
+					{
+						ImGui::InputText("##NewRequirement", &(m_SkillRequirementNew.name));
+					}
+					ImGui::TableSetColumnIndex(1); // confirm button
+					{
+						ImGui::Button("< Добавить");
+					}
+					ImGui::TableSetColumnIndex(2); // blank
+				}
+				
+				ImGui::TableNextRow(); // content row
+				{
+					ImGui::TableSetColumnIndex(0); // requirements set
+					{
+						ImGui::BeginTable("##RequirementsSet", 2, 0);
+						bool selected = false;
+						ImGui::TableNextRow();
+						for (int i = 0; i < m_SkillSelected->GetRequirementsArray().size(); i++)
+						{
+							if (m_SkillSelected->GetRequirementsArray()[i]->name == m_SkillRequirementSelectedName)
+							{
+								selected = true;
+							}
+							
+							ImGui::TableSetColumnIndex(0);
+							if (ImGui::Selectable(m_SkillSelected->GetRequirementsArray()[i]->name.c_str(), &selected))
+							{
+								m_SkillRequirementSelectedName = m_SkillSelected->GetRequirementsArray()[i]->name;
+							}
+							
+							ImGui::TableSetColumnIndex(1);
+							std::string buf = "";
+							for (int i = 1; i <= 10; i++)
+							{
+								if (m_SkillSelected->GetRequirementsArray()[i]->level >= i)
+								{
+									sprintf((char*)buf.c_str(), "%s+", buf.c_str());
+								} else {
+									sprintf((char*)buf.c_str(), "%s ", buf.c_str());
+								}
+							}
+							if (ImGui::Selectable(buf.c_str(), &selected))
+							{
+								m_SkillRequirementSelectedName = m_SkillSelected->GetRequirementsArray()[i]->name;
+							}
+						}
+					}
+					ImGui::TableSetColumnIndex(1); // control buttons (<< , >> , LevelSlider)
+					ImGui::TableSetColumnIndex(2); // all skills
+				}
+				
+				ImGui::EndTable();
+			}
+		}
 	}
 	
 	void Proforientator::ShowSkillsTable(const std::string& groupName)
