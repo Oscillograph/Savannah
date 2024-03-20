@@ -167,7 +167,7 @@ void SkillRequirementSet::RemoveRequirement(const std::string& name)
 {
 	for (auto it = m_Requirements.begin(); it != m_Requirements.end(); it++)
 	{
-		if ((*it)->name.c_str() == name.c_str())
+		if ((*it)->name == name)
 		{
 			delete *it;
 			m_Requirements.erase(it);
@@ -675,6 +675,11 @@ std::vector<std::string>& SkillRegistry::GetGroupsNames()
 std::vector<Skill*>& SkillRegistry::GetGrouplessSkills()
 {
 	return m_SkillsWithoutGroup;
+}
+
+std::vector<Skill*>& SkillRegistry::GetAllSkills()
+{
+	return m_SkillsRegistry;
 }
 
 std::string SkillRegistry::GetRequirements(Skill* skill)

@@ -14,7 +14,8 @@ enum class ProforientatorTasks : int
 	
 //	NewSkillRequirement			= 5, // NOT USED
 //	CancelNewSkillRequirement	= 6, // NOT USED
-	AddSkillRequirement 		= 7, // TODO: add a requirement to skill requirements set
+	AddNewSkillRequirement 		= 6, // TODO: add a requirement to skill requirements set
+	AddExistingSkillRequirement = 7, // TODO: add a requirement to skill requirements set
 	EditSkillRequirement 		= 8, // TODO: change level of a requirement
 	RemoveSkillRequirement 		= 9, // TODO: remove a requirement from a skill requirements set (we do not delete anything here!)
 	
@@ -75,6 +76,7 @@ namespace Savannah
 		Skill* m_SkillSelected = nullptr; // selection from one of skills tables
 		Skill* m_SkillRequirementSelected = nullptr; // selected in EditRequirements mode
 		std::string m_SkillRequirementSelectedName = "";
+		uint32_t m_SkillRequirementSelectedLevel = 0;
 		SkillRequirement m_SkillRequirementNew = {"", 0}; // a new skill requirement template
 		std::vector<SkillRequirement*> m_SkillRequirementsMet = {};
 		std::vector<SkillRequirement*> m_SkillRequirementsNotMet = {};

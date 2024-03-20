@@ -75,6 +75,7 @@ struct SkillRegistry
 	SkillGroup* GetGroupByName(const std::string& groupName);
 	std::vector<std::string>& GetGroupsNames();
 	std::vector<Skill*>& GetGrouplessSkills();
+	std::vector<Skill*>& GetAllSkills();
 	
 private:
 	std::vector<Skill*> m_SkillsRegistry = {}; // all skills are here

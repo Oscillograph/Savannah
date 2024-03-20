@@ -128,14 +128,48 @@ namespace Savannah
 					CONSOLE_LOG("m_SkillSelected equals nullptr now.");
 				}
 				break;
-			case ProforientatorTasks::AddSkillRequirement:
-				{}
+			case ProforientatorTasks::AddNewSkillRequirement:
+				{
+					if (m_SkillRequirementNew.name.size() > 0)
+					{
+						if (m_SkillSelected->GetRequirementByName(m_SkillRequirementSelectedName) == nullptr)
+						{
+							m_SkillSelected->AddRequirement({m_SkillRequirementNew.name, m_SkillRequirementNew.level});
+							ProcessSkillRequirements();
+							m_ChangesInDatabase = true;
+							
+							m_SkillRequirementNew.name = "";
+							m_SkillRequirementNew.level = 0;
+						}
+					}
+				}
+				break;
+			case ProforientatorTasks::AddExistingSkillRequirement:
+				{
+					if (m_SkillRequirementSelected != nullptr)
+					{
+						if (m_SkillSelected->GetRequirementByName(m_SkillRequirementSelectedName) == nullptr)
+						{
+							m_SkillSelected->AddRequirement({m_SkillRequirementSelectedName, m_SkillRequirementSelectedLevel});
+							ProcessSkillRequirements();
+							m_ChangesInDatabase = true;
+						}
+					}
+				}
 				break;
 			case ProforientatorTasks::EditSkillRequirement:
-				{}
+				{
+					m_SkillSelected->GetRequirementByName(m_SkillRequirementSelectedName)->level = m_SkillRequirementSelectedLevel;
+					ProcessSkillRequirements();
+					m_ChangesInDatabase = true;
+				}
 				break;
 			case ProforientatorTasks::RemoveSkillRequirement:
-				{}
+				{
+					m_SkillSelected->RemoveRequirement(m_SkillRequirementSelectedName);
+					ProcessSkillRequirements();
+					m_ChangesInDatabase = true;
+				}
 				break;
 			case ProforientatorTasks::NewSkillGroup:
 				{
@@ -732,13 +766,28 @@ namespace Savannah
 			ImGui::Text("Уровень: ");
 			
 			ImGui::TableSetColumnIndex(1);
+			
+			if (m_SkillRequirementsNotMet.size() > 0)
+			{
+				ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
+				ImGui::PushStyleColor(ImGuiCol_SliderGrab, ImVec4{0.4f, 0.4f, 0.4f, 1.0f});
+				ImGui::PushStyleColor(ImGuiCol_SliderGrabActive, ImVec4{0.4f, 0.4f, 0.4f, 1.0f});
+			}
 			if (ImGui::SliderInt("###Level", &level, 0, 10))
 			{
-				if (m_CurrentMode == ProforientatorMode::EditSkill)
+				if (m_SkillRequirementsNotMet.size() == 0)
 				{
-					m_ChangesInDatabase = true;
+					if (m_CurrentMode == ProforientatorMode::EditSkill)
+					{
+						m_ChangesInDatabase = true;
+					}
+					m_EditSkill->level = (uint32_t)level;
 				}
-				m_EditSkill->level = (uint32_t)level;
+			}
+			if (m_SkillRequirementsNotMet.size() > 0)
+			{
+				ImGui::PopStyleColor(2);
+				ImGui::PopItemFlag();
 			}
 			
 			ImGui::TableSetColumnIndex(2);
@@ -894,11 +943,16 @@ namespace Savannah
 				{
 					ImGui::TableSetColumnIndex(0); // add a new requirement
 					{
+						ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x);
 						ImGui::InputText("##NewRequirement", &(m_SkillRequirementNew.name));
 					}
 					ImGui::TableSetColumnIndex(1); // confirm button
 					{
-						ImGui::Button("< Добавить");
+						if (ImGui::Button("< Добавить"))
+						{
+							NewTask(ProforientatorTasks::AddNewSkillRequirement);
+							CONSOLE_LOG("Add a new Task: AddNewSkillRequirement");
+						}
 					}
 					ImGui::TableSetColumnIndex(2); // blank
 				}
@@ -922,6 +976,7 @@ namespace Savannah
 							if (ImGui::Selectable(reqName.c_str(), &selected, ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_SelectOnNav))
 							{
 								m_SkillRequirementSelectedName = reqName;
+								m_SkillRequirementSelectedLevel = reqLevel;
 							}
 							
 							ImGui::TableSetColumnIndex(1);
@@ -938,12 +993,65 @@ namespace Savannah
 							if (ImGui::Selectable(buf.c_str(), &selected, ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_SelectOnNav))
 							{
 								m_SkillRequirementSelectedName = reqName;
+								m_SkillRequirementSelectedLevel = reqLevel;
 							}
 						}
 						ImGui::EndTable();
 					}
 					ImGui::TableSetColumnIndex(1); // control buttons (<< , >> , LevelSlider)
+					{
+						ImGui::NewLine();
+						ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x);
+						if (ImGui::Button("      <<      ##"))
+						{
+							NewTask(ProforientatorTasks::AddExistingSkillRequirement);
+							CONSOLE_LOG("Add a new Task: AddExistingSkillRequirement");
+						}
+						ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x);
+						if (ImGui::Button("      >>      ##"))
+						{
+							NewTask(ProforientatorTasks::RemoveSkillRequirement);
+							CONSOLE_LOG("Add a new Task: RemoveSkillRequirement");
+						}
+						ImGui::NewLine();
+						ImGui::Text("Уровень:");
+						ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x);
+						int level = m_SkillRequirementSelectedLevel;
+						if (ImGui::SliderInt("##SkillRequirementLevel", &level, 0 , 10))
+						{
+							if (m_SkillRequirementSelectedName.size() > 0)
+							{
+								m_SkillRequirementSelectedLevel = level;
+								NewTask(ProforientatorTasks::EditSkillRequirement);
+								CONSOLE_LOG("Add a new Task: EditSkillRequirement");
+							}
+						}
+						ImGui::NewLine();
+					}
 					ImGui::TableSetColumnIndex(2); // all skills
+					{
+						if (ImGui::BeginTable("##SkillsAvailable", 1, ImGuiTableFlags_ScrollY, {TEXT_BASE_WIDTH * 30, TEXT_BASE_HEIGHT * 10}))
+						{
+							bool selected = false;
+							for (int i = 0; i < m_SkillsRegistry->GetAllSkills().size(); i++)
+							{
+								ImGui::TableNextRow();
+								ImGui::TableSetColumnIndex(0);
+								
+								Skill* skill = m_SkillsRegistry->GetAllSkills()[i];
+								selected = (m_SkillRequirementSelected == skill) ? true : false;
+								
+								std::string name = skill->name + "##" + skill->group;
+								if (ImGui::Selectable(name.c_str(), &selected, ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_SelectOnNav))
+								{
+									m_SkillRequirementSelected = skill;
+									m_SkillRequirementSelectedName = skill->name;
+									m_SkillRequirementSelectedLevel = 1;
+								}
+							}
+							ImGui::EndTable();
+						}
+					}
 				}
 				
 				ImGui::EndTable();
