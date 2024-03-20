@@ -159,16 +159,22 @@ namespace Savannah
 				break;
 			case ProforientatorTasks::EditSkillRequirement:
 				{
-					m_SkillSelected->GetRequirementByName(m_SkillRequirementSelectedName)->level = m_SkillRequirementSelectedLevel;
-					ProcessSkillRequirements();
-					m_ChangesInDatabase = true;
+					if (m_SkillSelected->GetRequirementByName(m_SkillRequirementSelectedName))
+					{
+						m_SkillSelected->GetRequirementByName(m_SkillRequirementSelectedName)->level = m_SkillRequirementSelectedLevel;
+						ProcessSkillRequirements();
+						m_ChangesInDatabase = true;
+					}
 				}
 				break;
 			case ProforientatorTasks::RemoveSkillRequirement:
 				{
-					m_SkillSelected->RemoveRequirement(m_SkillRequirementSelectedName);
-					ProcessSkillRequirements();
-					m_ChangesInDatabase = true;
+					if (m_SkillSelected->GetRequirementByName(m_SkillRequirementSelectedName))
+					{ 
+						m_SkillSelected->RemoveRequirement(m_SkillRequirementSelectedName);
+						ProcessSkillRequirements();
+						m_ChangesInDatabase = true;
+					}
 				}
 				break;
 			case ProforientatorTasks::NewSkillGroup:
@@ -1046,7 +1052,7 @@ namespace Savannah
 								{
 									m_SkillRequirementSelected = skill;
 									m_SkillRequirementSelectedName = skill->name;
-									m_SkillRequirementSelectedLevel = 1;
+									m_SkillRequirementSelectedLevel = 0;
 								}
 							}
 							ImGui::EndTable();
