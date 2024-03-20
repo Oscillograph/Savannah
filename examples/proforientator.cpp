@@ -450,6 +450,35 @@ namespace Savannah
 		m_EditGroup = new SkillGroup(m_SkillGroupSelected);
 	}
 	
+	void Proforientator::ProcessSkillRequirements()
+	{
+		if (m_SkillSelected != nullptr)
+		{
+			m_SkillRequirementsMet.clear();
+			m_SkillRequirementsNotMet.clear();
+			SkillRequirement* currentRequirement = nullptr;
+			
+			for (int i = 0; i < m_SkillSelected->GetRequirementsArray().size(); i++)
+			{
+				currentRequirement = m_SkillSelected->GetRequirementsArray()[i];
+				Skill* skillRequired = m_SkillsRegistry->FindSkill(currentRequirement->name);
+				
+				if (skillRequired != nullptr)
+				{
+					if (currentRequirement->level <= skillRequired->level)
+					{
+						m_SkillRequirementsMet.push_back(currentRequirement);
+						continue;
+					}
+				}
+				
+				m_SkillRequirementsNotMet.push_back(currentRequirement);
+			}
+		}
+		
+		CONSOLE_LOG("Reqs Met: ", m_SkillRequirementsMet.size(), "; Reqs Not Met: ", m_SkillRequirementsNotMet.size());
+	}
+	
 	void Proforientator::ShowMainMenu()
 	{
 		if (ImGui::BeginMainMenuBar())
@@ -578,43 +607,39 @@ namespace Savannah
 			
 			ImGui::TableNextRow();
 			std::string upToLevel = "";
-			for (int i = 0; i < m_SkillSelected->GetRequirementsArray().size(); i++)
+			
+			ImGui::TableSetColumnIndex(0); // requirements met
+			for (int i = 0; i < m_SkillRequirementsMet.size(); i++)
 			{
-				std::string& reqName = m_SkillSelected->GetRequirementsArray()[i]->name;
-				uint32_t& reqLevel = m_SkillSelected->GetRequirementsArray()[i]->level;
-				
-				int column = 1; // requirement set not met by default
+				std::string& reqName = m_SkillRequirementsMet[i]->name;
+				uint32_t& reqLevel = m_SkillRequirementsMet[i]->level;
 				Skill* skillStored = m_SkillsRegistry->FindSkill(reqName);
 				
-				// find out if the requirement is met
-				if (skillStored != nullptr)
-				{
-					if (skillStored->level >= reqLevel)
-					{
-						column = 0;
-						sprintf((char*)upToLevel.c_str(), " (%d)", skillStored->level);
-					} else {
-						column = 1;
-						sprintf((char*)upToLevel.c_str(), " (%d)", reqLevel);
-					}
-				} else {
-					column = 1;
-					sprintf((char*)upToLevel.c_str(), " (%d)", reqLevel);
-				}
+				sprintf((char*)upToLevel.c_str(), " (%d)", skillStored->level);
+				TextColoredSkillName(skillStored);
+				ImGui ::SameLine();
+				ImGui::Text(upToLevel.c_str());
+			}
+			
+			ImGui::TableSetColumnIndex(1); // requirements not met
+			for (int i = 0; i < m_SkillRequirementsNotMet.size(); i++)
+			{
+				std::string& reqName = m_SkillRequirementsNotMet[i]->name;
+				uint32_t& reqLevel = m_SkillRequirementsNotMet[i]->level;
+				Skill* skillStored = m_SkillsRegistry->FindSkill(reqName);
 				
-				// show the name of a skill required
-				ImGui::TableSetColumnIndex(column);
+				sprintf((char*)upToLevel.c_str(), " (%d)", reqLevel);
+				
 				if (skillStored != nullptr)
 				{
 					TextColoredSkillName(skillStored);
 				} else {
 					ImGui::TextColored({1.0f, 0.2f, 0.2f, 1.0f}, reqName.c_str());
 				}
-				
-				// show the level of a skill required
 				ImGui ::SameLine();
 				ImGui::Text(upToLevel.c_str());
 			}
+			
 			ImGui::TableSetColumnIndex(2);
 			if (ImGui::Button("Изменить"))
 			{
@@ -965,6 +990,7 @@ namespace Savannah
 					m_CurrentMode = ProforientatorMode::EditSkill;
 					CONSOLE_LOG("Enter EditSkill mode");
 					CopySkillSelectedToEditSkill();
+					ProcessSkillRequirements();
 				}
 				ImGui::Spacing();
 				ImGui::TableSetColumnIndex(1);
@@ -985,6 +1011,7 @@ namespace Savannah
 					m_CurrentMode = ProforientatorMode::EditSkill;
 					CONSOLE_LOG("Enter EditSkill mode");
 					CopySkillSelectedToEditSkill();
+					ProcessSkillRequirements();
 				}
 				
 				ImGui::PopID();

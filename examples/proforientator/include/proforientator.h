@@ -76,6 +76,8 @@ namespace Savannah
 		Skill* m_SkillRequirementSelected = nullptr; // selected in EditRequirements mode
 		std::string m_SkillRequirementSelectedName = "";
 		SkillRequirement m_SkillRequirementNew = {"", 0}; // a new skill requirement template
+		std::vector<SkillRequirement*> m_SkillRequirementsMet = {};
+		std::vector<SkillRequirement*> m_SkillRequirementsNotMet = {};
 		Skill* m_NewSkill = nullptr; // created in NewSkill mode
 		Skill* m_EditSkill = nullptr; // created in EditSkill mode to separate from the selected one
 		SkillGroup* m_SkillGroupSelected = nullptr; // specifically selected to be edited or deleted
@@ -99,6 +101,7 @@ namespace Savannah
 		void ReloadDatabase();
 		void CopySkillSelectedToEditSkill();
 		void CopySkillGroupSelectedToEditGroup();
+		void ProcessSkillRequirements();
 		void ShowMainMenu();
 		void ShowLogo();
 		void ShowContent();
