@@ -20,6 +20,8 @@ struct SkillRequirementSet
 	~SkillRequirementSet();
 	void AddRequirement(const SkillRequirement& req = {"None", 0});
 	void AddRequirement(SkillRequirement* skill);
+	SkillRequirement* GetRequirementByName(const std::string& name);
+	void SortRequirementsByLevel();
 	void RemoveRequirement(SkillRequirement* skill);
 	void RemoveRequirement(const std::string& name);
 	

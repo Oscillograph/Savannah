@@ -531,66 +531,95 @@ namespace Savannah
 
 )";
 		ImGui::Text(raw.c_str());
-		if ((m_CurrentMode == ProforientatorMode::EditSkill) ||
-			(m_CurrentMode == ProforientatorMode::NewSkill))
+		switch (m_CurrentMode)
 		{
-			if (m_SkillSelected != nullptr)
+		case ProforientatorMode::EditSkill:
+		case ProforientatorMode::NewSkill:
 			{
-				ShowEditSkillTable();
-				TextColoredSkillLevelDescription((int)m_EditSkill->level);
-				ImGui::Text("");
-				ShowSkillRequirementsTable();
+				if (m_SkillSelected != nullptr)
+				{
+					ShowEditSkillTable();
+					TextColoredSkillLevelDescription((int)m_EditSkill->level);
+					ImGui::Text("");
+					ShowSkillRequirementsTable();
+				}
 			}
-		}
-		
-		if ((m_CurrentMode == ProforientatorMode::NewSkillGroup) ||
-			(m_CurrentMode == ProforientatorMode::EditSkillGroup))
-		{
-			if (m_SkillGroupSelected != nullptr)
+			break;
+		case ProforientatorMode::EditSkillRequirement:
 			{
-				ShowEditSkillGroupTable();
+				if (m_SkillSelected != nullptr)
+				{
+					ShowEditSkillRequirementsTable();
+				}
 			}
+			break;
+		case ProforientatorMode::NewSkillGroup:
+		case ProforientatorMode::EditSkillGroup:
+			{
+				if (m_SkillGroupSelected != nullptr)
+				{
+					ShowEditSkillGroupTable();
+				}
+			}
+			break;
+		default:
+			break;
 		}
 	}
 	
 	void Proforientator::ShowSkillRequirementsTable()
 	{
-		if (ImGui::BeginTable("##Требования", 2, ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_ScrollY))
+		if (ImGui::BeginTable("##Требования", 3, ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_ScrollY))
 		{
-			ImGui::TableSetupColumn("Полученные навыки##passed", ImGuiTableColumnFlags_WidthFixed, TEXT_BASE_WIDTH * 40);
-			ImGui::TableSetupColumn("Нужны ещё##notpassed", ImGuiTableColumnFlags_WidthFixed, TEXT_BASE_WIDTH * 40);
+			ImGui::TableSetupColumn("Полученные навыки##passed", ImGuiTableColumnFlags_WidthFixed, TEXT_BASE_WIDTH * 35);
+			ImGui::TableSetupColumn("Нужны ещё##notpassed", ImGuiTableColumnFlags_WidthFixed, TEXT_BASE_WIDTH * 35);
+			ImGui::TableSetupColumn("##empty", ImGuiTableColumnFlags_WidthFixed, TEXT_BASE_WIDTH * 10);
 			ImGui::TableHeadersRow();
-			ImGui::TableNextRow();
 			
-			std::string reqName = "";
+			ImGui::TableNextRow();
 			std::string upToLevel = "";
-			int reqLevel = 0;
 			for (int i = 0; i < m_SkillSelected->GetRequirementsArray().size(); i++)
 			{
-				reqName = m_SkillSelected->GetRequirementsArray()[i]->name;
-				reqLevel = m_SkillSelected->GetRequirementsArray()[i]->level;
+				std::string& reqName = m_SkillSelected->GetRequirementsArray()[i]->name;
+				uint32_t& reqLevel = m_SkillSelected->GetRequirementsArray()[i]->level;
 				
-				int column = 1;
+				int column = 1; // requirement set not met by default
 				Skill* skillStored = m_SkillsRegistry->FindSkill(reqName);
+				
+				// find out if the requirement is met
 				if (skillStored != nullptr)
 				{
 					if (skillStored->level >= reqLevel)
 					{
-						sprintf((char*)upToLevel.c_str(), " (%d)", skillStored->level);
 						column = 0;
+						sprintf((char*)upToLevel.c_str(), " (%d)", skillStored->level);
 					} else {
+						column = 1;
 						sprintf((char*)upToLevel.c_str(), " (%d)", reqLevel);
 					}
-					ImGui::TableSetColumnIndex(column);
-					TextColoredSkillName(skillStored);
-					ImGui::SameLine();
-					ImGui::Text(upToLevel.c_str());
 				} else {
-					ImGui::TableSetColumnIndex(column);
-					ImGui::TextColored({1.0f, 0.2f, 0.2f, 1.0f}, reqName.c_str());
-					ImGui::SameLine();
-					ImGui::Text(upToLevel.c_str());
+					column = 1;
+					sprintf((char*)upToLevel.c_str(), " (%d)", reqLevel);
 				}
+				
+				// show the name of a skill required
+				ImGui::TableSetColumnIndex(column);
+				if (skillStored != nullptr)
+				{
+					TextColoredSkillName(skillStored);
+				} else {
+					ImGui::TextColored({1.0f, 0.2f, 0.2f, 1.0f}, reqName.c_str());
+				}
+				
+				// show the level of a skill required
+				ImGui ::SameLine();
+				ImGui::Text(upToLevel.c_str());
+			}
+			ImGui::TableSetColumnIndex(2);
+			if (ImGui::Button("Изменить"))
+			{
+				m_CurrentMode = ProforientatorMode::EditSkillRequirement;
+				CONSOLE_LOG("Enter EditSkillRequirement mode");
 			}
 			
 			ImGui::EndTable();
@@ -624,7 +653,7 @@ namespace Savannah
 			ImGui::TableSetColumnIndex(2);
 			{
 				ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x);
-				std::string buttonName = "Удалить##";
+				std::string buttonName = (m_CurrentMode == ProforientatorMode::NewSkill) ? "Отменить##" : "Удалить##";
 				ImGui::PushStyleColor(ImGuiCol_Button, ImVec4{0.8f, 0.3f, 0.3f, 1.0f});
 				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{0.8f, 0.6f, 0.4f, 1.0f});
 				ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4{1.0f, 0.7f, 0.7f, 1.0f});
@@ -855,36 +884,38 @@ namespace Savannah
 					{
 						ImGui::BeginTable("##RequirementsSet", 2, 0);
 						bool selected = false;
-						ImGui::TableNextRow();
+						std::string buf = "";
+//						CONSOLE_LOG(m_SkillSelected->GetRequirementsArray().size());
 						for (int i = 0; i < m_SkillSelected->GetRequirementsArray().size(); i++)
 						{
-							if (m_SkillSelected->GetRequirementsArray()[i]->name == m_SkillRequirementSelectedName)
-							{
-								selected = true;
-							}
+							std::string& reqName = m_SkillSelected->GetRequirementsArray()[i]->name;
+							uint32_t& reqLevel = m_SkillSelected->GetRequirementsArray()[i]->level;
+							selected = (reqName == m_SkillRequirementSelectedName) ? true : false;
 							
+							ImGui::TableNextRow();
 							ImGui::TableSetColumnIndex(0);
-							if (ImGui::Selectable(m_SkillSelected->GetRequirementsArray()[i]->name.c_str(), &selected))
+							if (ImGui::Selectable(reqName.c_str(), &selected, ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_SelectOnNav))
 							{
-								m_SkillRequirementSelectedName = m_SkillSelected->GetRequirementsArray()[i]->name;
+								m_SkillRequirementSelectedName = reqName;
 							}
 							
 							ImGui::TableSetColumnIndex(1);
-							std::string buf = "";
-							for (int i = 1; i <= 10; i++)
+							buf = "";
+							for (int i = 0; i < 10; i++)
 							{
-								if (m_SkillSelected->GetRequirementsArray()[i]->level >= i)
+								if (i < reqLevel)
 								{
-									sprintf((char*)buf.c_str(), "%s+", buf.c_str());
+									sprintf((char*)(buf.c_str()), "%s+", buf.c_str());
 								} else {
-									sprintf((char*)buf.c_str(), "%s ", buf.c_str());
+									sprintf((char*)(buf.c_str()), "%s ", buf.c_str());
 								}
 							}
-							if (ImGui::Selectable(buf.c_str(), &selected))
+							if (ImGui::Selectable(buf.c_str(), &selected, ImGuiSelectableFlags_SpanAllColumns | ImGuiSelectableFlags_SelectOnNav))
 							{
-								m_SkillRequirementSelectedName = m_SkillSelected->GetRequirementsArray()[i]->name;
+								m_SkillRequirementSelectedName = reqName;
 							}
 						}
+						ImGui::EndTable();
 					}
 					ImGui::TableSetColumnIndex(1); // control buttons (<< , >> , LevelSlider)
 					ImGui::TableSetColumnIndex(2); // all skills
