@@ -523,7 +523,7 @@ namespace Savannah
 	{
 		if (ImGui::BeginMainMenuBar())
 		{
-			if (ImGui::BeginMenu("Файл"))
+			if (ImGui::BeginMenu("Меню"))
 			{
 				if (ImGui::MenuItem("Перезагрузить БД")) 
 				{ 
@@ -536,6 +536,30 @@ namespace Savannah
 					NewTask(ProforientatorTasks::Exit);
 					CONSOLE_LOG("Add a new Task: Exit");
 				}
+				ImGui::EndMenu();
+			}
+			
+			if (ImGui::BeginMenu("Навыки"))
+			{
+				if (ImGui::MenuItem("Новый навык")) 
+				{ 
+					NewTask(ProforientatorTasks::NewSkill);
+					CONSOLE_LOG("Add a new Task: NewSkill");
+				}
+				
+				bool enableEditSkillRequirements = (m_CurrentMode == ProforientatorMode::EditSkill) ? true : false;
+				if (ImGui::MenuItem("Изменить требования", NULL, false, enableEditSkillRequirements)) 
+				{ 
+					m_CurrentMode = ProforientatorMode::EditSkillRequirement;
+					CONSOLE_LOG("Enter EditSkillRequirement mode");
+				}
+				
+				if (ImGui::MenuItem("Новая группа")) 
+				{ 
+					NewTask(ProforientatorTasks::NewSkillGroup);
+					CONSOLE_LOG("Add a new Task: NewSkillGroup");
+				}
+				
 				ImGui::EndMenu();
 			}
 			
@@ -602,8 +626,16 @@ namespace Savannah
 		ImGui::Text(raw.c_str());
 		switch (m_CurrentMode)
 		{
-		case ProforientatorMode::EditSkill:
 		case ProforientatorMode::NewSkill:
+			{
+				if (m_SkillSelected != nullptr)
+				{
+					ShowEditSkillTable();
+					TextColoredSkillLevelDescription((int)m_EditSkill->level);
+				}
+			}
+			break;
+		case ProforientatorMode::EditSkill:
 			{
 				if (m_SkillSelected != nullptr)
 				{
@@ -640,8 +672,8 @@ namespace Savannah
 	{
 		if (ImGui::BeginTable("##Требования", 3, ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_ScrollY))
 		{
-			ImGui::TableSetupColumn("Полученные навыки##passed", ImGuiTableColumnFlags_WidthFixed, TEXT_BASE_WIDTH * 35);
-			ImGui::TableSetupColumn("Нужны ещё##notpassed", ImGuiTableColumnFlags_WidthFixed, TEXT_BASE_WIDTH * 35);
+			ImGui::TableSetupColumn("Полученные навыки##passed", ImGuiTableColumnFlags_WidthFixed, TEXT_BASE_WIDTH * 30);
+			ImGui::TableSetupColumn("Нужны ещё##notpassed", ImGuiTableColumnFlags_WidthFixed, TEXT_BASE_WIDTH * 30);
 			ImGui::TableSetupColumn("##empty", ImGuiTableColumnFlags_WidthFixed, TEXT_BASE_WIDTH * 10);
 			ImGui::TableHeadersRow();
 			
