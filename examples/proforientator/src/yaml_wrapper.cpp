@@ -1,5 +1,5 @@
+#include <savannah/core.h>
 #include "../include/yaml_wrapper.h"
-#include "../include/logger.h"
 
 YAML::Emitter& operator<<(YAML::Emitter& out, Skill* rhs){
 //		out << YAML::Flow;
@@ -69,7 +69,7 @@ bool YamlWrapper::LoadDocument(const std::string& filename) // load an existing 
 	m_Contents = FileIO::GetRawText(filename);
 	YAML::Node data = YAML::Load(m_Contents);
 	if (!data["Database"]){
-		CONSOLE_LOG("No database node");
+		SAVANNAH_CONSOLE_LOG("No database node");
 		return success;
 	}
 	

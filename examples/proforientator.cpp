@@ -4,7 +4,7 @@ namespace Savannah
 {
 	Proforientator::Proforientator()
 	{
-		CONSOLE_GREEN("Savannah Framework initialization succesful.");
+		SAVANNAH_CONSOLE_GREEN("Savannah Framework initialization succesful.");
 		SetWindowTitle("Профориентатор 1.0");
 		
 		m_LevelDescription.push_back("незнаком"); // 0
@@ -20,10 +20,10 @@ namespace Savannah
 		m_LevelDescription.push_back("БОГ"); // 10
 		
 		m_CurrentMode = ProforientatorMode::Idle;
-		CONSOLE_LOG("Enter Idle mode");
+		SAVANNAH_CONSOLE_LOG("Enter Idle mode");
 		
 		NewTask(ProforientatorTasks::LoadData);
-		CONSOLE_LOG("Add a new Task: LoadData");
+		SAVANNAH_CONSOLE_LOG("Add a new Task: LoadData");
 	}
 	
 	Proforientator::~Proforientator()
@@ -65,7 +65,7 @@ namespace Savannah
 					m_EditSkill = new Skill("Новый навык", "Groupless", 0);
 					m_SkillSelected = m_EditSkill;
 					m_CurrentMode = ProforientatorMode::NewSkill;
-					CONSOLE_LOG("Enter NewSkill mode");
+					SAVANNAH_CONSOLE_LOG("Enter NewSkill mode");
 				}
 				break;
 			case ProforientatorTasks::CancelNewSkill:
@@ -76,7 +76,7 @@ namespace Savannah
 					m_EditSkill = nullptr;
 					m_SkillSelected = nullptr;
 					m_CurrentMode = ProforientatorMode::Idle;
-					CONSOLE_LOG("Enter Idle mode");
+					SAVANNAH_CONSOLE_LOG("Enter Idle mode");
 				}
 				break;
 			case ProforientatorTasks::AddSkill:
@@ -88,11 +88,11 @@ namespace Savannah
 						m_EditSkill = nullptr;
 						m_EditSkill = new Skill(m_SkillSelected);
 						m_ChangesInDatabase = true;
-						CONSOLE_LOG("Skill \"", m_EditSkill->name, "\" added to group \"", m_SkillSelected->group, "\".");
+						SAVANNAH_CONSOLE_LOG("Skill \"", m_EditSkill->name, "\" added to group \"", m_SkillSelected->group, "\".");
 						m_CurrentMode = ProforientatorMode::EditSkill;
-						CONSOLE_LOG("Enter EditSkill mode");
+						SAVANNAH_CONSOLE_LOG("Enter EditSkill mode");
 					} else {
-						CONSOLE_LOG("Called Task AddSkill when m_EditSkill is nullptr.");
+						SAVANNAH_CONSOLE_LOG("Called Task AddSkill when m_EditSkill is nullptr.");
 					}
 				}
 				break;
@@ -109,11 +109,11 @@ namespace Savannah
 						m_SkillSelected->level = m_EditSkill->level;
 						m_SkillSelected->CopyRequirementsArray(m_EditSkill->GetRequirementsArray());
 						m_ChangesInDatabase = true;
-						CONSOLE_LOG("Skill \"", m_EditSkill->name, "\" from group \"", m_SkillSelected->group, "\" updated.");
+						SAVANNAH_CONSOLE_LOG("Skill \"", m_EditSkill->name, "\" from group \"", m_SkillSelected->group, "\" updated.");
 						m_CurrentMode = ProforientatorMode::EditSkill;
-						CONSOLE_LOG("Enter EditSkill mode");
+						SAVANNAH_CONSOLE_LOG("Enter EditSkill mode");
 					} else {
-						CONSOLE_LOG("Called Task EditSkill when m_EditSkill is nullptr.");
+						SAVANNAH_CONSOLE_LOG("Called Task EditSkill when m_EditSkill is nullptr.");
 					}
 				}
 				break;
@@ -125,7 +125,7 @@ namespace Savannah
 					m_EditSkill = nullptr;
 					m_ChangesInDatabase = true;
 					m_CurrentMode = ProforientatorMode::Idle;
-					CONSOLE_LOG("m_SkillSelected equals nullptr now.");
+					SAVANNAH_CONSOLE_LOG("m_SkillSelected equals nullptr now.");
 				}
 				break;
 			case ProforientatorTasks::AddNewSkillRequirement:
@@ -185,7 +185,7 @@ namespace Savannah
 					CopySkillGroupSelectedToEditGroup();
 
 					m_CurrentMode = ProforientatorMode::NewSkillGroup;
-					CONSOLE_LOG("Enter NewSkillGroup mode");
+					SAVANNAH_CONSOLE_LOG("Enter NewSkillGroup mode");
 				}
 				break;
 			case ProforientatorTasks::CancelNewSkillGroup:
@@ -196,7 +196,7 @@ namespace Savannah
 					m_EditGroup = nullptr;
 
 					m_CurrentMode = ProforientatorMode::Idle;
-					CONSOLE_LOG("Enter Idle mode");
+					SAVANNAH_CONSOLE_LOG("Enter Idle mode");
 				}
 				break;
 			case ProforientatorTasks::AddSkillGroup:
@@ -229,7 +229,7 @@ namespace Savannah
 						std::string oldName = m_SkillGroupSelected->name;
 
 						// update group names registry
-						CONSOLE_LOG("Update group names registry...");
+						SAVANNAH_CONSOLE_LOG("Update group names registry...");
 						std::vector<std::string>& groupsNames = m_SkillsRegistry->GetGroupsNames();
 						for (int i = 0; i < groupsNames.size(); i++)
 						{
@@ -241,7 +241,7 @@ namespace Savannah
 						}
 						
 						// update the map in the skill registry
-						CONSOLE_LOG("Update the map in the skill registry...");
+						SAVANNAH_CONSOLE_LOG("Update the map in the skill registry...");
 						std::map<std::string, SkillGroup*>& groupRegistry = m_SkillsRegistry->GetGroups();
 						auto itg = groupRegistry.find(oldName);
 						(*itg).second = nullptr;
@@ -249,26 +249,26 @@ namespace Savannah
 						groupRegistry[m_EditGroup->name] = m_SkillGroupSelected;
 						
 						// update group names in skills
-						CONSOLE_LOG("Update group names in skills...");
+						SAVANNAH_CONSOLE_LOG("Update group names in skills...");
 						for (int i = 0; i < m_SkillGroupSelected->children.size(); i++)
 						{
 							m_SkillGroupSelected->children[i]->group = m_EditGroup->name;
 						}
 						
 						// update the group name
-						CONSOLE_LOG("Update the group name...");
+						SAVANNAH_CONSOLE_LOG("Update the group name...");
 						m_SkillGroupSelected->name = m_EditGroup->name;
 						
 						// update the EditGroup object
-						CONSOLE_LOG("Update EditGroup object...");
+						SAVANNAH_CONSOLE_LOG("Update EditGroup object...");
 						CopySkillGroupSelectedToEditGroup();
 						
 						m_ChangesInDatabase = true;
-						CONSOLE_LOG("Skill group \"", oldName, "\" updated to \"", m_EditGroup->name, "\".");
+						SAVANNAH_CONSOLE_LOG("Skill group \"", oldName, "\" updated to \"", m_EditGroup->name, "\".");
 						m_CurrentMode = ProforientatorMode::EditSkillGroup;
-						CONSOLE_LOG("Enter EditGroup mode");
+						SAVANNAH_CONSOLE_LOG("Enter EditGroup mode");
 					} else {
-						CONSOLE_LOG("Called Task EditSkillGroup when m_EditGroup is nullptr.");
+						SAVANNAH_CONSOLE_LOG("Called Task EditSkillGroup when m_EditGroup is nullptr.");
 					}
 				}
 				break;
@@ -380,7 +380,7 @@ namespace Savannah
 				ShowLogo();
 				ImGui::TableSetColumnIndex(1);
 				ShowContent();
-//					CONSOLE_LOG("Content shown");
+//					SAVANNAH_CONSOLE_LOG("Content shown");
 				ImGui::EndTable();
 			}
 			
@@ -416,15 +416,15 @@ namespace Savannah
 						if (ImGui::ImageButton("##AddSkillGroup", (ImTextureID)m_NewSkillsGroupIcon->GetID(), {TEXT_BASE_WIDTH * 25, TEXT_BASE_HEIGHT * 10}, ImVec2(0, 0), ImVec2(1, 1)))
 						{
 							NewTask(ProforientatorTasks::NewSkillGroup);
-							CONSOLE_LOG("Add a new Task: NewSkillGroup");
+							SAVANNAH_CONSOLE_LOG("Add a new Task: NewSkillGroup");
 						}
 						ImGui::EndTable();
 					}
 					
-//						CONSOLE_LOG("General skills tables shown.");
+//						SAVANNAH_CONSOLE_LOG("General skills tables shown.");
 					ImGui::TableSetColumnIndex(i + 1);
 					ShowSkillsTable("Groupless");
-//						CONSOLE_LOG("Groupless skills table shown.");
+//						SAVANNAH_CONSOLE_LOG("Groupless skills table shown.");
 					ImGui::EndTable();
 				}
 			}
@@ -461,9 +461,9 @@ namespace Savannah
 		if (m_ChangesInDatabase)
 		{
 			SaveDatabase(m_SkillsFile);
-			CONSOLE_LOG("Changes saved.");
+			SAVANNAH_CONSOLE_LOG("Changes saved.");
 		} else {
-			CONSOLE_LOG("No changes.");
+			SAVANNAH_CONSOLE_LOG("No changes.");
 		}
 		delete m_SkillsRegistry;
 		delete m_YAMLWrapperObject;
@@ -516,7 +516,7 @@ namespace Savannah
 			}
 		}
 		
-		CONSOLE_LOG("Reqs Met: ", m_SkillRequirementsMet.size(), "; Reqs Not Met: ", m_SkillRequirementsNotMet.size());
+		SAVANNAH_CONSOLE_LOG("Reqs Met: ", m_SkillRequirementsMet.size(), "; Reqs Not Met: ", m_SkillRequirementsNotMet.size());
 	}
 	
 	void Proforientator::ShowMainMenu()
@@ -528,13 +528,13 @@ namespace Savannah
 				if (ImGui::MenuItem("Перезагрузить БД")) 
 				{ 
 					NewTask(ProforientatorTasks::ReloadData);
-					CONSOLE_LOG("Add a new Task: ReloadData");
+					SAVANNAH_CONSOLE_LOG("Add a new Task: ReloadData");
 				}
 				ImGui::MenuItem(" ");
 				if (ImGui::MenuItem("Выход")) 
 				{
 					NewTask(ProforientatorTasks::Exit);
-					CONSOLE_LOG("Add a new Task: Exit");
+					SAVANNAH_CONSOLE_LOG("Add a new Task: Exit");
 				}
 				ImGui::EndMenu();
 			}
@@ -544,20 +544,20 @@ namespace Savannah
 				if (ImGui::MenuItem("Новый навык")) 
 				{ 
 					NewTask(ProforientatorTasks::NewSkill);
-					CONSOLE_LOG("Add a new Task: NewSkill");
+					SAVANNAH_CONSOLE_LOG("Add a new Task: NewSkill");
 				}
 				
 				bool enableEditSkillRequirements = (m_CurrentMode == ProforientatorMode::EditSkill) ? true : false;
 				if (ImGui::MenuItem("Изменить требования", NULL, false, enableEditSkillRequirements)) 
 				{ 
 					m_CurrentMode = ProforientatorMode::EditSkillRequirement;
-					CONSOLE_LOG("Enter EditSkillRequirement mode");
+					SAVANNAH_CONSOLE_LOG("Enter EditSkillRequirement mode");
 				}
 				
 				if (ImGui::MenuItem("Новая группа")) 
 				{ 
 					NewTask(ProforientatorTasks::NewSkillGroup);
-					CONSOLE_LOG("Add a new Task: NewSkillGroup");
+					SAVANNAH_CONSOLE_LOG("Add a new Task: NewSkillGroup");
 				}
 				
 				ImGui::EndMenu();
@@ -716,7 +716,7 @@ namespace Savannah
 			if (ImGui::Button("Изменить"))
 			{
 				m_CurrentMode = ProforientatorMode::EditSkillRequirement;
-				CONSOLE_LOG("Enter EditSkillRequirement mode");
+				SAVANNAH_CONSOLE_LOG("Enter EditSkillRequirement mode");
 			}
 			
 			ImGui::EndTable();
@@ -757,7 +757,7 @@ namespace Savannah
 				if (ImGui::Button(buttonName.c_str()))
 				{
 					NewTask(ProforientatorTasks::DeleteSkill);
-					CONSOLE_LOG("Add a new Task: DeleteSkill");
+					SAVANNAH_CONSOLE_LOG("Add a new Task: DeleteSkill");
 				}
 				ImGui::PopStyleColor(3);
 			}
@@ -841,14 +841,14 @@ namespace Savannah
 					{
 					case ProforientatorMode::EditSkill:
 						NewTask(ProforientatorTasks::EditSkill);
-						CONSOLE_LOG("Add a new Task: EditSkill");
+						SAVANNAH_CONSOLE_LOG("Add a new Task: EditSkill");
 						break;
 					case ProforientatorMode::NewSkill:
 						NewTask(ProforientatorTasks::AddSkill);
-						CONSOLE_LOG("Add a new Task: AddSkill");
+						SAVANNAH_CONSOLE_LOG("Add a new Task: AddSkill");
 						break;
 					default:
-						CONSOLE_LOG("EditSkill mode active, but m_CurrentMode is not set to it.");
+						SAVANNAH_CONSOLE_LOG("EditSkill mode active, but m_CurrentMode is not set to it.");
 					}
 				}
 				ImGui::PopStyleColor(3);
@@ -906,15 +906,15 @@ namespace Savannah
 							{
 							case ProforientatorMode::NewSkillGroup:
 								NewTask(ProforientatorTasks::CancelNewSkillGroup);
-								CONSOLE_LOG("Add a new Task: CancelNewSkillGroup");
+								SAVANNAH_CONSOLE_LOG("Add a new Task: CancelNewSkillGroup");
 								break;
 							case ProforientatorMode::EditSkillGroup:
 								NewTask(ProforientatorTasks::DeleteSkillGroup);
-								CONSOLE_LOG("Add a new Task: DeleteSkillGroup");
+								SAVANNAH_CONSOLE_LOG("Add a new Task: DeleteSkillGroup");
 								break;
 							default:
 								// do nothing
-								CONSOLE_LOG("Unknown behaviour!");
+								SAVANNAH_CONSOLE_LOG("Unknown behaviour!");
 								break;
 							}
 						}
@@ -947,15 +947,15 @@ namespace Savannah
 							{
 							case ProforientatorMode::NewSkillGroup:
 								NewTask(ProforientatorTasks::AddSkillGroup);
-								CONSOLE_LOG("Add a new Task: AddSkillGroup");
+								SAVANNAH_CONSOLE_LOG("Add a new Task: AddSkillGroup");
 								break;
 							case ProforientatorMode::EditSkillGroup:
 								NewTask(ProforientatorTasks::EditSkillGroup);
-								CONSOLE_LOG("Add a new Task: EditSkillGroup");
+								SAVANNAH_CONSOLE_LOG("Add a new Task: EditSkillGroup");
 								break;
 							default:
 								// do nothing
-								CONSOLE_LOG("Unknown behaviour!");
+								SAVANNAH_CONSOLE_LOG("Unknown behaviour!");
 								break;
 							}
 						}
@@ -989,7 +989,7 @@ namespace Savannah
 						if (ImGui::Button("< Добавить"))
 						{
 							NewTask(ProforientatorTasks::AddNewSkillRequirement);
-							CONSOLE_LOG("Add a new Task: AddNewSkillRequirement");
+							SAVANNAH_CONSOLE_LOG("Add a new Task: AddNewSkillRequirement");
 						}
 					}
 					ImGui::TableSetColumnIndex(2); // blank
@@ -1002,7 +1002,7 @@ namespace Savannah
 						ImGui::BeginTable("##RequirementsSet", 2, 0);
 						bool selected = false;
 						std::string buf = "";
-//						CONSOLE_LOG(m_SkillSelected->GetRequirementsArray().size());
+//						SAVANNAH_CONSOLE_LOG(m_SkillSelected->GetRequirementsArray().size());
 						for (int i = 0; i < m_SkillSelected->GetRequirementsArray().size(); i++)
 						{
 							std::string& reqName = m_SkillSelected->GetRequirementsArray()[i]->name;
@@ -1043,13 +1043,13 @@ namespace Savannah
 						if (ImGui::Button("      <<      ##"))
 						{
 							NewTask(ProforientatorTasks::AddExistingSkillRequirement);
-							CONSOLE_LOG("Add a new Task: AddExistingSkillRequirement");
+							SAVANNAH_CONSOLE_LOG("Add a new Task: AddExistingSkillRequirement");
 						}
 						ImGui::PushItemWidth(ImGui::GetContentRegionAvail().x);
 						if (ImGui::Button("      >>      ##"))
 						{
 							NewTask(ProforientatorTasks::RemoveSkillRequirement);
-							CONSOLE_LOG("Add a new Task: RemoveSkillRequirement");
+							SAVANNAH_CONSOLE_LOG("Add a new Task: RemoveSkillRequirement");
 						}
 						ImGui::NewLine();
 						ImGui::Text("Уровень:");
@@ -1061,7 +1061,7 @@ namespace Savannah
 							{
 								m_SkillRequirementSelectedLevel = level;
 								NewTask(ProforientatorTasks::EditSkillRequirement);
-								CONSOLE_LOG("Add a new Task: EditSkillRequirement");
+								SAVANNAH_CONSOLE_LOG("Add a new Task: EditSkillRequirement");
 							}
 						}
 						ImGui::NewLine();
@@ -1115,7 +1115,7 @@ namespace Savannah
 				skillsCollection = group->children;
 			}
 			
-//				CONSOLE_LOG("Skills table \"", groupName, " \" size: ", skillsCollection.size());
+//				SAVANNAH_CONSOLE_LOG("Skills table \"", groupName, " \" size: ", skillsCollection.size());
 			for (auto skillsIterator = skillsCollection.begin(); skillsIterator != skillsCollection.end(); skillsIterator++)
 			{
 				std::string nameID = (*skillsIterator)->name;
@@ -1134,7 +1134,7 @@ namespace Savannah
 				{
 					m_SkillSelected = *skillsIterator;
 					m_CurrentMode = ProforientatorMode::EditSkill;
-					CONSOLE_LOG("Enter EditSkill mode");
+					SAVANNAH_CONSOLE_LOG("Enter EditSkill mode");
 					CopySkillSelectedToEditSkill();
 					ProcessSkillRequirements();
 				}
@@ -1155,7 +1155,7 @@ namespace Savannah
 				{
 					m_SkillSelected = *skillsIterator;
 					m_CurrentMode = ProforientatorMode::EditSkill;
-					CONSOLE_LOG("Enter EditSkill mode");
+					SAVANNAH_CONSOLE_LOG("Enter EditSkill mode");
 					CopySkillSelectedToEditSkill();
 					ProcessSkillRequirements();
 				}
@@ -1171,7 +1171,7 @@ namespace Savannah
 				std::string buttonName = "Новый навык##" + ((group == nullptr) ? "Groupless" : group->name);
 				if (ImGui::Button(buttonName.c_str(), {TEXT_BASE_WIDTH * 14, TEXT_BASE_HEIGHT * 2}))
 				{
-					CONSOLE_LOG("Add a new Task: NewSkill");
+					SAVANNAH_CONSOLE_LOG("Add a new Task: NewSkill");
 					NewTask(ProforientatorTasks::NewSkill);
 				}
 			}
@@ -1182,11 +1182,11 @@ namespace Savannah
 					std::string buttonName = "Править группу##" + group->name;
 					if (ImGui::Button(buttonName.c_str(), {TEXT_BASE_WIDTH * 14, TEXT_BASE_HEIGHT * 2}))
 					{
-//						CONSOLE_LOG("Previous m_SkillGroupSelected value: ", ((m_SkillGroupSelected == nullptr) ? "nullptr" : m_SkillGroupSelected->name));
+//						SAVANNAH_CONSOLE_LOG("Previous m_SkillGroupSelected value: ", ((m_SkillGroupSelected == nullptr) ? "nullptr" : m_SkillGroupSelected->name));
 						m_SkillGroupSelected = group;
 						
 						m_CurrentMode = ProforientatorMode::EditSkillGroup;
-						CONSOLE_LOG("Enter EditSkillGroup mode");
+						SAVANNAH_CONSOLE_LOG("Enter EditSkillGroup mode");
 						CopySkillGroupSelectedToEditGroup();
 					}
 				}

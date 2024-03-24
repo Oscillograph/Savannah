@@ -1,7 +1,6 @@
 #include <include/savannah/savannah.h>
 
 #include "./yaml_wrapper.h"
-#include "./logger.h"
 
 // basically, commands to process
 enum class ProforientatorTasks : int
@@ -14,10 +13,10 @@ enum class ProforientatorTasks : int
 	
 //	NewSkillRequirement			= 5, // NOT USED
 //	CancelNewSkillRequirement	= 6, // NOT USED
-	AddNewSkillRequirement 		= 6, // TODO: add a requirement to skill requirements set
-	AddExistingSkillRequirement = 7, // TODO: add a requirement to skill requirements set
-	EditSkillRequirement 		= 8, // TODO: change level of a requirement
-	RemoveSkillRequirement 		= 9, // TODO: remove a requirement from a skill requirements set (we do not delete anything here!)
+	AddNewSkillRequirement 		= 6, // [+] add a requirement to skill requirements set
+	AddExistingSkillRequirement = 7, // [+] add a requirement to skill requirements set
+	EditSkillRequirement 		= 8, // [+] change level of a requirement
+	RemoveSkillRequirement 		= 9, // [+] remove a requirement from a skill requirements set (we do not delete anything here!)
 	
 	NewSkillGroup				= 10, // [+] create a new skill group and prepare to edit it
 	CancelNewSkillGroup			= 11, // [+] cancel the new skill group editing
@@ -42,14 +41,14 @@ enum class ProforientatorMode : int
 	EditSkill					= 1, // [+]
 	
 //	NewSkillRequirement			= 2, // NOT USED
-	EditSkillRequirement		= 3, //
+	EditSkillRequirement		= 3, // [+]
 	
-	NewSkillGroup				= 4, // 
-	EditSkillGroup				= 5, // 
+	NewSkillGroup				= 4, // [+]
+	EditSkillGroup				= 5, // [+]
 	
 	NewJob						= 6, // 
 	EditJob						= 7, // 
-	AdviseJob					= 8, //
+	AdviseJob					= 8, // 
 	
 	Idle						= 9 // [+]
 };

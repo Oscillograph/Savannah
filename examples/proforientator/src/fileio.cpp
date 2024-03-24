@@ -1,4 +1,4 @@
-#include "../include/logger.h"
+#include <savannah/core.h>
 #include "../include/fileio.h"
 #include <fstream>
 
@@ -15,7 +15,7 @@ std::string FileIO::GetRawText(std::string filename){
 				output += (lineRead + "\n");
 			}
 		} else {
-			CONSOLE_ERROR("Couldn't open file: {0}", filename);
+			SAVANNAH_CONSOLE_ERROR("Couldn't open file: {0}", filename);
 		}
 	}
 	
@@ -31,7 +31,7 @@ bool FileIO::WriteRawText(const std::string& filename, const char* text){
 			oFile.close();
 			return true;
 		} else {
-			CONSOLE_ERROR("Couldn't open file: {0}", filename);
+			SAVANNAH_CONSOLE_ERROR("Couldn't open file: {0}", filename);
 		}
 	}
 	return false;

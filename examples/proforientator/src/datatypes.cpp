@@ -1,5 +1,5 @@
+#include <savannah/core.h>
 #include "../include/datatypes.h"
-#include "../include/logger.h"
 
 SkillRequirement::SkillRequirement(const std::string& _name, uint32_t _level)
 	: name(_name), level(_level)
@@ -294,7 +294,7 @@ void SkillRegistry::AddSkill(Skill* skill)
 		if (m == skill)
 		{
 			skillExists = true;
-			CONSOLE_LOG(skill->name, " : ", skill->level, " - exists in the registry.");
+			SAVANNAH_CONSOLE_LOG(skill->name, " : ", skill->level, " - exists in the registry.");
 			break;
 		}
 	}
@@ -304,7 +304,7 @@ void SkillRegistry::AddSkill(Skill* skill)
 		AddSkillToGroup(skill, skill->group);
 //		CONSOLE_LOG("Added a skill to the group.");
 	} else {
-		CONSOLE_LOG("Couldn't add a skill \"", skill->name, "\": already exists in the registry.");
+		SAVANNAH_CONSOLE_LOG("Couldn't add a skill \"", skill->name, "\": already exists in the registry.");
 	}
 }
 
@@ -318,11 +318,11 @@ void SkillRegistry::AddSkillToGroup(Skill* skill, const std::string& name)
 	{
 		if (m_GroupsRegistry.find(skill->group) == m_GroupsRegistry.end())
 		{
-			CONSOLE_LOG("There is no group called \"\"", skill->group, ",..");
+			SAVANNAH_CONSOLE_LOG("There is no group called \"\"", skill->group, ",..");
 			SkillGroup* group = new SkillGroup();
 			group->name = skill->group;
 			AddGroup(group);
-			CONSOLE_LOG("...so it has been created.");
+			SAVANNAH_CONSOLE_LOG("...so it has been created.");
 		} 
 		
 		for (auto m : m_GroupsRegistry[skill->group]->children)
@@ -336,9 +336,9 @@ void SkillRegistry::AddSkillToGroup(Skill* skill, const std::string& name)
 		if (!alreadyExists)
 		{
 			m_GroupsRegistry[skill->group]->children.push_back(skill);
-			CONSOLE_LOG("Added a skill to group \"", skill->group, "\".");
+			SAVANNAH_CONSOLE_LOG("Added a skill to group \"", skill->group, "\".");
 		} else {
-			CONSOLE_LOG("Couldn't add a skill to group \"", skill->group, "\": already exists there;");
+			SAVANNAH_CONSOLE_LOG("Couldn't add a skill to group \"", skill->group, "\": already exists there;");
 		}
 	} else {
 		for (auto m : m_SkillsWithoutGroup)
@@ -353,9 +353,9 @@ void SkillRegistry::AddSkillToGroup(Skill* skill, const std::string& name)
 		if (!alreadyExists)
 		{
 			m_SkillsWithoutGroup.push_back(skill);
-			CONSOLE_LOG("Added a skill to group \"", skill->group, "\".");
+			SAVANNAH_CONSOLE_LOG("Added a skill to group \"", skill->group, "\".");
 		} else {
-			CONSOLE_LOG("Couldn't add a skill to group \"", skill->group, "\": already exists there;");
+			SAVANNAH_CONSOLE_LOG("Couldn't add a skill to group \"", skill->group, "\": already exists there;");
 		}
 	}
 }
@@ -429,20 +429,20 @@ void SkillRegistry::RemoveSkill(const std::string& name)
 					{
 						*it = nullptr;
 						GetGrouplessSkills().erase(it);
-						CONSOLE_LOG("Removed a skill from the \"Groupless\" group.");
+						SAVANNAH_CONSOLE_LOG("Removed a skill from the \"Groupless\" group.");
 						break;
 					}
 				}
 			} else {
 				group = (*it)->group;
 				m_GroupsRegistry[group]->RemoveSkill((*it));
-				CONSOLE_LOG("Removed a skill from the group.");
+				SAVANNAH_CONSOLE_LOG("Removed a skill from the group.");
 			}
 		}
 		delete *it;
 		*it = nullptr;
 		m_SkillsRegistry.erase(it);
-		CONSOLE_LOG("Removed a skill from the registry.");
+		SAVANNAH_CONSOLE_LOG("Removed a skill from the registry.");
 		break;
 	}
 }
@@ -457,13 +457,13 @@ void SkillRegistry::RemoveSkillFromGroup(Skill* skill)
 			{
 				*it = nullptr;
 				GetGrouplessSkills().erase(it);
-				CONSOLE_LOG("Removed a skill from the \"Groupless\" group.");
+				SAVANNAH_CONSOLE_LOG("Removed a skill from the \"Groupless\" group.");
 				break;
 			}
 		}
 	} else {
 		m_GroupsRegistry[skill->group]->RemoveSkill(skill);
-		CONSOLE_LOG("Removed a skill from the group.");
+		SAVANNAH_CONSOLE_LOG("Removed a skill from the group.");
 	}
 }
 
@@ -476,7 +476,7 @@ void SkillRegistry::NewGroup(const std::string& name)
 		if (m_GroupsNames[i] == name)
 		{
 			groupAlreadyExists = true;
-			CONSOLE_LOG("Couldn't add a group \"", name, "\": already exists in the vector registry.");
+			SAVANNAH_CONSOLE_LOG("Couldn't add a group \"", name, "\": already exists in the vector registry.");
 			break;
 		}
 	}
@@ -487,7 +487,7 @@ void SkillRegistry::NewGroup(const std::string& name)
 		
 		if (m_GroupsRegistry.find(name) == m_GroupsRegistry.end())
 		{
-			CONSOLE_LOG("Couldn't add a group \"", name, "\": already exists in the map registry.");
+			SAVANNAH_CONSOLE_LOG("Couldn't add a group \"", name, "\": already exists in the map registry.");
 		}
 		
 		if (!groupAlreadyExists)
@@ -508,7 +508,7 @@ void SkillRegistry::AddGroup(SkillGroup* group)
 		if (m_GroupsNames[i] == group->name)
 		{
 			groupAlreadyExists = true;
-			CONSOLE_LOG("Couldn't add a group \"", group->name, "\": already exists in the vector registry.");
+			SAVANNAH_CONSOLE_LOG("Couldn't add a group \"", group->name, "\": already exists in the vector registry.");
 			break;
 		}
 	}
@@ -520,7 +520,7 @@ void SkillRegistry::AddGroup(SkillGroup* group)
 		if (m_GroupsRegistry.find(group->name) != m_GroupsRegistry.end())
 		{
 			groupAlreadyExists = true;
-			CONSOLE_LOG("Couldn't add a group \"", group->name, "\": already exists in the map registry.");
+			SAVANNAH_CONSOLE_LOG("Couldn't add a group \"", group->name, "\": already exists in the map registry.");
 		}
 		
 		if (!groupAlreadyExists)
