@@ -66,7 +66,7 @@ void YamlWrapper::UseSkillRegistry(SkillRegistry* skillRegistry)
 bool YamlWrapper::LoadDocument(const std::string& filename) // load an existing yaml document from a file in memory
 {
 	bool success = false;
-	m_Contents = FileIO::GetRawText(filename);
+	m_Contents = Savannah::FileIO::GetRawText(filename);
 	YAML::Node data = YAML::Load(m_Contents);
 	if (!data["Database"]){
 		SAVANNAH_CONSOLE_LOG("No database node");
@@ -128,5 +128,5 @@ bool YamlWrapper::SaveDocument(const std::string& filename) // save a yaml docum
 	out << YAML::EndSeq;
 	out << YAML::EndMap;
 	
-	return FileIO::WriteRawText(filename, out.c_str());
+	return Savannah::FileIO::WriteRawText(filename, out.c_str());
 }
