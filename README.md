@@ -13,6 +13,16 @@ This framework is meant to be used with:
 - TDM-GCC 10.3
 - OpenGL 3.3-4.1
 
+Link static libraries:
++ -lopengl32
++ bin/libglad.a
++ bin/libglfw3dll.a
++ bin/libDear_ImGui.a
++ bin/libYaml_cpp.a
+Define variables:
++ SAVANNAH_PLATFORM_WINDOWS 
++ SAVANNAH_DEBUGGER
+
 ## Developer's Tech Stack for Savannah ##
 - C++ 17
 - TDM GCC 10.3
