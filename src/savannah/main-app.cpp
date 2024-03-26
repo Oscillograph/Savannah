@@ -1,5 +1,7 @@
 #include <savannah/main-app.h>
 
+#include <savannah/platforms/opengl/opengl_window.h>
+
 namespace Savannah
 {
 	App::App()
@@ -24,26 +26,27 @@ namespace Savannah
 	
 	void App::SetupWindow()
 	{
-		glfwSetErrorCallback(glfw_error_callback);
-		if (!glfwInit())
-			return;
+		m_Window = Window::Create({m_WindowTitle, 1280, 720, true});
+//		glfwSetErrorCallback(glfw_error_callback);
+//		if (!glfwInit())
+//			return;
 		
 		// Decide GL+GLSL versions
 		// GL 3.0 + GLSL 130
 		// const char* m_glsl_version = "#version 410";
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+//		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+//		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
 		//glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);  // 3.2+ only
 		//glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);            // 3.0+ only
 		
 		// Create window with graphics context
 		// glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
-		m_Window = glfwCreateWindow(1280, 720, m_WindowTitle.c_str(), nullptr, nullptr);
-		if (m_Window == nullptr)
-			return;
-		glfwMakeContextCurrent(m_Window);
-		gladLoadGL();
-		glfwSwapInterval(1); // Enable vsync
+//		m_Window = glfwCreateWindow(1280, 720, m_WindowTitle.c_str(), nullptr, nullptr);
+//		if (m_Window == nullptr)
+//			return;
+//		glfwMakeContextCurrent(m_Window);
+//		gladLoadGL();
+//		glfwSwapInterval(1); // Enable vsync
 	}
 	
 	void App::SetupResources()
@@ -69,7 +72,7 @@ namespace Savannah
 		
 		// Setup Platform/Renderer backends
 		ImGui_ImplOpenGL3_Init(m_glsl_version);
-		ImGui_ImplGlfw_InitForOpenGL(m_Window, true);
+		ImGui_ImplGlfw_InitForOpenGL((GLFWwindow*)m_Window->GetNativeWindow(), true);
 		
 		// load font
 		if (font_config == nullptr){
@@ -82,7 +85,7 @@ namespace Savannah
 		;
 	}
 	
-	GLFWwindow* App::GetWindow()
+	Window* App::GetWindow()
 	{
 		return m_Window;
 	}
@@ -126,7 +129,7 @@ namespace Savannah
 		// Rendering
 		ImGui::Render();
 		int display_w, display_h;
-		glfwGetFramebufferSize(m_Window, &display_w, &display_h);
+		glfwGetFramebufferSize((GLFWwindow*)m_Window->GetNativeWindow(), &display_w, &display_h);
 		// io.DisplaySize = ImVec2((float)display_w, (float)display_h);
 		glViewport(0, 0, (GLsizei)display_w, (GLsizei)display_h);
 		glClearColor(m_ClearColor.x * m_ClearColor.w, m_ClearColor.y * m_ClearColor.w, m_ClearColor.z * m_ClearColor.w, m_ClearColor.w);
@@ -142,7 +145,7 @@ namespace Savannah
 		}
 		
 		// 
-		glfwSwapBuffers(m_Window);
+		glfwSwapBuffers((GLFWwindow*)m_Window->GetNativeWindow());
 	}
 	
 	void App::GUIContent()
@@ -197,8 +200,8 @@ namespace Savannah
 		ImGui_ImplGlfw_Shutdown();
 		ImGui::DestroyContext();
 		
-		glfwDestroyWindow(m_Window);
-		glfwTerminate();
+		delete m_Window;
+		m_Window = nullptr;
 	}
 	
 	void App::SetFPS(float fps)
@@ -223,7 +226,7 @@ namespace Savannah
 	
 	void App::UpdateWindowMinimizedStatus()
 	{
-		int iconified = glfwGetWindowAttrib(GetWindow(), GLFW_ICONIFIED);
+		int iconified = glfwGetWindowAttrib((GLFWwindow*)(GetWindow()->GetNativeWindow()), GLFW_ICONIFIED);
 		if (iconified)
 		{
 			OnWindowMinimized();

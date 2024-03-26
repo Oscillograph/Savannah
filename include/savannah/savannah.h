@@ -10,10 +10,9 @@
 
 // Savannah systems
 // - events system
-// #include <savannah/systems/events/event.h>
-// #include <savannah/systems/events/appEvent.h>
-// #include <savannah/systems/events/keyEvent.h>
-// #include <savannah/systems/events/mouseEvent.h>
+#include <savannah/systems/events/event_app.h>
+#include <savannah/systems/events/event_key.h>
+#include <savannah/systems/events/event_mouse.h>
 
 // - scenes
 // #include <savannah/systems/scene/scene.h>

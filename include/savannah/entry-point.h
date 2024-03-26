@@ -12,7 +12,7 @@ int main(int, char**)
 	float time_previous = (float)glfwGetTime();
 	int idle_frames = 0;
 	
-	while ((!glfwWindowShouldClose(application->GetWindow())) && !application->doExit){
+	while ((!glfwWindowShouldClose((GLFWwindow*)(application->GetWindow()->GetNativeWindow()))) && !application->doExit){
 		glfwWaitEventsTimeout(application->GetFPS());
 		
 		float time_current = (float)glfwGetTime();

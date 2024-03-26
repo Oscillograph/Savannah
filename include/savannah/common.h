@@ -9,7 +9,7 @@
 #include <memory> // smart pointers
 #include <utility> // pairs
 #include <algorithm> // search functions and others
-#include <functional> // not decided yet, but Events system uses it, so why not
+#include <functional> // Events system and its users require functional library
 #include <initializer_list> // to convert initializer lists to vectors to avoid problems with pointers to vectors
 #include <chrono> // time management
 #include <math.h> // simple math for graphics, sound and other tasks
