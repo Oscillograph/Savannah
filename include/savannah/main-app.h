@@ -23,6 +23,11 @@
 #include <savannah/platforms/opengl/opengl_window.h> // open, process and close windows on Windows
 #include <savannah/platforms/opengl/opengl_texture.h> // probably, it's better to make a separate renderer module
 
+// events
+#include <savannah/systems/events/event_app.h>
+#include <savannah/systems/events/event_key.h>
+#include <savannah/systems/events/event_mouse.h>
+
 #define GL_SILENCE_DEPRECATION
 
 static void glfw_error_callback(int error, const char* description)
@@ -57,6 +62,7 @@ namespace Savannah {
 	protected:
 		ImFontConfig* font_config = nullptr;
 		Window* m_Window = nullptr;
+		WindowStack m_WindowStack;
 		ImVec4 m_ClearColor = {0.0f, 0.0f, 0.0f, 0.0f};
 		std::string m_WindowTitle = "Превед, мир!";
 		const char* m_glsl_version = "#version 410";
@@ -68,10 +74,14 @@ namespace Savannah {
 		void SetWindowTitle(const std::string& title);
 		
 	protected:
+		void OnEvent(Event& event);
+		
 		void UpdateWindowMinimizedStatus();
 		void OnWindowMinimized();
 		void OnWindowRestored();
 		bool IsWindowMinimized();
+		bool OnWindowResized(WindowResizeEvent& event);
+		bool OnMouseClicked(MouseButtonPressed& event);
 	};
 	
 	App* CreateApplication();

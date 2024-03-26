@@ -17,9 +17,12 @@ namespace Savannah
 		
 		std::string ToString() const override 
 		{
-			std::string out = "";
-			sprintf((char*)out.c_str(), "Окно изменило размер: %d, %d", m_Width, m_Height);
-			return out;
+			std::stringstream ss;
+			ss << "Окно изменило размер: " << m_Width << ", " << m_Height;
+			return ss.str();
+//			std::string out = "";
+//			sprintf((char*)out.c_str(), "Окно изменило размер: %d, %d", m_Width, m_Height);
+//			return ss.;
 		}
 		
 		EVENT_CLASS_TYPE(WindowResize)

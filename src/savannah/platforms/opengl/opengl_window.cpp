@@ -72,13 +72,13 @@ namespace Savannah
 		// set GLFW callbacks
 		glfwSetWindowSizeCallback(m_Window, [](GLFWwindow* window, int width, int height)
 			{
-			WindowData& data = *(WindowData*) glfwGetWindowUserPointer(window);
-			data.width = width;
-			data.height = height;
-			
-			WindowResizeEvent event(width, height);
-			data.EventCallback(event);
-		});
+				WindowData& data = *(WindowData*) glfwGetWindowUserPointer(window);
+				data.width = width;
+				data.height = height;
+				
+				WindowResizeEvent event(width, height);
+				data.EventCallback(event);
+			});
 		
 		/*
 		// this one is required for my AMD Mobility Radeon 6650M to change framebuffer size properly

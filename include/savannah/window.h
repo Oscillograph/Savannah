@@ -52,10 +52,46 @@ namespace Savannah
 	{
 	public:
 		WindowStack() = default;
-		~WindowStack() {};
+		~WindowStack() 
+		{
+			for (int i = 0; i < m_Windows.size(); i++)
+			{
+				delete m_Windows[i];
+			}
+		};
 		
-		void Push(Window*) {};
-		void Pop(Window*) {};
+		void Push(Window* window) 
+		{
+			bool exists = false;
+			for (int i = 0; i < m_Windows.size(); i++)
+			{
+				if (m_Windows[i] == window)
+				{
+					exists = true;
+					break;
+				}
+			}
+			
+			if (!exists)
+			{
+				m_Windows.push_back(window);
+			}
+		};
+		
+		void Pop(Window* window) 
+		{
+			bool exists = false;
+			for (auto it = m_Windows.begin(); it != m_Windows.end(); it++)
+			{
+				if (*it == window)
+				{
+					exists = true;
+					delete *it;
+					m_Windows.erase(it);
+					break;
+				}
+			}
+		};
 		
 	private:
 		std::vector<Window*> m_Windows = {};

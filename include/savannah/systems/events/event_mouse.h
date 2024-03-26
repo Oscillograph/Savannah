@@ -23,9 +23,12 @@ namespace Savannah {
 		
 		std::string ToString() const override 
 		{
-			std::string out = "";
-			sprintf((char*)out.c_str(), "Мышка подвинулась на: %d, %d", m_MouseX, m_MouseY);
-			return out;
+			std::stringstream ss;
+			ss << "Мышка подвинулась на: " << m_MouseX << ", " << m_MouseY;
+			return ss.str();
+//			std::string out = "";
+//			sprintf((char*)out.c_str(), "Мышка подвинулась на: %d, %d", m_MouseX, m_MouseY);
+//			return out;
 		}
 		
 		EVENT_CLASS_TYPE(MouseMoved)
@@ -47,9 +50,12 @@ namespace Savannah {
 		
 		std::string ToString() const override 
 		{
-			std::string out = "";
-			sprintf((char*)out.c_str(), "Колёсико крутанулось на: %d, %d", m_XOffset, m_YOffset);
-			return out;
+			std::stringstream ss;
+			ss << "Колёсико крутанулось на: " << m_XOffset << ", " << m_YOffset;
+			return ss.str();
+//			std::string out = "";
+//			sprintf((char*)out.c_str(), "Колёсико крутанулось на: %d, %d", m_XOffset, m_YOffset);
+//			return out;
 		}
 		
 		EVENT_CLASS_TYPE(MouseScrolled)
@@ -82,9 +88,12 @@ namespace Savannah {
 		
 		std::string ToString() const override 
 		{
-			std::string out = "";
-			sprintf((char*)out.c_str(), "Нажата кнопка: %d, (%d repeats)", m_MouseButtonCode, m_RepeatCount);
-			return out;
+			std::stringstream ss;
+			ss << "Нажата кнопка: " << m_MouseButtonCode << " (" << m_RepeatCount << "repeats )";
+			return ss.str();
+//			std::string out = "";
+//			sprintf((char*)out.c_str(), "Нажата кнопка: %d, (%d repeats)", m_MouseButtonCode, m_RepeatCount);
+//			return out;
 		}
 		
 		EVENT_CLASS_TYPE(MouseButtonPressed)
@@ -101,9 +110,12 @@ namespace Savannah {
 		
 		std::string ToString() const override 
 		{
-			std::string out = "";
-			sprintf((char*)out.c_str(), "Отпущена кнопка: %d", m_MouseButtonCode);
-			return out;
+			std::stringstream ss;
+			ss << "Отпущена кнопка: " << m_MouseButtonCode;
+			return ss.str();
+//			std::string out = "";
+//			sprintf((char*)out.c_str(), "Отпущена кнопка: %d", m_MouseButtonCode);
+//			return out;
 		}
 		
 		EVENT_CLASS_TYPE(MouseButtonReleased)

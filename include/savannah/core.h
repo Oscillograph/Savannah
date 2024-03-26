@@ -2,13 +2,7 @@
 #define SAVANNAH_CORE_H
 
 #include <savannah/proto-core.h>
-/*
-#ifdef SAVANNAH_SPDLOG
-	#include <savannah/utils/debugger.h>
-#elif SAVANNAH_DEBUGGER
-	#include <savannah/utils/logger.h>
-#endif
-*/
+
 #include <savannah/utils/logger.h>
 // #include <misc.h>
 #include <savannah/utils/file-io.h>

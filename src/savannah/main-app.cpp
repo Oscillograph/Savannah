@@ -27,6 +27,10 @@ namespace Savannah
 	void App::SetupWindow()
 	{
 		m_Window = Window::Create({m_WindowTitle, 1280, 720, true});
+		m_Window->SetEventCallback([this](Event& event)
+			{
+				OnEvent(event);
+			});
 //		glfwSetErrorCallback(glfw_error_callback);
 //		if (!glfwInit())
 //			return;
@@ -48,7 +52,7 @@ namespace Savannah
 //		gladLoadGL();
 //		glfwSwapInterval(1); // Enable vsync
 	}
-	
+
 	void App::SetupResources()
 	{
 	}
@@ -254,5 +258,30 @@ namespace Savannah
 	bool App::IsWindowMinimized()
 	{
 		return m_WindowMinimized;
+	}
+	
+	void App::OnEvent(Event& event)
+	{
+		EventDispatcher dispatcher(event);
+		dispatcher.Dispatch<WindowResizeEvent>([this](WindowResizeEvent& event)
+			{
+				return OnWindowResized(event);
+			});
+		dispatcher.Dispatch<MouseButtonPressed>([this](MouseButtonPressed& event)
+			{
+				return OnMouseClicked(event);
+			});
+	}
+	
+	bool App::OnWindowResized(WindowResizeEvent& event)
+	{
+		SAVANNAH_CORE_INFO(event.ToString().c_str());
+		return true;
+	}
+	
+	bool App::OnMouseClicked(MouseButtonPressed& event)
+	{
+		SAVANNAH_CORE_INFO(event.ToString().c_str());
+		return true;
 	}
 }
