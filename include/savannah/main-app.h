@@ -39,6 +39,7 @@ namespace Savannah {
 	class App {
 	public:
 		App();
+		
 		virtual ~App();
 		virtual void Init();
 		virtual void PreSetup();
