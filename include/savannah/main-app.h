@@ -3,11 +3,6 @@
 
 #include <savannah/core.h>
 
-// Dear ImGui: standalone example application for GLFW + OpenGL 3, using programmable pipeline
-// (GLFW is a cross-platform general purpose library for handling windows, inputs, OpenGL/Vulkan/Metal graphics context creation, etc.)
-// If you are new to Dear ImGui, read documentation from the docs/ folder + read the top of imgui.cpp.
-// Read online: https://github.com/ocornut/imgui/tree/master/docs
-
 #ifndef IMGUI_IMPL_OPENGL_LOADER_CUSTOM
 #define IMGUI_IMPL_OPENGL_LOADER_CUSTOM
 #endif
@@ -15,6 +10,7 @@
 #include <external/imgui/imgui.h>
 #include <external/imgui/imgui_internal.h> // for advanced selectable flags
 #include <external/imgui/misc/cpp/imgui_stdlib.h> // for strings
+#include <external/implot/implot.h> // for plots with implot
 
 #include <external/imgui/backends/imgui_impl_glfw.h>
 #include <external/imgui/backends/imgui_impl_opengl3.h>
