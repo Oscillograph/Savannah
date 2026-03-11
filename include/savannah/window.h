@@ -34,10 +34,10 @@ namespace Savannah
 		virtual unsigned int GetHeight() { return m_Properties.height; }
 		virtual bool IsVSync() { return m_Properties.vsync; }
 		
-		virtual float GetTime() {}
+		virtual float GetTime() { return 0.0f; }
 		
 		// to be virtual
-		virtual void* GetNativeWindow() {} // get GLFWwindow pointer
+		virtual void* GetNativeWindow() { return nullptr; } // get GLFWwindow pointer
 		virtual void OnUpdate(int code = 0) {}
 		virtual void SetVSync(bool vsync) {}
 		virtual void SetTitle(const std::string& title) {}
@@ -54,7 +54,7 @@ namespace Savannah
 		WindowStack() = default;
 		~WindowStack() 
 		{
-			for (int i = 0; i < m_Windows.size(); i++)
+			for (size_t i = 0; i < m_Windows.size(); i++)
 			{
 				delete m_Windows[i];
 			}
@@ -63,7 +63,7 @@ namespace Savannah
 		void Push(Window* window) 
 		{
 			bool exists = false;
-			for (int i = 0; i < m_Windows.size(); i++)
+			for (size_t i = 0; i < m_Windows.size(); i++)
 			{
 				if (m_Windows[i] == window)
 				{
@@ -90,6 +90,10 @@ namespace Savannah
 					m_Windows.erase(it);
 					break;
 				}
+			}
+			if (exists)
+			{
+				SAVANNAH_CORE_TRACE("Window popped from collection.");
 			}
 		};
 		

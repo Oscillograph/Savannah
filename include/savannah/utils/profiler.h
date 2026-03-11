@@ -13,14 +13,14 @@
 	// - each session is saved in a different file;
 	// - "Scope" means a timer shall auto-destroy itself once its scope ends, so it might be a good practice to place the corresponding code in brackets;
 	// - "Function" is an advanced version of "Scope" timers, it should be places at the start of the function
-	#define SAVANNAH_PROFILE_SESSION_START(name, filepath) 	::BSE::Profiler::BeginSession(name, filepath);
-	#define SAVANNAH_PROFILE_SCOPE(name)					::BSE::ProfilerTimer timer##__LINE__(name);
-	#define SAVANNAH_PROFILE_FUNCTION() 					::BSE::ProfilerTimer funcTimer##__LINE__(__PRETTY_FUNCTION__);
-	#define SAVANNAH_PROFILE_SESSION_END() 					::BSE::Profiler::EndSession();
+	#define SAVANNAH_PROFILE_SESSION_START(name, filepath) 	::Savannah::Profiler::BeginSession(name, filepath);
+	#define SAVANNAH_PROFILE_SCOPE(name)					::Savannah::ProfilerTimer timer##__LINE__(name);
+	#define SAVANNAH_PROFILE_FUNCTION() 					::Savannah::ProfilerTimer funcTimer##__LINE__(__PRETTY_FUNCTION__);
+	#define SAVANNAH_PROFILE_SESSION_END() 					::Savannah::Profiler::EndSession();
 			
 	// A simpler version: moment profiling which can be read by ImGuiLayers, etc.
-	#define SAVANNAH_CORE_PROFILER(name)	Timer timer##__LINE__(name, [&](BSE::TimerResult result){ BSE::Profiler::Push(result); });
-	#define SAVANNAH_PROFILER(name)			Timer timer##__LINE__(name, [&](BSE::TimerResult result){ BSE::Profiler::Push(result); });
+	#define SAVANNAH_CORE_PROFILER(name)	Timer timer##__LINE__(name, [&](Savannah::TimerResult result){ Savannah::Profiler::Push(result); });
+	#define SAVANNAH_PROFILER(name)			Timer timer##__LINE__(name, [&](Savannah::TimerResult result){ Savannah::Profiler::Push(result); });
 #else
 	// profiling to files in json format
 	#define SAVANNAH_PROFILE_SESSION_START(name, filepath)
@@ -152,6 +152,8 @@ namespace Savannah {
 			
 			uint32_t threadID = std::hash<std::thread::id>{}(std::this_thread::get_id());
 			Profiler::WriteProfile({ m_Name, start, end, threadID });
+			
+			Savannah::GetDateAndTime(); // just for the sake of no warning about unused function from the compiler. Sorry, performance
 		}
 		
 	private:

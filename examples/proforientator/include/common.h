@@ -11,6 +11,7 @@
 
 namespace Utils
 {
+	/*
 	static std::string GetDateAndTime() 
 	{
 		time_t 		timeNow = time(0);
@@ -34,6 +35,7 @@ namespace Utils
 			return g_UniformDistribution(g_RandomEngine);
 		}
 	};
+	*/
 }
 
 #endif

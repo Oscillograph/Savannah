@@ -9,7 +9,7 @@ YAML::Emitter& operator<<(YAML::Emitter& out, Skill* rhs){
 	
 	out << YAML::Key << "Requirements" << YAML::Value;
 	out << YAML::BeginSeq;
-	for (int i = 0; i < rhs->GetRequirementsArray().size(); i++)
+	for (size_t i = 0; i < rhs->GetRequirementsArray().size(); i++)
 	{
 		out << YAML::BeginMap;
 		out << YAML::Key << "Name" << YAML::Value << rhs->GetRequirementsArray()[i]->name;

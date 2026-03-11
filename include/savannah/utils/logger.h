@@ -6,7 +6,7 @@
 #include <external/utf8.h>
 
 // comment this line if you want something simple like std::cout
-#define SAVANNAH_LOGGER_CLASS
+// #define SAVANNAH_LOGGER_CLASS
 
 namespace Savannah
 {
@@ -76,38 +76,34 @@ namespace Savannah
 }
 
 #ifndef SAVANNAH_LOGGER_CLASS
-	#define SAVANNAH_CONSOLE_LOG(...)			std::cout << "SkillsChecker: " << __VA_ARGS__ << "\n";
-	#define SAVANNAH_CONSOLE_DEBUG(...)			std::cout << "SkillsChecker: " << __VA_ARGS__ << "\n";
-	#define SAVANNAH_CONSOLE_ERROR(...)			std::cout << "SkillsChecker: " << __VA_ARGS__ << "\n";
-	#define SAVANNAH_CONSOLE_ASSERT(x, ...)		{ if (!(x)) { SkillsChecker_CORE_LOG(__VA_ARGS__); std::exit(); } }
+	#define SAVANNAH_CONSOLE_LOG(...) 				std::cout << "App Log: " << __VA_ARGS__ << "\n";
+	#define SAVANNAH_CONSOLE_DEBUG(...)				std::cout << "App Debug: " << __VA_ARGS__ << "\n";
+	#define SAVANNAH_CONSOLE_ERROR(...)				std::cout << "App Error: " << __VA_ARGS__ << "\n";
+	#define SAVANNAH_CONSOLE_ASSERT(x, ...)			{ if (!(x)) { std::cout << "App Assert: " << __VA_ARGS__ (__VA_ARGS__); std::exit(); } }
 	
-	#define SAVANNAH_CONSOLE_LOG(...) 				std::cout << "App: " << __VA_ARGS__ << "\n";
-	#define SAVANNAH_CONSOLE_DEBUG(...)				std::cout << "App: " << __VA_ARGS__ << "\n";
-	#define SAVANNAH_CONSOLE_ERROR(...)				std::cout << "App: " << __VA_ARGS__ << "\n";
-	#define SAVANNAH_CONSOLE_ASSERT(x, ...)			{ if (!(x)) { SkillsChecker_LOG(__VA_ARGS__); std::exit(); } }
+	#define SAVANNAH_CORE_TRACE(...)				std::cout << "Core Trace: " << __VA_ARGS__ << "\n";
+	#define SAVANNAH_CORE_INFO(...)					std::cout << "Core Info: " << __VA_ARGS__ << "\n";
+	#define SAVANNAH_CORE_WARN(...)					std::cout << "Core Warning: " << __VA_ARGS__ << "\n";
+	#define SAVANNAH_CORE_ERROR(...)				std::cout << "Core Error: " << __VA_ARGS__ << "\n";
+	#define SAVANNAH_CORE_CRITICAL(...)				std::cout << "Core Critical: " << __VA_ARGS__ << "\n";
 #else
 	// Savannah misc console macros
-	#define SAVANNAH_CONSOLE_LOG(...)			::Savannah::Logger::Text("Proforientator: ", __VA_ARGS__); ::Savannah::Logger::Flush(0, 0);
-	#define SAVANNAH_CONSOLE_ERROR(...)			::Savannah::Logger::Text("Proforientator: ", __VA_ARGS__); ::Savannah::Logger::Flush(0, 3);
-	#define SAVANNAH_CONSOLE_ASSERT(x, ...)		{ if (!(x)) { SAVANNAH_CORE_ERROR(__VA_ARGS__); std::exit(-4); } }
-	#define SAVANNAH_CONSOLE_DEBUG(...)			::Savannah::Logger::Text("Proforientator: ", __VA_ARGS__); ::Savannah::Logger::Flush(1, 0);
-	
-	#define SAVANNAH_CONSOLE_GREY(...)			::Savannah::Logger::Message(__VA_ARGS__); ::Savannah::Logger::Flush(0, -1);
-	#define SAVANNAH_CONSOLE_YELLOW(...)		::Savannah::Logger::Message(__VA_ARGS__); ::Savannah::Logger::Flush(0, 0);
-	#define SAVANNAH_CONSOLE_WHITE(...)			::Savannah::Logger::Message(__VA_ARGS__); ::Savannah::Logger::Flush(0, 1);
-	#define SAVANNAH_CONSOLE_DARKRED(...)		::Savannah::Logger::Message(__VA_ARGS__); ::Savannah::Logger::Flush(0, 2);
-	#define SAVANNAH_CONSOLE_RED(...)			::Savannah::Logger::Message(__VA_ARGS__); ::Savannah::Logger::Flush(0, 3);
-	#define SAVANNAH_CONSOLE_TEAL(...)			::Savannah::Logger::Message(__VA_ARGS__); ::Savannah::Logger::Flush(0, 4);
-	#define SAVANNAH_CONSOLE_CYAN(...)			::Savannah::Logger::Message(__VA_ARGS__); ::Savannah::Logger::Flush(0, 5);
-	#define SAVANNAH_CONSOLE_BLUE(...)			::Savannah::Logger::Message(__VA_ARGS__); ::Savannah::Logger::Flush(0, 6);
-	#define SAVANNAH_CONSOLE_MAGENTA(...)		::Savannah::Logger::Message(__VA_ARGS__); ::Savannah::Logger::Flush(0, 7);
-	#define SAVANNAH_CONSOLE_GREEN(...)			::Savannah::Logger::Message(__VA_ARGS__); ::Savannah::Logger::Flush(0, 8);
-	#define SAVANNAH_CONSOLE_CAPTION_BLACK(...)	::Savannah::Logger::Message(__VA_ARGS__); ::Savannah::Logger::Flush(0, 9);
+	#define SAVANNAH_CONSOLE_GREY(...)				::Savannah::Logger::Message(__VA_ARGS__); ::Savannah::Logger::Flush(0, -1);
+	#define SAVANNAH_CONSOLE_YELLOW(...)			::Savannah::Logger::Message(__VA_ARGS__); ::Savannah::Logger::Flush(0, 0);
+	#define SAVANNAH_CONSOLE_WHITE(...)				::Savannah::Logger::Message(__VA_ARGS__); ::Savannah::Logger::Flush(0, 1);
+	#define SAVANNAH_CONSOLE_DARKRED(...)			::Savannah::Logger::Message(__VA_ARGS__); ::Savannah::Logger::Flush(0, 2);
+	#define SAVANNAH_CONSOLE_RED(...)				::Savannah::Logger::Message(__VA_ARGS__); ::Savannah::Logger::Flush(0, 3);
+	#define SAVANNAH_CONSOLE_TEAL(...)				::Savannah::Logger::Message(__VA_ARGS__); ::Savannah::Logger::Flush(0, 4);
+	#define SAVANNAH_CONSOLE_CYAN(...)				::Savannah::Logger::Message(__VA_ARGS__); ::Savannah::Logger::Flush(0, 5);
+	#define SAVANNAH_CONSOLE_BLUE(...)				::Savannah::Logger::Message(__VA_ARGS__); ::Savannah::Logger::Flush(0, 6);
+	#define SAVANNAH_CONSOLE_MAGENTA(...)			::Savannah::Logger::Message(__VA_ARGS__); ::Savannah::Logger::Flush(0, 7);
+	#define SAVANNAH_CONSOLE_GREEN(...)				::Savannah::Logger::Message(__VA_ARGS__); ::Savannah::Logger::Flush(0, 8);
+	#define SAVANNAH_CONSOLE_CAPTION_BLACK(...)		::Savannah::Logger::Message(__VA_ARGS__); ::Savannah::Logger::Flush(0, 9);
 	
 	#define SAVANNAH_CONSOLE_LOG(...)				::Savannah::Logger::Text("App: ", __VA_ARGS__); ::Savannah::Logger::Flush(0, 1);
-	#define SAVANNAH_CONSOLE_ERROR(...)			::Savannah::Logger::Text("App: ", __VA_ARGS__); ::Savannah::Logger::Flush(0, 3);
-	#define SAVANNAH_CONSOLE_DEBUG(...)			::Savannah::Logger::Text("App: ", __VA_ARGS__); ::Savannah::Logger::Flush(1, 1);
+	#define SAVANNAH_CONSOLE_ERROR(...)				::Savannah::Logger::Text("App: ", __VA_ARGS__); ::Savannah::Logger::Flush(0, 3);
 	#define SAVANNAH_CONSOLE_ASSERT(x, ...)			{ if (!(x)) { SAVANNAH_CORE_ERROR(__VA_ARGS__); std::exit(-4); } }
+	#define SAVANNAH_CONSOLE_DEBUG(...)				::Savannah::Logger::Text("App: ", __VA_ARGS__); ::Savannah::Logger::Flush(1, 1);
 
 	// Savannah core log macros
 	#define SAVANNAH_CORE_TRACE(...)		SAVANNAH_CONSOLE_GREY("Core Trace: ", __VA_ARGS__)

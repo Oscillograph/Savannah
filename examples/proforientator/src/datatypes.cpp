@@ -12,7 +12,7 @@ SkillRequirementSet::SkillRequirementSet()
 
 SkillRequirementSet::~SkillRequirementSet()
 {
-	for (int i = 0; i < m_Requirements.size(); i++)
+	for (size_t i = 0; i < m_Requirements.size(); i++)
 	{
 		delete m_Requirements[i];
 		m_Requirements[i] = nullptr;
@@ -35,7 +35,7 @@ void SkillRequirementSet::AddRequirement(SkillRequirement* skill)
 SkillRequirement* SkillRequirementSet::GetRequirementByName(const std::string& name)
 {
 	SkillRequirement* result = nullptr;
-	for (int i = 0; i < m_Requirements.size(); i++)
+	for (size_t i = 0; i < m_Requirements.size(); i++)
 	{
 		if (m_Requirements[i]->name == name)
 		{
@@ -135,7 +135,7 @@ void SkillRequirementSet::SortRequirementsByLevel()
 		}
 		
 		// update the source
-		for (int i = 0; i < m_Requirements.size(); i++)
+		for (size_t i = 0; i < m_Requirements.size(); i++)
 		{
 			m_Requirements[i] = temp[i];
 		}
@@ -144,7 +144,7 @@ void SkillRequirementSet::SortRequirementsByLevel()
 	}
 	
 	// clean the temporary array
-	for (int i = 0; i < temp.size(); i++)
+	for (size_t i = 0; i < temp.size(); i++)
 	{
 		temp[i] = nullptr;
 	}
@@ -183,7 +183,7 @@ std::vector<SkillRequirement*>& SkillRequirementSet::GetRequirementsArray()
 
 void SkillRequirementSet::CopyRequirementsArray(const std::vector<SkillRequirement*>& reqSet)
 {
-	for (int i = 0; i < reqSet.size(); i++)
+	for (size_t i = 0; i < reqSet.size(); i++)
 	{
 		AddRequirement({reqSet[i]->name, reqSet[i]->level});
 	}
@@ -197,7 +197,7 @@ Skill::Skill(const std::string& _name, const std::string& _group, uint32_t _leve
 Skill::Skill(Skill* skill)
 	: name(skill->name), group(skill->group), level(skill->level)
 {
-	for (int i = 0; i < skill->GetRequirementsArray().size(); i++)
+	for (size_t i = 0; i < skill->GetRequirementsArray().size(); i++)
 	{
 		AddRequirement({skill->GetRequirementsArray()[i]->name, skill->GetRequirementsArray()[i]->level});
 	}
@@ -227,7 +227,7 @@ SkillGroup::SkillGroup()
 SkillGroup::SkillGroup(SkillGroup* group)
 	: name(group->name)
 {
-	for (int i = 0; i < group->children.size(); i++)
+	for (size_t i = 0; i < group->children.size(); i++)
 	{
 		children.push_back(group->children[i]);
 	}
@@ -237,6 +237,7 @@ SkillGroup::~SkillGroup()
 {
 	for (auto m : children)
 	{
+		m = m; // escaping unwanted warning... sorry, performance
 		m = nullptr;
 	}
 }
@@ -263,6 +264,7 @@ SkillRegistry::~SkillRegistry()
 {
 	for (auto m : m_SkillsWithoutGroup)
 	{
+		m = m; // escaping unwanted warning... sorry, performance
 		m = nullptr;
 	}
 	
@@ -471,7 +473,7 @@ void SkillRegistry::NewGroup(const std::string& name)
 {
 	bool groupAlreadyExists = false;
 	
-	for (int i = 0; i < m_GroupsNames.size(); i++)
+	for (size_t i = 0; i < m_GroupsNames.size(); i++)
 	{
 		if (m_GroupsNames[i] == name)
 		{
@@ -503,7 +505,7 @@ void SkillRegistry::AddGroup(SkillGroup* group)
 {
 	bool groupAlreadyExists = false;
 	
-	for (int i = 0; i < m_GroupsNames.size(); i++)
+	for (size_t i = 0; i < m_GroupsNames.size(); i++)
 	{
 		if (m_GroupsNames[i] == group->name)
 		{
@@ -540,7 +542,7 @@ void SkillRegistry::SortGroups()
 		Sort(group->children);
 		
 		// and sort requirements in each skill
-		for (int i = 0; i < group->children.size(); i++)
+		for (size_t i = 0; i < group->children.size(); i++)
 		{
 			group->children[i]->SortRequirementsByLevel();
 		}
@@ -642,7 +644,7 @@ void SkillRegistry::Sort(std::vector<Skill*>& source)
 		}
 		
 		// update the source
-		for (int i = 0; i < source.size(); i++)
+		for (size_t i = 0; i < source.size(); i++)
 		{
 			source[i] = temp[i];
 		}
@@ -651,7 +653,7 @@ void SkillRegistry::Sort(std::vector<Skill*>& source)
 	}
 	
 	// clean the temporary array
-	for (int i = 0; i < temp.size(); i++)
+	for (size_t i = 0; i < temp.size(); i++)
 	{
 		temp[i] = nullptr;
 	}

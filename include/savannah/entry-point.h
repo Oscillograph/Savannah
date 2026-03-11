@@ -10,7 +10,7 @@ int main(int, char**)
 	application->Init();
 	
 	float time_previous = (float)glfwGetTime();
-	int idle_frames = 0;
+	// int idle_frames = 0; // unused for some reason
 	
 	while ((!glfwWindowShouldClose((GLFWwindow*)(application->GetWindow()->GetNativeWindow()))) && !application->doExit){
 		glfwWaitEventsTimeout(application->GetFPS());

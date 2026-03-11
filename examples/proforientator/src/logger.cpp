@@ -1,3 +1,5 @@
+#ifdef SAVANNAH_PLATFORM_WINDOWS
+
 #include "../include/logger.h"
 #include <external/color-console/color.hpp>
 
@@ -84,3 +86,5 @@ void Logger::Flush(int mode, int color){
 	
 	Reset();
 }
+
+#endif

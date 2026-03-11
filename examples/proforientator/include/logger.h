@@ -1,11 +1,12 @@
 #ifndef PROFORIENTATOR_LOGGER_H
 #define PROFORIENTATOR_LOGGER_H
 
+#ifdef PROFORIENTATOR_LOGGER_CLASS
 #include "./common.h"
 #include <external/utf8.h>
 
 // comment this line if you want something simple like std::cout
-#define PROFORIENTATOR_LOGGER_CLASS
+// #define PROFORIENTATOR_LOGGER_CLASS
 
 typedef std::basic_stringstream<char32_t> u32stringstream;
 
@@ -103,7 +104,8 @@ private:
 //#define CONSOLE_ERROR(...)			::Logger::Text("App: ", __VA_ARGS__); ::Logger::Flush(0, 3);
 //#define CONSOLE_DEBUG(...)			::Logger::Text("App: ", __VA_ARGS__); ::Logger::Flush(1, 1);
 //#define CONSOLE_ASSERT(x, ...)			{ if (!(x)) { SkillsChecker_LOG(__VA_ARGS__); std::exit(-4); } }
-#endif
+#endif // PROFORIENTATOR_LOGGER_CLASS
 
-#endif
+#endif // PROFORIENTATOR_LOGGER_CLASS
 
+#endif // include guard

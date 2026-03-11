@@ -1,7 +1,10 @@
+/*
+
 // #include <datatypes.h>
 #include "../include/yaml_wrapper.h"
-#include "../include/logger.h"
-#include <windows.h>
+#include "../include/datatypes.h"
+// #include "../include/logger.h"
+// #include <windows.h>
 //#include <locale>
 
 int main(int argc, char** argv) {
@@ -10,14 +13,14 @@ int main(int argc, char** argv) {
 //	SetConsoleCP(866);
 //	setlocale(LC_ALL, "Russian");
 //	SetConsoleOutputCP(1251);
-	SetConsoleOutputCP(CP_UTF8);
+//	SetConsoleOutputCP(CP_UTF8);
 //	system("chcp 65001");
 	
 	
 	// load database
 	std::string skillsFile = "../data/skillsDB.txt";
-	Proforientator::SkillRegistry skillsRegistry;
-	Proforientator::YamlWrapper YAMLWrapperObject;
+	SkillRegistry skillsRegistry;
+	YamlWrapper YAMLWrapperObject;
 	YAMLWrapperObject.UseSkillRegistry(&skillsRegistry);
 	YAMLWrapperObject.LoadDocument(skillsFile);
 	
@@ -97,3 +100,4 @@ int main(int argc, char** argv) {
 	
 	return 0;
 }
+*/
