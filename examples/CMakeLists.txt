@@ -9,7 +9,7 @@ savannah_add_target(
 	EXE
 	${SAVANNAH_EXAMPLES_DIR}
 	${SAVANNAH_EXAMPLES_DIR}/basic-opengl/source
-	${SAVANNAH_BASE_SOURCE_DIR}/release/examples/basic-opengl
+	${SAVANNAH_BASE_SOURCE_DIR}/release
 	".."
 	-Wall -Werror -Wfatal-errors -DSAVANNAH_LOGGER_CLASS
 	)
@@ -19,7 +19,7 @@ savannah_add_target(
 	EXE
 	${SAVANNAH_EXAMPLES_DIR}
 	${SAVANNAH_EXAMPLES_DIR}/implot-test/source
-	${SAVANNAH_BASE_SOURCE_DIR}/release/examples/implot-test
+	${SAVANNAH_BASE_SOURCE_DIR}/release
 	".."
 	-Wall -Werror -Wfatal-errors -DSAVANNAH_LOGGER_CLASS
 	)
@@ -29,7 +29,7 @@ savannah_add_target(
 	EXE
 	${SAVANNAH_EXAMPLES_DIR}
 	${SAVANNAH_EXAMPLES_DIR}/proforientator/src
-	${SAVANNAH_BASE_SOURCE_DIR}/release/examples/proforientator
+	${SAVANNAH_BASE_SOURCE_DIR}/release
 	".."
 	${compile_flags}
 	)
