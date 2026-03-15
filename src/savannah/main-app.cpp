@@ -115,6 +115,13 @@ namespace Savannah
 	{
 		if (!IsWindowMinimized())
 		{
+			// update current knowledge of the window size and scale
+			glfwGetWindowSize((GLFWwindow*)(m_Window->GetNativeWindow()), &m_WindowCurrentWidth, &m_WindowCurrentHeight);
+			m_WindowScale = {
+				(float)m_WindowCurrentWidth / m_WindowWidth,
+				(float)m_WindowCurrentHeight / m_WindowHeight 
+			};
+		
 			GUIBegin();
 			GUIContent();
 			GUIEnd();

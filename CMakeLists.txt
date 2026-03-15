@@ -30,7 +30,10 @@ file(GLOB_RECURSE SAVANNAH_SOURCES
     ${SAVANNAH_BASE_SOURCE_DIR}/external/implot/implot.cpp
 #    ${SAVANNAH_BASE_SOURCE_DIR}/external/implot/implot_demo.cpp
     ${SAVANNAH_BASE_SOURCE_DIR}/external/implot/implot_internal.cpp
-    ${SAVANNAH_BASE_SOURCE_DIR}/external/implot/implot_items.cpp)
+    ${SAVANNAH_BASE_SOURCE_DIR}/external/implot/implot_items.cpp
+    ${SAVANNAH_BASE_SOURCE_DIR}/external/stb_image.cpp
+    ${SAVANNAH_BASE_SOURCE_DIR}/external/imgui_filedialog/src/imgui_filedialog.cpp
+    )
 file(GLOB_RECURSE EXTERNAL_SOURCES 
     ${SAVANNAH_BASE_SOURCE_DIR}/external/*.cpp
     ${SAVANNAH_BASE_SOURCE_DIR}/external/*.c)

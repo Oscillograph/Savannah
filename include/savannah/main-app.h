@@ -61,7 +61,12 @@ namespace Savannah {
 	protected:
 		ImFontConfig* font_config = nullptr;
 		Window* m_Window = nullptr;
-		WindowStack m_WindowStack;
+//		WindowStack m_WindowStack; // TODO: WindowStack implementation
+		int m_WindowWidth = 1280;
+		int m_WindowHeight = 720;
+		int m_WindowCurrentWidth = 0;
+		int m_WindowCurrentHeight = 0;
+		ImVec2 m_WindowScale = {0.0f, 0.0f};
 		ImVec4 m_ClearColor = {0.0f, 0.0f, 0.0f, 0.0f};
 		std::string m_WindowTitle = "Превед, мир!";
 		const char* m_glsl_version = "#version 410";

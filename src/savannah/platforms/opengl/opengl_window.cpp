@@ -26,8 +26,9 @@ namespace Savannah
 	}
 	
 	WindowsWindow::~WindowsWindow(){
-		SAVANNAH_CORE_TRACE("Window shutdown.");
+		SAVANNAH_CORE_TRACE("Window shutdown...");
 		Shutdown();
+		SAVANNAH_CORE_TRACE("Window shutdown...complete");
 	}
 	
 	void WindowsWindow::Init(const WindowProperties& properties)

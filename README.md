@@ -1,6 +1,6 @@
 # ! WORK IN PROGRESS ! #
 
-*Savannah* is a Windows application framework built on OpenGL & Dear ImGui.
+*Savannah* is a Windows/Linux application framework built on OpenGL & Dear ImGui.
 
 ## Features ##
 - Window abstraction
@@ -8,23 +8,26 @@
 - GUI construction based on Dear ImGui
 
 ## Build notes ##
-This framework is meant to be used with:
+This framework is meant to be used as a static library with:
 - C++ 17
-- TDM-GCC 10.3
-- OpenGL 3.3-4.1
+- OpenGL 3.3+
 
-Link static libraries:
-+ -lopengl32
-+ bin/libglad.a
-+ bin/libglfw3dll.a
-+ bin/libDear_ImGui.a
-+ bin/libYaml_cpp.a
-Define variables:
-+ SAVANNAH_PLATFORM_WINDOWS 
-+ SAVANNAH_DEBUGGER
+commands:
+
+```
+cmake -S . -B build
+cd build
+make
+make install
+```
+
+The resulting static library will be sent to the "out" directory in the source root.
+Make sure you carry "data" folder from the source root along with your Savannah projects as this folder contains fonts and images necessary for the framework to run properly. Lack of this folder may result in program crash at startup when ImGui subsystem tries to load a font and fails to find it nearby.
+
 
 ## Developer's Tech Stack for Savannah ##
 - C++ 17
+- CMake
 - TDM GCC 10.3
 - Dear ImGui 1.89.7 (Docking branch)
 - color console
